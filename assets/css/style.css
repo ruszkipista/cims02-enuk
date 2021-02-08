@@ -4,7 +4,9 @@
     --tile-normal-side: 8rem;
     --color-board: dodgerblue;
 }
-
+#tiles{
+    background-color: var(--color-board);
+}
 .tile-normal {
     width:  var(--tile-normal-side);
     height: var(--tile-normal-side);
@@ -15,7 +17,6 @@
     background-color: transparent;
     width: var(--tile-normal-side);
     height: var(--tile-normal-side);
-    border: 1px solid #f1f1f1;
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
   }
   
