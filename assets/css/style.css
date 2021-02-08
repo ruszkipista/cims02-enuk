@@ -1,3 +1,7 @@
+ div {
+     margin: 0;
+     padding: 0;
+ }
  /* GLOBAL VARIABLES */
 :root {
     /* tile sizes */

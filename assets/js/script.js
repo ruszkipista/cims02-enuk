@@ -3,7 +3,10 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     generateTiles(false);
 }
-let gameMaterials = [
+function getGameMaterials(){
+  return [
+    { type: 'path', name:'image', value:'./assets/img/tile-'},
+    { type: 'backtile', name: 'ice'},
     { type: 'tile', name: 'reindeer', count: 9 },
     { type: 'tile', name: 'polarbear', count: 14  },
     { type: 'tile', name: 'seal', count: 14 },
@@ -23,8 +26,9 @@ let gameMaterials = [
     { type: 'figure', name: 'green', count: 4 },
     { type: 'figure', name: 'orange', count: 4 },
     { type: 'figure', name: 'purple', count: 4 },
-    { type: 'sun', name: 'sun', count: 4, image: 'figure-sun.png' },
-]
+    { type: 'sun', name: 'sun' },
+  ]
+}
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffleArrayInplace(arr) {
     let j;
@@ -34,6 +38,9 @@ function shuffleArrayInplace(arr) {
     }
 }
 function generateTiles(isRandom) {
+    let gameMaterials = getGameMaterials();
+    let path = "";
+    let backtile = "";
     // assemble tiles
     tiles = [];
     for (let piece of gameMaterials) {
@@ -41,6 +48,10 @@ function generateTiles(isRandom) {
             for (let i = 0; i < piece.count; i++) {
                 tiles.push({name:piece.name});
             };
+        } else if (piece.type === 'path' && piece.name === 'image') {
+            path = piece.value;
+        } else if (piece.type === 'backtile') {
+            backtile = piece.name;
         }
     };
     if (isRandom) { shuffleArrayInplace(tiles) };
@@ -52,10 +63,10 @@ function generateTiles(isRandom) {
         tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
-            <img class="tile-normal" src="./assets/img/tile-${tile.name}.jpg" alt="game tile">
+            <img class="tile-normal" src="${path}${tile.name}.jpg" alt="game tile">
           </div>
           <div class="tile-back">
-            <img class="tile-normal" src="./assets/img/tile-ice.jpg" alt="game tile">
+            <img class="tile-normal" src="${path}${backtile}.jpg" alt="game tile">
           </div>
         </div>
         `
