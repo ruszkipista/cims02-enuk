@@ -8,17 +8,17 @@
     --tile-normal-side: 8rem;
     --color-board: dodgerblue;
 }
-#tiles{
+#tiles {
     background-color: var(--color-board);
 }
-.tile-normal {
+.tile-front > img, .tile-back > img {
     width:  var(--tile-normal-side);
     height: var(--tile-normal-side);
 }
 /* Source: https://www.w3schools.com/howto/howto_css_flip_card.asp */
 .tile {
     display: inline-block;
-    background-color: transparent;
+    /* background-color: transparent; */
     width: var(--tile-normal-side);
     height: var(--tile-normal-side);
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
@@ -34,11 +34,12 @@
     transform-style: preserve-3d;
   }
   
-  /* Do an horizontal flip when you move the mouse over the flip box container */
-  .tile:hover .tile-inner {
-    transform: rotateY(180deg);
-  }
-  
+  /* Do a flip  */
+  .tile-flip-right { transform: rotateY(180deg); }
+  .tile-flip-left  { transform: rotateY(-180deg); }
+  .tile-flip-down  { transform: rotateX(-180deg); }
+  .tile-flip-up    { transform: rotateX(180deg); }
+
   /* Position the front and back side */
   .tile-front, .tile-back {
     position: absolute;
@@ -49,6 +50,5 @@
   }
   /* Style the back side */
   .tile-back {
-    background-color: var(--color-board);
     transform: rotateY(180deg);
   }

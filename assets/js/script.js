@@ -21,12 +21,12 @@ function getGameMaterials(){
     { type: 'tile', name: 'igloo20', count: 1 },
     { type: 'tile', name: 'igloo21', count: 1 },
     { type: 'tile', name: 'igloo22', count: 1 },
-    { type: 'figure', name: 'blue', count: 4 },
-    { type: 'figure', name: 'red', count: 4 },
-    { type: 'figure', name: 'green', count: 4 },
-    { type: 'figure', name: 'orange', count: 4 },
-    { type: 'figure', name: 'purple', count: 4 },
-    { type: 'sun', name: 'sun' },
+    { type: 'piece', name: 'figure-blue', count: 4 },
+    { type: 'piece', name: 'figure-red', count: 4 },
+    { type: 'piece', name: 'figure-green', count: 4 },
+    { type: 'piece', name: 'figure-orange', count: 4 },
+    { type: 'piece', name: 'figure-purple', count: 4 },
+    { type: 'piece', name: 'sun', count: 1 },
   ]
 }
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
@@ -63,10 +63,10 @@ function generateTiles(isRandom) {
         tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
-            <img class="tile-normal" src="${path}${tile.name}.jpg" alt="game tile">
+            <img src="${path}${tile.name}.jpg" alt="game tile">
           </div>
           <div class="tile-back">
-            <img class="tile-normal" src="${path}${backtile}.jpg" alt="game tile">
+            <img src="${path}${backtile}.jpg" alt="game tile">
           </div>
         </div>
         `
@@ -76,5 +76,20 @@ function generateTiles(isRandom) {
 }
 
 function handleClick(event){
+  let tileInner = event.currentTarget.children[0];
+  let isTopRight = event.layerY < event.layerX;
+  let isTopLeft  = event.layerY < (event.currentTarget.offsetWidth - event.layerX);
+  if (tileInner.classList.contains('tile-flip-up')
+    || tileInner.classList.contains('tile-flip-down')
+    || tileInner.classList.contains('tile-flip-left')
+    || tileInner.classList.contains('tile-flip-right')){
+      tileInner.classList.remove('tile-flip-up','tile-flip-down','tile-flip-left','tile-flip-right');
+  } else {
+    if ( isTopLeft &&  isTopRight) { tileInner.classList.toggle('tile-flip-up');}
+    if ( isTopLeft && !isTopRight) { tileInner.classList.toggle('tile-flip-left');}
+    if (!isTopLeft &&  isTopRight) { tileInner.classList.toggle('tile-flip-right');}
+    if (!isTopLeft && !isTopRight) { tileInner.classList.toggle('tile-flip-down');}
+  }
 
+  
 }
