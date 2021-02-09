@@ -1,7 +1,7 @@
 // generate tiles
 document.addEventListener('DOMContentLoaded', init);
 function init() {
-    generateTiles(false);
+    generateTiles(true);
 }
 function getGameMaterials(){
   return [
@@ -62,11 +62,11 @@ function generateTiles(isRandom) {
         tileElement.setAttribute('class','tile');
         tileElement.innerHTML = `
         <div class="tile-inner">
-          <div class="tile-front">
-            <img src="${path}${tile.name}.jpg" alt="game tile">
+          <div class="tile-face">
+          <img src="${path}${backtile}.jpg" alt="game tile face">
           </div>
           <div class="tile-back">
-            <img src="${path}${backtile}.jpg" alt="game tile">
+          <img src="${path}${tile.name}.jpg" alt="game tile back">
           </div>
         </div>
         `
