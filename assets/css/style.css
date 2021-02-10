@@ -19,6 +19,7 @@
   height: var(--piece-sun-length);
   top: var(--piece-sun-fromtop);
   left: var(--piece-sun-fromleft);
+  transition: top 2s, left 2s;
 }
 #tiles {
     background: url("../img/tiles-background.jpg") center top / cover no-repeat;

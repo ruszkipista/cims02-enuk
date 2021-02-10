@@ -3,49 +3,64 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     generateTiles(true);
 }
-isTest = true;
-let materialTypeTileFace = 'tileface';
-let materialTypeTileBack = 'tileback';
-let gameState = { 
-  sunPosition: 8,
+const isTest = true;
+const materialTypeTileFace = 'tileface';
+const materialTypeTileBack = 'tileback';
+const materialTypeImagePath = 'path-image';
+const materialTypeFigurePiece = 'piece-figure';
+const materialTypeBoardPiece = 'piece-board';
+const materialTypeSunPiece = 'piece-sun';
+const gameState = { 
+  sunPosition: 0,
 };
-function getGameMaterials(){
-  return [
-    { type: 'path-image', name:'./assets/img/'},
-    { type: materialTypeTileBack, name: 'ice'},
-    { type: materialTypeTileFace, name: 'reindeer', count: 9 },
-    { type: materialTypeTileFace, name: 'polarbear', count: 14  },
-    { type: materialTypeTileFace, name: 'seal', count: 14 },
-    { type: materialTypeTileFace, name: 'salmon', count: 14 },
-    { type: materialTypeTileFace, name: 'herring', count: 9 },
-    { type: materialTypeTileFace, name: 'igloo00', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo01', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo02', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo10', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo11', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo12', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo20', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo21', count: 1 },
-    { type: materialTypeTileFace, name: 'igloo22', count: 1 },
-    { type: 'piece-figure', name: 'blue', count: 4 },
-    { type: 'piece-figure', name: 'red', count: 4 },
-    { type: 'piece-figure', name: 'green', count: 4 },
-    { type: 'piece-figure', name: 'orange', count: 4 },
-    { type: 'piece-figure', name: 'purple', count: 4 },
-    { type: 'piece-sun', name: 'piece-sun.png', count: 1, length: 0.08556 },
-    { type: 'piece-board', name: 'enuk-board-front.jpg', count: 1, 
-      sunCenters: [[0.145,0.079],
-                   [0.115,0.185],
-                   [0.09,0.291],
-                   [0.074,0.404],
-                   [0.068,0.51],
-                   [0.07,0.622],
-                   [0.086,0.73],
-                   [0.112,0.835],
-                   [0.143,0.935]],
-    },
-  ]
+
+function getGameMaterials(attribute){
+  switch (attribute) {
+    case materialTypeImagePath:
+      return './assets/img/';
+    case materialTypeTileBack:
+      return { filename: 'tileback-ice.jpg'};
+    case materialTypeTileFace:
+      return [{ name: 'reindeer', filename: 'tileface-reindeer.jpg', count: 9 },
+              { name: 'polarbear', filename: 'tileface-polarbear.jpg', count: 14 },
+              { name: 'seal', filename: 'tileface-seal.jpg', count: 14 },
+              { name: 'salmon', filename: 'tileface-salmon.jpg', count: 14 },
+              { name: 'herring', filename: 'tileface-herring.jpg', count: 9 },
+              { name: 'igloo00', filename: 'tileface-igloo00.jpg', count: 1 },
+              { name: 'igloo01', filename: 'tileface-igloo01.jpg', count: 1 },
+              { name: 'igloo02', filename: 'tileface-igloo02.jpg', count: 1 },
+              { name: 'igloo10', filename: 'tileface-igloo10.jpg', count: 1 },
+              { name: 'igloo11', filename: 'tileface-igloo11.jpg', count: 1 },
+              { name: 'igloo12', filename: 'tileface-igloo12.jpg', count: 1 },
+              { name: 'igloo20', filename: 'tileface-igloo20.jpg', count: 1 },
+              { name: 'igloo21', filename: 'tileface-igloo21.jpg', count: 1 },
+              { name: 'igloo22', filename: 'tileface-igloo22.jpg', count: 1 }];
+    case materialTypeFigurePiece:
+      return [{ name: 'blue', count: 4 },
+              { name: 'red', count: 4 },
+              { name: 'green', count: 4 },
+              { name: 'orange', count: 4 },
+              { name: 'purple', count: 4 }];
+    case materialTypeBoardPiece:              
+      return { id: materialTypeBoardPiece,
+               name: 'enuk-board-front.jpg', 
+               sunCenters: [[0.145,0.079],
+                            [0.115,0.185],
+                            [0.09,0.291],
+                            [0.074,0.404],
+                            [0.068,0.51],
+                            [0.07,0.622],
+                            [0.086,0.73],
+                            [0.112,0.835],
+                            [0.143,0.935]]}           
+    case materialTypeSunPiece:
+      return { id: materialTypeSunPiece,
+               name: 'piece-sun.png', 
+               count: 1, 
+               length: 0.08556 }
+  }
 }
+
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffleArrayInplace(arr) {
     let j;
@@ -54,68 +69,75 @@ function shuffleArrayInplace(arr) {
         [arr[i], arr[j]] = [arr[j], arr[i]];
     }
 }
+
 function generateTiles(isRandom) {
-    let gameMaterials = getGameMaterials();
-    let path;
-    let backtileName = "";
-    let pieceBoard;
-    let pieceSun;
-    // assemble tiles
-    tiles = [];
-    for (let piece of gameMaterials) {
-        if (piece.type === materialTypeTileFace) {
-            for (let i = 0; i < piece.count; i++) {
-                tiles.push({name:piece.name});
-            };
-        } else if (piece.type === 'path-image') {
-            path = piece;
-        } else if (piece.type === 'tileback') {
-            backtileName = piece.name;
-        } else if (piece.type === 'piece-board') {
-          pieceBoard = piece;
-        } else if (piece.type === 'piece-sun') {
-          pieceSun = piece; 
-        }
-    };
+    const path = getGameMaterials(materialTypeImagePath);
+
     // put game board and sun piece in place
-    let boardElement = document.getElementById('board');
-    boardElement.innerHTML = `
-      <img id="${pieceBoard.type}" src="${path.name}${pieceBoard.name}" alt="game board">           
-      <img id="${pieceSun.type}" src="${path.name}${pieceSun.name}" alt="game piece sun">
+    const pieceBoard = getGameMaterials(materialTypeBoardPiece);
+    const pieceSun = getGameMaterials(materialTypeSunPiece);
+    document.getElementById('board').innerHTML = `
+      <img id="${pieceBoard.id}" src="${path}${pieceBoard.name}" alt="game board">           
+      <img id="${pieceSun.id}" src="${path}${pieceSun.name}" alt="game piece sun">
     `;
-    let boardWidth = document.getElementById(pieceBoard.type).naturalWidth;
-    let sunLength = boardWidth * pieceSun.length;
-    document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
-    document.documentElement.style.setProperty('--piece-sun-fromtop', 
-        `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][0] - sunLength/2}px`);
-    document.documentElement.style.setProperty('--piece-sun-fromleft', 
-        `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][1] - sunLength/2}px`);
+    document.getElementById(pieceSun.id).addEventListener('click', handleSunClick);
+
+    setSunPosition();
+
+    let tiles = [];
+    for (let piece of getGameMaterials(materialTypeTileFace)) {
+      for (let i = 0; i < piece.count; i++) {
+        tiles.push({name: piece.name, filename: piece.filename});
+      };
+    }
 
     if (isRandom) { shuffleArrayInplace(tiles) };
+
     let tilesElement = document.getElementById('tiles');
-    let tileElement;
+    let tileElement; 
+    let backtileName = getGameMaterials(materialTypeTileBack).filename;
+
+    // assemble tiles
     for (let tile of tiles) {
         tileElement = document.createElement('div');
-        tileElement.setAttribute('class','tile');
+        tileElement.classList.add('tile');
         tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
-            <img src="${path.name}${materialTypeTileBack}-${backtileName}.jpg" alt="game tile back">
+            <img src="${path}${backtileName}" alt="game tile back">
           </div>
           <div class="tile-front">
             ${(isTest) ? tile.name : ""}
           </div>
           <div class="tile-back">
-            <img src="${path.name}${materialTypeTileFace}-${tile.name}.jpg" alt="game tile face">
+            <img src="${path}${tile.filename}" alt="game tile face">
           </div>
         </div>
         `
-        tileElement.addEventListener('click', handleClick);
+        tileElement.addEventListener('click', handleTileClick);
         tilesElement.appendChild(tileElement);
     }
 }
 
-function handleClick(event){
+function setSunPosition(){
+  let pieceBoard = getGameMaterials(materialTypeBoardPiece);
+  let boardElement = document.getElementById(pieceBoard.id);
+  let boardWidth = boardElement.naturalWidth;
+  let pieceSun = getGameMaterials(materialTypeSunPiece);
+  let sunLength = boardWidth * pieceSun.length;
+  document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
+  document.documentElement.style.setProperty('--piece-sun-fromtop', 
+      `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][0] - sunLength/2}px`);
+  document.documentElement.style.setProperty('--piece-sun-fromleft', 
+      `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][1] - sunLength/2}px`);
+}
+
+function handleSunClick(event){
+  ++gameState.sunPosition;
+  setSunPosition();
+}
+
+function handleTileClick(event){
   let tileInner = event.currentTarget.children[0];
   let isTopRight = event.layerY < event.layerX;
   let isTopLeft  = event.layerY < (event.currentTarget.offsetWidth - event.layerX);
