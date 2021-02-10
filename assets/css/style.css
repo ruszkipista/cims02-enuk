@@ -11,7 +11,7 @@
 #tiles {
     background-color: var(--color-board);
 }
-.tile-face > img, .tile-back > img {
+.tile-front > img, .tile-back > img {
     width:  var(--tile-normal-side);
     height: var(--tile-normal-side);
 }
@@ -41,7 +41,7 @@
   .tile-flip-up    { transform: rotateX(180deg); }
 
   /* Position the face and back side */
-  .tile-face, .tile-back {
+  .tile-front, .tile-back {
     position: absolute;
     width: 100%;
     height: 100%;

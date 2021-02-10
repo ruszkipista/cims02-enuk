@@ -3,24 +3,26 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     generateTiles(true);
 }
+let materialTypeTileFace = 'tileface';
+let materialTypeTileBack = 'tileback';
 function getGameMaterials(){
   return [
-    { type: 'path', name:'image', value:'./assets/img/tile-'},
-    { type: 'backtile', name: 'ice'},
-    { type: 'tile', name: 'reindeer', count: 9 },
-    { type: 'tile', name: 'polarbear', count: 14  },
-    { type: 'tile', name: 'seal', count: 14 },
-    { type: 'tile', name: 'salmon', count: 14 },
-    { type: 'tile', name: 'herring', count: 9 },
-    { type: 'tile', name: 'igloo00', count: 1 },
-    { type: 'tile', name: 'igloo01', count: 1 },
-    { type: 'tile', name: 'igloo02', count: 1 },
-    { type: 'tile', name: 'igloo10', count: 1 },
-    { type: 'tile', name: 'igloo11', count: 1 },
-    { type: 'tile', name: 'igloo12', count: 1 },
-    { type: 'tile', name: 'igloo20', count: 1 },
-    { type: 'tile', name: 'igloo21', count: 1 },
-    { type: 'tile', name: 'igloo22', count: 1 },
+    { type: 'path', name:'image', value:'./assets/img/'},
+    { type: materialTypeTileBack, name: 'ice'},
+    { type: materialTypeTileFace, name: 'reindeer', count: 9 },
+    { type: materialTypeTileFace, name: 'polarbear', count: 14  },
+    { type: materialTypeTileFace, name: 'seal', count: 14 },
+    { type: materialTypeTileFace, name: 'salmon', count: 14 },
+    { type: materialTypeTileFace, name: 'herring', count: 9 },
+    { type: materialTypeTileFace, name: 'igloo00', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo01', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo02', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo10', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo11', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo12', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo20', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo21', count: 1 },
+    { type: materialTypeTileFace, name: 'igloo22', count: 1 },
     { type: 'piece', name: 'figure-blue', count: 4 },
     { type: 'piece', name: 'figure-red', count: 4 },
     { type: 'piece', name: 'figure-green', count: 4 },
@@ -39,19 +41,20 @@ function shuffleArrayInplace(arr) {
 }
 function generateTiles(isRandom) {
     let gameMaterials = getGameMaterials();
-    let path = "";
-    let backtile = "";
+    let pathName = "";
+    let backtileName = "";
+
     // assemble tiles
     tiles = [];
     for (let piece of gameMaterials) {
-        if (piece.type === 'tile') {
+        if (piece.type === materialTypeTileFace) {
             for (let i = 0; i < piece.count; i++) {
                 tiles.push({name:piece.name});
             };
         } else if (piece.type === 'path' && piece.name === 'image') {
-            path = piece.value;
-        } else if (piece.type === 'backtile') {
-            backtile = piece.name;
+            pathName = piece.value;
+        } else if (piece.type === 'tileback') {
+            backtileName = piece.name;
         }
     };
     if (isRandom) { shuffleArrayInplace(tiles) };
@@ -62,11 +65,11 @@ function generateTiles(isRandom) {
         tileElement.setAttribute('class','tile');
         tileElement.innerHTML = `
         <div class="tile-inner">
-          <div class="tile-face">
-          <img src="${path}${backtile}.jpg" alt="game tile face">
+          <div class="tile-front">
+          <img src="${pathName}${materialTypeTileBack}-${backtileName}.jpg" alt="game tile back">
           </div>
           <div class="tile-back">
-          <img src="${path}${tile.name}.jpg" alt="game tile back">
+          <img src="${pathName}${materialTypeTileFace}-${tile.name}.jpg" alt="game tile face">
           </div>
         </div>
         `
