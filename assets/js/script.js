@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     generateTiles(true);
 }
+isTest = true;
 let materialTypeTileFace = 'tileface';
 let materialTypeTileBack = 'tileback';
 function getGameMaterials(){
@@ -66,10 +67,13 @@ function generateTiles(isRandom) {
         tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
-          <img src="${pathName}${materialTypeTileBack}-${backtileName}.jpg" alt="game tile back">
+            <img src="${pathName}${materialTypeTileBack}-${backtileName}.jpg" alt="game tile back">
+          </div>
+          <div class="tile-front">
+            ${(isTest) ? tile.name : ""}
           </div>
           <div class="tile-back">
-          <img src="${pathName}${materialTypeTileFace}-${tile.name}.jpg" alt="game tile face">
+            <img src="${pathName}${materialTypeTileFace}-${tile.name}.jpg" alt="game tile face">
           </div>
         </div>
         `

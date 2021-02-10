@@ -15,40 +15,34 @@
     width:  var(--tile-normal-side);
     height: var(--tile-normal-side);
 }
-/* Source: https://www.w3schools.com/howto/howto_css_flip_card.asp */
+/* Flipping learned from here: https://www.w3schools.com/howto/howto_css_flip_card.asp */
 .tile {
     display: inline-block;
-    /* background-color: transparent; */
     width: var(--tile-normal-side);
     height: var(--tile-normal-side);
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
   }
   
-  /* This container is needed to position the face and back side */
-  .tile-inner {
+  /* This container is needed to position the two sides */
+.tile-inner {
     position: relative;
     width: 100%;
     height: 100%;
-    text-align: center;
     transition: transform 0.8s;
     transform-style: preserve-3d;
-  }
+}
   
-  /* Do a flip  */
-  .tile-flip-right { transform: rotateY(180deg); }
-  .tile-flip-left  { transform: rotateY(-180deg); }
-  .tile-flip-down  { transform: rotateX(-180deg); }
-  .tile-flip-up    { transform: rotateX(180deg); }
-
-  /* Position the face and back side */
-  .tile-front, .tile-back {
+/* Position both sides */
+.tile-front, .tile-back {
     position: absolute;
-    width: 100%;
-    height: 100%;
-    -webkit-backface-visibility: hidden; /* Safari */
-    backface-visibility: hidden;
-  }
-  /* Style the back side */
-  .tile-back {
+    text-align: center;
+}
+/* Style the back side */
+.tile-back {
     transform: rotateY(180deg);
-  }
+}
+/* Flip!  */
+.tile-flip-right { transform: rotateY(180deg); }
+.tile-flip-left  { transform: rotateY(-180deg); }
+.tile-flip-down  { transform: rotateX(-180deg); }
+.tile-flip-up    { transform: rotateX(180deg); }
