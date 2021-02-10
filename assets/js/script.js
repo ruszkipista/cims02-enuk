@@ -136,7 +136,7 @@ function setSunPosition(){
   document.documentElement.style.setProperty('--piece-sun-fromleft', 
       `${boardLeftOffset + boardWidth * pieceBoard.sunCenters[gameState.sunPosition][1] - sunLength/2}px`);
   document.documentElement.style.setProperty('--piece-sun-rotate', 
-      `${gameState.sunPosition * 90}deg`);
+      `${gameState.sunPosition * 120}deg`);
 }
 
 function handleSunClick(event){
