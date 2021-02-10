@@ -8,8 +8,21 @@
     --tile-normal-side: 8rem;
     --color-board: dodgerblue;
 }
+#board {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+#piece-sun {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  top: 125px;
+  left: 45px;
+}
 #tiles {
-    background-color: var(--color-board);
+    background: url("../img/tiles-background.jpg") center top / cover no-repeat;
+    text-align: center;
 }
 .tile-front > img, .tile-back > img {
     width:  var(--tile-normal-side);

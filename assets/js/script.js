@@ -8,7 +8,7 @@ let materialTypeTileFace = 'tileface';
 let materialTypeTileBack = 'tileback';
 function getGameMaterials(){
   return [
-    { type: 'path', name:'image', value:'./assets/img/'},
+    { type: 'path-image', name:'./assets/img/'},
     { type: materialTypeTileBack, name: 'ice'},
     { type: materialTypeTileFace, name: 'reindeer', count: 9 },
     { type: materialTypeTileFace, name: 'polarbear', count: 14  },
@@ -24,12 +24,13 @@ function getGameMaterials(){
     { type: materialTypeTileFace, name: 'igloo20', count: 1 },
     { type: materialTypeTileFace, name: 'igloo21', count: 1 },
     { type: materialTypeTileFace, name: 'igloo22', count: 1 },
-    { type: 'piece', name: 'figure-blue', count: 4 },
-    { type: 'piece', name: 'figure-red', count: 4 },
-    { type: 'piece', name: 'figure-green', count: 4 },
-    { type: 'piece', name: 'figure-orange', count: 4 },
-    { type: 'piece', name: 'figure-purple', count: 4 },
-    { type: 'piece', name: 'sun', count: 1 },
+    { type: 'piece-figure', name: 'blue', count: 4 },
+    { type: 'piece-figure', name: 'red', count: 4 },
+    { type: 'piece-figure', name: 'green', count: 4 },
+    { type: 'piece-figure', name: 'orange', count: 4 },
+    { type: 'piece-figure', name: 'purple', count: 4 },
+    { type: 'piece-sun', name: 'piece-sun.png', count: 1 },
+    { type: 'piece-board', name: 'enuk-board-front.jpg', count: 1 },
   ]
 }
 // https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
@@ -44,7 +45,7 @@ function generateTiles(isRandom) {
     let gameMaterials = getGameMaterials();
     let pathName = "";
     let backtileName = "";
-
+    let pieceBoard;
     // assemble tiles
     tiles = [];
     for (let piece of gameMaterials) {
@@ -52,12 +53,22 @@ function generateTiles(isRandom) {
             for (let i = 0; i < piece.count; i++) {
                 tiles.push({name:piece.name});
             };
-        } else if (piece.type === 'path' && piece.name === 'image') {
-            pathName = piece.value;
+        } else if (piece.type === 'path-image') {
+            pathName = piece.name;
         } else if (piece.type === 'tileback') {
             backtileName = piece.name;
+        } else if (piece.type === 'piece-board') {
+          pieceBoard = piece;
+        } else if (piece.type === 'piece-sun') {
+          pieceSun = piece; 
         }
     };
+    // put game board and sun piece in place
+    document.getElementById('board').innerHTML = `
+      <img id="${pieceBoard.type}" src="${pathName}${pieceBoard.name}" alt="game board">           
+      <img id="${pieceSun.type}" src="${pathName}${pieceSun.name}" alt="game piece sun">
+    `;            
+
     if (isRandom) { shuffleArrayInplace(tiles) };
     let tilesElement = document.getElementById('tiles');
     let tileElement;
