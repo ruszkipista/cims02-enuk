@@ -15,10 +15,10 @@
 }
 #piece-sun {
   position: absolute;
-  width: 100px;
-  height: 100px;
-  top: 125px;
-  left: 45px;
+  width: var(--piece-sun-length);
+  height: var(--piece-sun-length);
+  top: var(--piece-sun-fromtop);
+  left: var(--piece-sun-fromleft);
 }
 #tiles {
     background: url("../img/tiles-background.jpg") center top / cover no-repeat;
