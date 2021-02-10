@@ -6,6 +6,9 @@ function init() {
 isTest = true;
 let materialTypeTileFace = 'tileface';
 let materialTypeTileBack = 'tileback';
+let gameState = { 
+  sunPosition: 8,
+};
 function getGameMaterials(){
   return [
     { type: 'path-image', name:'./assets/img/'},
@@ -31,7 +34,15 @@ function getGameMaterials(){
     { type: 'piece-figure', name: 'purple', count: 4 },
     { type: 'piece-sun', name: 'piece-sun.png', count: 1, length: 0.08556 },
     { type: 'piece-board', name: 'enuk-board-front.jpg', count: 1, 
-      sunCenters: [[0.144385,0.074866]],
+      sunCenters: [[0.145,0.079],
+                   [0.115,0.185],
+                   [0.09,0.291],
+                   [0.074,0.404],
+                   [0.068,0.51],
+                   [0.07,0.622],
+                   [0.086,0.73],
+                   [0.112,0.835],
+                   [0.143,0.935]],
     },
   ]
 }
@@ -75,8 +86,10 @@ function generateTiles(isRandom) {
     let boardWidth = document.getElementById(pieceBoard.type).naturalWidth;
     let sunLength = boardWidth * pieceSun.length;
     document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
-    document.documentElement.style.setProperty('--piece-sun-fromtop', `${boardWidth * pieceBoard.sunCenters[0][0] - sunLength/2}px`);
-    document.documentElement.style.setProperty('--piece-sun-fromleft', `${boardWidth * pieceBoard.sunCenters[0][1] - sunLength/2}px`);
+    document.documentElement.style.setProperty('--piece-sun-fromtop', 
+        `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][0] - sunLength/2}px`);
+    document.documentElement.style.setProperty('--piece-sun-fromleft', 
+        `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][1] - sunLength/2}px`);
 
     if (isRandom) { shuffleArrayInplace(tiles) };
     let tilesElement = document.getElementById('tiles');
