@@ -49,7 +49,7 @@ function getGameMaterials(attribute){
     case materialTypeBoardPiece:              
       return { id: materialTypeBoardPiece,
                name: 'enuk-board-front.jpg', 
-               sunCenters: [[0.144,0.078],
+               sunCenters: [[0.144,0.072],
                             [0.115,0.185],
                             [0.09,0.291],
                             [0.074,0.404],

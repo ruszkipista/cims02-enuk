@@ -5,11 +5,11 @@
  /* GLOBAL VARIABLES */
 :root {
     /* tile sizes */
-    --tile-normal-side: 8rem;
+    --tile-normal-side: 7rem;
     --color-board: dodgerblue;
 }
 body {
-  background: url("../img/tiles-background.jpg") center top / cover no-repeat;
+  background: url("../img/enuk-background.jpg") center top / cover no-repeat;
 }
 header {
   text-align: center;
