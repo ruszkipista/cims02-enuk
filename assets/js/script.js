@@ -3,6 +3,8 @@ document.addEventListener('DOMContentLoaded', init);
 function init() {
     generateTiles(true);
 }
+window.addEventListener('resize', function(){setSunPosition();});
+
 const isTest = true;
 const materialTypeTileFace = 'tileface';
 const materialTypeTileBack = 'tileback';
@@ -10,8 +12,11 @@ const materialTypeImagePath = 'path-image';
 const materialTypeFigurePiece = 'piece-figure';
 const materialTypeBoardPiece = 'piece-board';
 const materialTypeSunPiece = 'piece-sun';
+
 const gameState = { 
   sunPosition: 0,
+  players: [],
+  scores: [],
 };
 
 function getGameMaterials(attribute){
@@ -44,7 +49,7 @@ function getGameMaterials(attribute){
     case materialTypeBoardPiece:              
       return { id: materialTypeBoardPiece,
                name: 'enuk-board-front.jpg', 
-               sunCenters: [[0.145,0.079],
+               sunCenters: [[0.144,0.078],
                             [0.115,0.185],
                             [0.09,0.291],
                             [0.074,0.404],
@@ -82,8 +87,6 @@ function generateTiles(isRandom) {
     `;
     document.getElementById(pieceSun.id).addEventListener('click', handleSunClick);
 
-    setSunPosition();
-
     let tiles = [];
     for (let piece of getGameMaterials(materialTypeTileFace)) {
       for (let i = 0; i < piece.count; i++) {
@@ -117,26 +120,31 @@ function generateTiles(isRandom) {
         tileElement.addEventListener('click', handleTileClick);
         tilesElement.appendChild(tileElement);
     }
+    setSunPosition();
 }
 
 function setSunPosition(){
   let pieceBoard = getGameMaterials(materialTypeBoardPiece);
   let boardElement = document.getElementById(pieceBoard.id);
-  let boardWidth = boardElement.naturalWidth;
+  let boardWidth = boardElement.clientWidth;
+  let boardLeftOffset = boardElement.offsetLeft;
   let pieceSun = getGameMaterials(materialTypeSunPiece);
   let sunLength = boardWidth * pieceSun.length;
   document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
   document.documentElement.style.setProperty('--piece-sun-fromtop', 
       `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][0] - sunLength/2}px`);
   document.documentElement.style.setProperty('--piece-sun-fromleft', 
-      `${boardWidth * pieceBoard.sunCenters[gameState.sunPosition][1] - sunLength/2}px`);
+      `${boardLeftOffset + boardWidth * pieceBoard.sunCenters[gameState.sunPosition][1] - sunLength/2}px`);
   document.documentElement.style.setProperty('--piece-sun-rotate', 
-      `${gameState.sunPosition * 70}deg`);
+      `${gameState.sunPosition * 90}deg`);
 }
 
 function handleSunClick(event){
-  ++gameState.sunPosition;
-  setSunPosition();
+  let pieceBoard = getGameMaterials(materialTypeBoardPiece);
+  if (gameState.sunPosition < pieceBoard.sunCenters.length-1){
+    ++gameState.sunPosition;
+    setSunPosition();
+  };
 }
 
 function handleTileClick(event){

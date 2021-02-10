@@ -8,10 +8,27 @@
     --tile-normal-side: 8rem;
     --color-board: dodgerblue;
 }
+body {
+  background: url("../img/tiles-background.jpg") center top / cover no-repeat;
+}
+header {
+  text-align: center;
+}
+#title {
+  display: inline-block;
+  width:100%;
+  height: 10vh;
+  background: url("../img/enuk-title.png") center / contain no-repeat;
+}
+
 #board {
   position: relative;
+  text-align: center;
+}
+#piece-board {
+  display: inline-block;
   width: 100%;
-  height: 100%;
+  max-width: 1200px;
 }
 #piece-sun {
   position: absolute;
@@ -23,7 +40,6 @@
   transition: top 2s, left 2s, transform 2s;
 }
 #tiles {
-    background: url("../img/tiles-background.jpg") center top / cover no-repeat;
     text-align: center;
 }
 .tile-front > img, .tile-back > img {
