@@ -5,7 +5,6 @@ function init() {
 }
 window.addEventListener('resize', function(){setSunPosition();});
 
-const isTest = true;
 const materialTypeTileFace = 'tileface';
 const materialTypeTileBack = 'tileback';
 const materialTypeImagePath = 'path-image';
@@ -13,7 +12,8 @@ const materialTypeFigurePiece = 'piece-figure';
 const materialTypeBoardPiece = 'piece-board';
 const materialTypeSunPiece = 'piece-sun';
 
-const gameState = { 
+const gameState = {
+  isTest: true,
   sunPosition: 0,
   players: [],
   scores: [],
@@ -110,7 +110,7 @@ function generateTiles(isRandom) {
             <img src="${path}${backtileName}" alt="game tile back">
           </div>
           <div class="tile-front">
-            ${(isTest) ? tile.name : ""}
+            ${(gameState.isTest) ? tile.name : ""}
           </div>
           <div class="tile-back">
             <img src="${path}${tile.filename}" alt="game tile face">
@@ -162,6 +162,4 @@ function handleTileClick(event){
     if (!isTopLeft &&  isTopRight) { tileInner.classList.toggle('tile-flip-right');}
     if (!isTopLeft && !isTopRight) { tileInner.classList.toggle('tile-flip-down');}
   }
-
-  
 }

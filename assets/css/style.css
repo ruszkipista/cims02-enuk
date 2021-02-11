@@ -67,6 +67,8 @@ header {
 .tile-front, .tile-back {
     position: absolute;
     text-align: center;
+    -webkit-backface-visibility: hidden; /* Safari */
+    backface-visibility: hidden;
 }
 /* Style the back side */
 .tile-back {
