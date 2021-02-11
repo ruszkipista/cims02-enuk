@@ -13,9 +13,11 @@ const materialTypeFigurePiece = 'piece-figure';
 const materialTypeBoardPiece = 'piece-board';
 const materialTypeSunPiece = 'piece-sun';
 const materialNameIgloo = 'igloo';
+const materialNameReindeer = 'reindeer';
 
 const gameState = {
   isTest: true,
+  tiles: [],
   sunPosition: 0,
   players: [],
   scores: [],
@@ -90,11 +92,10 @@ function generateTiles(isRandom) {
     const pieceSun = getGameMaterials(materialTypeSunPiece);
     const tileFaces = getGameMaterials(materialTypeTileFace);
 
-    let tiles = [];
     let counter = 0;
     for (let piece of tileFaces) {
       for (let i = 0; i < piece.count; i++) {
-        tiles.push({name: piece.name, filename: piece.filename, id:`tile-${counter}`});
+        gameState.tiles.push({name: piece.name, filename: piece.filename, id:`tile-${counter}`});
         counter++;
       };
     }
@@ -105,7 +106,7 @@ function generateTiles(isRandom) {
       <img id="${pieceSun.id}" src="${path}${pieceSun.filename}" alt="game piece sun">
       <div id="tiles-igloo">
     `;
-    for (let tile of tiles) {
+    for (let tile of gameState.tiles) {
       if (tile.name === materialNameIgloo){
         boardPiecesHTML += `<img id="${tile.id}" class="tile-igloo" 
                             src="${path}${tile.filename}"
@@ -116,15 +117,13 @@ function generateTiles(isRandom) {
     boardPiecesHTML += `</div>`;
     boardElement.innerHTML = boardPiecesHTML;
 
-    document.getElementById(pieceSun.id).addEventListener('click', handleSunClick);
-
-    if (isRandom) { shuffleArrayInplace(tiles) };
+    if (isRandom) { shuffleArrayInplace(gameState.tiles) };
 
     let tilesElement = document.getElementById('tiles');
     let backtileName = getGameMaterials(materialTypeTileBack).filename;
 
     // assemble tiles
-    for (let tile of tiles) {
+    for (let tile of gameState.tiles) {
         tileElement = document.createElement('div');
         tileElement.classList.add('tile');
         tileElement.setAttribute('data-id',tile.id);
@@ -170,14 +169,6 @@ function setBoardPiecesPosition(){
       `${boardLeftOffset + boardWidth * pieceBoard.igloo3x3TopLeftCorner[1]}px`); 
 }
 
-function handleSunClick(event){
-  let pieceBoard = getGameMaterials(materialTypeBoardPiece);
-  if (gameState.sunPosition < pieceBoard.sunCenters.length-1){
-    ++gameState.sunPosition;
-    setBoardPiecesPosition();
-  };
-}
-
 function handleTileClick(event){
   let tileInner = event.currentTarget.children[0];
   let isTopRight = event.layerY < event.layerX;
@@ -189,9 +180,25 @@ function handleTileClick(event){
       tileInner.classList.remove('tile-flip-up','tile-flip-down','tile-flip-left','tile-flip-right');
   } else {
     if ( isTopLeft &&  isTopRight) { tileInner.classList.add('tile-flip-up');}
-    if ( isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-left');}
-    if (!isTopLeft &&  isTopRight) { tileInner.classList.add('tile-flip-right');}
-    if (!isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-down');}
+    else if ( isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-left');}
+    else if (!isTopLeft &&  isTopRight) { tileInner.classList.add('tile-flip-right');}
+    else if (!isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-down');}
+    // learnt from https://usefulangle.com/post/3/javascript-search-array-of-objects
+    let tile = gameState.tiles.find(function(element, index){
+      if (element.id === event.currentTarget.dataset.id) return true;
+    })
+    switch (tile.name) {
+      case materialNameIgloo:
+        setVisibilityTileOnBoard(event.currentTarget.dataset.id,true);
+        break;
+      case materialNameReindeer:
+        const pieceBoard = getGameMaterials(materialTypeBoardPiece);
+        if (gameState.sunPosition < pieceBoard.sunCenters.length-1){
+          ++gameState.sunPosition;
+          setBoardPiecesPosition();
+        };
+        break;
+    }
   }
 }
 
