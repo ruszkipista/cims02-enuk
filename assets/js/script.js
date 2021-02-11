@@ -33,15 +33,15 @@ function getGameMaterials(attribute){
               { name: 'seal', filename: 'tileface-seal.jpg', count: 14 },
               { name: 'salmon', filename: 'tileface-salmon.jpg', count: 14 },
               { name: 'herring', filename: 'tileface-herring.jpg', count: 9 },
-              { name: 'igloo', posRow:0,posCol:0, filename: 'tileface-igloo00.jpg', count: 1 },
-              { name: 'igloo', posRow:0,posCol:1, filename: 'tileface-igloo01.jpg', count: 1 },
-              { name: 'igloo', posRow:0,posCol:2, filename: 'tileface-igloo02.jpg', count: 1 },
-              { name: 'igloo', posRow:1,posCol:0, filename: 'tileface-igloo10.jpg', count: 1 },
-              { name: 'igloo', posRow:1,posCol:1, filename: 'tileface-igloo11.jpg', count: 1 },
-              { name: 'igloo', posRow:1,posCol:2, filename: 'tileface-igloo12.jpg', count: 1 },
-              { name: 'igloo', posRow:2,posCol:0, filename: 'tileface-igloo20.jpg', count: 1 },
-              { name: 'igloo', posRow:2,posCol:1, filename: 'tileface-igloo21.jpg', count: 1 },
-              { name: 'igloo', posRow:2,posCol:2, filename: 'tileface-igloo22.jpg', count: 1 }];
+              { name: 'igloo', filename: 'tileface-igloo00.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo01.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo02.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo10.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo11.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo12.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo20.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo21.jpg', count: 1 },
+              { name: 'igloo', filename: 'tileface-igloo22.jpg', count: 1 }];
     case materialTypeFigurePiece:
       return [{ name: 'blue', count: 4 },
               { name: 'red', count: 4 },
@@ -53,7 +53,7 @@ function getGameMaterials(attribute){
                name: 'enuk-board-front.jpg',
                sunLength: 0.08556,
                sunCenters:[
-                 [0.144,0.072],
+                 [0.146,0.0728],
                  [0.115,0.185],
                  [0.09,0.291],
                  [0.074,0.404],
@@ -89,34 +89,34 @@ function generateTiles(isRandom) {
     const pieceBoard = getGameMaterials(materialTypeBoardPiece);
     const pieceSun = getGameMaterials(materialTypeSunPiece);
     const tileFaces = getGameMaterials(materialTypeTileFace);
+
+    let tiles = [];
+    let counter = 0;
+    for (let piece of tileFaces) {
+      for (let i = 0; i < piece.count; i++) {
+        tiles.push({name: piece.name, filename: piece.filename, id:`tile-${counter}`});
+        counter++;
+      };
+    }
+
     const boardElement = document.getElementById('board');
     let boardPiecesHTML = `
       <img id="${pieceBoard.id}" src="${path}${pieceBoard.name}" alt="game board">           
       <img id="${pieceSun.id}" src="${path}${pieceSun.filename}" alt="game piece sun">
       <div id="tiles-igloo">
     `;
-    for (let piece of tileFaces) {
-      if (piece.name === materialNameIgloo){
-        boardPiecesHTML += `<img class="tile-igloo" 
-                            id="${piece.name+piece.posRow+piece.posCol}" 
-                            src="${path}${piece.filename}"
+    for (let tile of tiles) {
+      if (tile.name === materialNameIgloo){
+        boardPiecesHTML += `<img id="${tile.id}" class="tile-igloo" 
+                            src="${path}${tile.filename}"
                             style="visibility: hidden;"
-                            alt="game tile igloo">`;        
+                            alt="game tile ${tile.name}">`;
       }
     }
     boardPiecesHTML += `</div>`;
     boardElement.innerHTML = boardPiecesHTML;
 
-    setVisibilityTileOnBoard('igloo00',true);
-
     document.getElementById(pieceSun.id).addEventListener('click', handleSunClick);
-
-    let tiles = [];
-    for (let piece of tileFaces) {
-      for (let i = 0; i < piece.count; i++) {
-        tiles.push({name: piece.name, filename: piece.filename});
-      };
-    }
 
     if (isRandom) { shuffleArrayInplace(tiles) };
 
@@ -127,6 +127,7 @@ function generateTiles(isRandom) {
     for (let tile of tiles) {
         tileElement = document.createElement('div');
         tileElement.classList.add('tile');
+        tileElement.setAttribute('data-id',tile.id);
         tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
@@ -136,7 +137,7 @@ function generateTiles(isRandom) {
             ${(gameState.isTest) ? tile.name : ""}
           </div>
           <div class="tile-back">
-            <img src="${path}${tile.filename}" alt="game tile face">
+            <img src="${path}${tile.filename}" alt="game tile ${tile.name}">
           </div>
         </div>
         `
