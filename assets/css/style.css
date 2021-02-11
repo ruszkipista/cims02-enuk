@@ -39,6 +39,19 @@ header {
   transform: rotate(var(--piece-sun-rotate));
   transition: top 2s linear, left 2s linear, transform 2s linear;
 }
+#tiles-igloo {
+  position: absolute;
+  width: var(--piece-igloo3x3-length);
+  height: var(--piece-igloo3x3-length);
+  top: var(--piece-igloo3x3-fromtop);
+  left: var(--piece-igloo3x3-fromleft);
+  text-align:justify;
+}
+.tile-igloo {
+  width: var(--piece-igloo-length);
+  height: var(--piece-igloo-length);
+  margin:2px;
+}
 #tiles {
     text-align: center;
 }
@@ -67,6 +80,7 @@ header {
 .tile-front, .tile-back {
     position: absolute;
     text-align: center;
+    width: 100%;
     -webkit-backface-visibility: hidden; /* Safari */
     backface-visibility: hidden;
 }
