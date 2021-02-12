@@ -85,6 +85,7 @@ const gameState = {
   tiles: null,
   sunPosition: null,
   round: null,
+  whosRound: null,
   players: null,
 
   setupPlayers: function (numberOfPlayers, isTest) {
@@ -123,11 +124,14 @@ const gameState = {
   }
 };
 
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
 // learnt random shuffling from here https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffleArrayInplace(arr) {
   let j;
   for (let i = arr.length - 1; i > 0; i--) {
-    j = Math.floor(Math.random() * (i + 1));
+    j = getRandomInt(i + 1);
     [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }
@@ -203,8 +207,13 @@ function generateGameBoard() {
   }
   setBoardPiecesPosition();
   gameState.players[0].score = 30;
-  gameState.players[1].score = 39;
+  gameState.players[1].score = 31;
+  gameState.players[2].score = 2;
+  gameState.players[3].score = 2;
   setScoresOnBoard();
+  gameState.players[3].score++;
+  setScoresOnBoard();
+  gameState.whosRound = 0;
 }
 
 function setBoardPiecesPosition() {
@@ -242,6 +251,9 @@ function setBoardPiecesPosition() {
 }
 
 function handleTileClick(event) {
+  if (gameState.whosRound !== 0) {
+    return;
+  }
   let tileInner = event.currentTarget.children[0];
   let isTopRight = event.layerY < event.layerX;
   let isTopLeft = event.layerY < (event.currentTarget.offsetWidth - event.layerX);
@@ -289,16 +301,15 @@ function setScoresOnBoard() {
   let stackElement = null;
   for (let player of gameState.players) {
     stackElement = document.getElementById(player.tileStackID);
-    tilesHTML = "";
+    tilesHTML = stackElement.innerHTML;
     if (player.score > 0) {
-      for (let i = 0; i < (player.score - 1); i++) {
-        tilesHTML += `<img class="tile-edge" 
-                       src="${gameMaterials.imagePath}${tileEdges[0].filename}" 
-                       alt="tile edge for score keeping">`;
+      for (let i = 0; i < (player.score - stackElement.children.length); i++) {
+        tilesHTML = `<img class="tile-edge" 
+                       src="${gameMaterials.imagePath}${tileEdges[(i === 0 && stackElement.children.length === 0) ? 1 : 0].filename}"
+                       style="margin-left: ${getRandomInt(5) - 2}px"
+                       alt="tile edge for score keeping">`
+          + tilesHTML;
       }
-      tilesHTML += `<img class="tile-edge" 
-                  src="${gameMaterials.imagePath}${tileEdges[1].filename}" 
-                  alt="tile edge for score keeping">`;
     }
     stackElement.innerHTML = tilesHTML;
   }
