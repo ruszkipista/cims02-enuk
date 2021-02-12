@@ -3,13 +3,13 @@
      padding: 0;
  }
  /* GLOBAL VARIABLES */
-:root {
+:root { 
     /* tile sizes */
     --tile-normal-side: 7rem;
     --color-board: dodgerblue;
 }
 body {
-  background: url("../img/enuk-background.jpg") center top / cover no-repeat;
+  background: url("../img/enuk-background.jpg") center top / cover;
 }
 header {
   text-align: center;
@@ -49,7 +49,31 @@ header {
 }
 .tile-igloo {
   width: var(--piece-igloo-length);
-  height: var(--piece-igloo-length);
+  margin:2px;
+}
+.figures-playerx {
+  position: absolute;
+  width: var(--board-figures-width);
+  top: var(--board-figures-fromtop);
+  border-top: 3px solid;
+}
+#figures-player0 {
+  left: var(--board-figures-fromleft0);
+}
+#figures-player1 {
+  left: var(--board-figures-fromleft1);
+}
+#figures-player2 {
+  left: var(--board-figures-fromleft2);
+}
+#figures-player3 {
+  left: var(--board-figures-fromleft3);
+}
+#figures-player4 {
+  left: var(--board-figures-fromleft4);
+}
+.figure-on-board {
+  width: var(--board-figure-width);
   margin:2px;
 }
 #tiles {
