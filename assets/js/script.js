@@ -2,33 +2,26 @@
 document.addEventListener('DOMContentLoaded', function () {
   gameState.setupPlayers(4, true);
   generateGameBoard();
+  setBoardPiecesPosition();
+  gameState.players[0].score = 30;
+  gameState.players[1].score = 31;
+  gameState.players[2].score = 2;
+  gameState.players[3].score = 2;
+  setScoresOnBoard();
+  gameState.players[3].score++;
+  setScoresOnBoard();
+  gameState.whosRound = 0;
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () { setBoardPiecesPosition(); });
 
-const materialTypeTileFace = 'tileface';
-const materialTypeTileBack = 'tileback';
-const materialTypeFigurePiece = 'piece-figure';
-const materialTypeBoardPiece = 'piece-board';
-const materialTypeSunPiece = 'piece-sun';
-const materialNameIgloo = 'igloo';
-const materialNameReindeer = 'reindeer';
-
 const gameMaterials = {
   imagePath: './assets/img/',
-  getTileEdges: function () {
+  nameIgloo: 'igloo',
+  nameReindeer: 'reindeer',
+  getTileFace: function () {
     return [
-      { filename: 'tileedge-mid.png' },
-      { filename: 'tileedge-top.png' },
-    ]
-  }
-}
-function getGameMaterials(attribute) {
-  switch (attribute) {
-    case materialTypeTileBack:
-      return { filename: 'tileback-ice.jpg' };
-    case materialTypeTileFace:
-      return [{ name: 'reindeer', filename: 'tileface-reindeer.jpg', count: 9 },
+      { name: 'reindeer', filename: 'tileface-reindeer.jpg', count: 9 },
       { name: 'polarbear', filename: 'tileface-polarbear.jpg', count: 14 },
       { name: 'seal', filename: 'tileface-seal.jpg', count: 14 },
       { name: 'salmon', filename: 'tileface-salmon.jpg', count: 14 },
@@ -42,42 +35,54 @@ function getGameMaterials(attribute) {
       { name: 'igloo', filename: 'tileface-igloo20.jpg', count: 1 },
       { name: 'igloo', filename: 'tileface-igloo21.jpg', count: 1 },
       { name: 'igloo', filename: 'tileface-igloo22.jpg', count: 1 }];
-    case materialTypeFigurePiece:
-      return [
-        { name: 'blue', filename: 'piece-figure-blue.png', count: 4 },
-        { name: 'red', filename: 'piece-figure-red.png', count: 4 },
-        { name: 'green', filename: 'piece-figure-green.png', count: 4 },
-        { name: 'orange', filename: 'piece-figure-orange.png', count: 4 },
-        { name: 'purple', filename: 'piece-figure-purple.png', count: 4 }
-      ];
-    case materialTypeBoardPiece:
-      return {
-        id: materialTypeBoardPiece,
-        name: 'enuk-board-front.jpg',
-        sunLength: 0.08556,
-        sunCenters: [
-          [0.146, 0.0728],
-          [0.115, 0.185],
-          [0.09, 0.291],
-          [0.074, 0.404],
-          [0.068, 0.51],
-          [0.07, 0.622],
-          [0.086, 0.73],
-          [0.112, 0.835],
-          [0.143, 0.935]],
-        iglooLength: 0.1355,
-        igloo3x3TopLeftCorner: [0.232, 0.297],
-        figureOnBoardWidth: 0.025,
-        figuresOnBoardFromTop: 0.65,
-        figuresOnBoardFromLeft: [0.02, 0.16, .73, .86],
-      }
-    case materialTypeSunPiece:
-      return {
-        id: materialTypeSunPiece,
-        filename: 'piece-sun.png',
-        count: 1
-      }
-  }
+  },
+  getTileEdges: function () {
+    return [
+      { filename: 'tileedge-mid.png' },
+      { filename: 'tileedge-top.png' },
+    ]
+  },
+  getTileBack: function () {
+    return { filename: 'tileback-ice.jpg' };
+  },
+  getBoardPiece: function () {
+    return {
+      id: 'piece-board',
+      name: 'enuk-board-front.jpg',
+      sunLength: 0.08556,
+      sunCenters: [
+        [0.146, 0.0728],
+        [0.115, 0.185],
+        [0.09, 0.291],
+        [0.074, 0.404],
+        [0.068, 0.51],
+        [0.07, 0.622],
+        [0.086, 0.73],
+        [0.112, 0.835],
+        [0.143, 0.935]],
+      iglooLength: 0.1355,
+      igloo3x3TopLeftCorner: [0.232, 0.297],
+      figureOnBoardWidth: 0.025,
+      figuresOnBoardFromTop: 0.65,
+      figuresOnBoardFromLeft: [0.02, 0.16, .73, .86],
+    };
+  },
+  getSunPiece: function(){
+    return {
+      id: 'piece-sun',
+      filename: 'piece-sun.png',
+      count: 1
+    }
+  }, 
+  getFigurePiece: function () {
+    return [
+      { name: 'blue', filename: 'piece-figure-blue.png', count: 4 },
+      { name: 'red', filename: 'piece-figure-red.png', count: 4 },
+      { name: 'green', filename: 'piece-figure-green.png', count: 4 },
+      { name: 'orange', filename: 'piece-figure-orange.png', count: 4 },
+      { name: 'purple', filename: 'piece-figure-purple.png', count: 4 }
+    ];
+  },
 }
 
 const gameState = {
@@ -94,7 +99,7 @@ const gameState = {
     this.round = 0;
 
     this.players = [];
-    const pieceFigures = getGameMaterials(materialTypeFigurePiece);
+    const pieceFigures = gameMaterials.getFigurePiece();
     shuffleArrayInplace(pieceFigures);
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
@@ -112,7 +117,7 @@ const gameState = {
     }
 
     this.tiles = [];
-    const tileFaces = getGameMaterials(materialTypeTileFace);
+    const tileFaces = gameMaterials.getTileFace();
     let counter = 0;
     for (let piece of tileFaces) {
       for (let i = 0; i < piece.count; i++) {
@@ -141,8 +146,8 @@ function generateGameBoard() {
   let tileElement;
 
   // put game board and sun piece in place
-  const pieceBoard = getGameMaterials(materialTypeBoardPiece);
-  const pieceSun = getGameMaterials(materialTypeSunPiece);
+  const pieceBoard = gameMaterials.getBoardPiece();
+  const pieceSun = gameMaterials.getSunPiece();
 
   let boardPiecesHTML = "";
   // add BOARD to game space
@@ -153,7 +158,7 @@ function generateGameBoard() {
   // add hidden IGLOO TILES to the middle of the board
   boardPiecesHTML += `<div id="tiles-igloo">`;
   for (let tile of gameState.tiles) {
-    if (tile.name === materialNameIgloo) {
+    if (tile.name === gameMaterials.nameIgloo) {
       boardPiecesHTML += `<img id="${tile.id}" class="tile-igloo" 
                             src="${path}${tile.filename}"
                             style="visibility: hidden;"
@@ -182,7 +187,7 @@ function generateGameBoard() {
   if (!gameState.isTest) { shuffleArrayInplace(gameState.tiles) };
 
   let tilesElement = document.getElementById('tiles');
-  let backtileName = getGameMaterials(materialTypeTileBack).filename;
+  let backtileName = gameMaterials.getTileBack().filename;
 
   // assemble tiles
   for (let tile of gameState.tiles) {
@@ -205,19 +210,10 @@ function generateGameBoard() {
     tileElement.addEventListener('click', handleTileClick);
     tilesElement.appendChild(tileElement);
   }
-  setBoardPiecesPosition();
-  gameState.players[0].score = 30;
-  gameState.players[1].score = 31;
-  gameState.players[2].score = 2;
-  gameState.players[3].score = 2;
-  setScoresOnBoard();
-  gameState.players[3].score++;
-  setScoresOnBoard();
-  gameState.whosRound = 0;
 }
 
 function setBoardPiecesPosition() {
-  const pieceBoard = getGameMaterials(materialTypeBoardPiece);
+  const pieceBoard = gameMaterials.getBoardPiece();
   const boardElement = document.getElementById(pieceBoard.id);
   const boardWidth = boardElement.clientWidth;
   const boardLeftOffset = boardElement.offsetLeft;
@@ -272,11 +268,11 @@ function handleTileClick(event) {
       if (element.id === event.currentTarget.dataset.id) return true;
     })
     switch (tile.name) {
-      case materialNameIgloo:
+      case gameMaterials.nameIgloo:
         setVisibilityOfElement(event.currentTarget.dataset.id, true);
         break;
-      case materialNameReindeer:
-        const pieceBoard = getGameMaterials(materialTypeBoardPiece);
+      case gameMaterials.nameReindeer:
+        const pieceBoard = gameMaterials.getBoardPiece();
         if (gameState.sunPosition < pieceBoard.sunCenters.length - 1) {
           ++gameState.sunPosition;
           setBoardPiecesPosition();
