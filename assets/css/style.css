@@ -95,6 +95,7 @@ header {
     width: var(--tile-normal-side);
     height: var(--tile-normal-side);
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
+    vertical-align: initial;
   }
   
   /* This container is needed to position the two sides */
