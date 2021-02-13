@@ -67,13 +67,13 @@ const gameMaterials = {
       figuresOnBoardFromLeft: [0.02, 0.16, .73, .86],
     };
   },
-  getSunPiece: function(){
+  getSunPiece: function () {
     return {
       id: 'piece-sun',
       filename: 'piece-sun.png',
       count: 1
     }
-  }, 
+  },
   getFigurePiece: function () {
     return [
       { name: 'blue', filename: 'piece-figure-blue.png', count: 4 },
@@ -86,18 +86,21 @@ const gameMaterials = {
 }
 
 class Tile {
-  constructor(id,name,filename){
+  constructor(id, name, filename) {
     this.id = id;
+    this.idOnTable = id + '-ontable';
+    this.idOnIgloo = id + '-onigloo';
     this.name = name;
     this.filename = filename;
     this.isFaceUp = null;
   }
-  placeOnTable(isFaceUp){
+  placeOnTable(isFaceUp) {
     this.isFaceUp = isFaceUp;
     const tileElement = document.createElement('div');
     const backtileName = gameMaterials.getTileBack().filename;
     const path = gameMaterials.imagePath;
     tileElement.classList.add('tile');
+    tileElement.setAttribute('id', this.idOnTable);
     tileElement.setAttribute('data-id', this.id);
     tileElement.innerHTML = `
         <div class="tile-inner">
@@ -115,8 +118,17 @@ class Tile {
     tileElement.addEventListener('click', handleTileClick);
     return tileElement;
   }
-  flipOnTable(){
+  flipOnTable(isTopLeft, isTopRight) {
     this.isFaceUp = !this.isFaceUp;
+    let tileInnerElement = document.getElementById(this.idOnTable).children[0];
+    if (this.isFaceUp) {
+      if (isTopLeft && isTopRight) { tileInnerElement.classList.add('tile-flip-up'); }
+      else if (isTopLeft && !isTopRight) { tileInnerElement.classList.add('tile-flip-left'); }
+      else if (!isTopLeft && isTopRight) { tileInnerElement.classList.add('tile-flip-right'); }
+      else if (!isTopLeft && !isTopRight) { tileInnerElement.classList.add('tile-flip-down'); }
+    } else {
+      tileInnerElement.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
+    }
   }
 }
 
@@ -155,16 +167,59 @@ const gameState = {
 
     this.tilesOnIgloo = [];
     this.tilesOnTable = [];
+    this.tiles = [];
     const tileFaces = gameMaterials.getTileFace();
     let counter = 0;
-    for (let piece of tileFaces) {
-      for (let i = 0; i < piece.count; i++) {
+    for (let tileFace of tileFaces) {
+      for (let i = 0; i < tileFace.count; i++) {
         // generate ID for each Tile
-        this.tilesOnTable.push( new Tile( `tile-${counter}`, piece.name, piece.filename));
+        this.tiles.push(new Tile(`tile-${counter}`, tileFace.name, tileFace.filename));
         counter++;
       };
     }
-  }
+    if (!this.isTest) { shuffleArrayInplace(this.tiles) };
+  },
+  findTileOnTable: function (idOnTable) {
+    // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
+    let tile = gameState.tilesOnTable.find(function (element, index) {
+      if (element.idOnTable === idOnTable) return true;
+    })
+    return tile;
+  },
+
+  removeTileFromTable: function (tile) {
+    setVisibilityOfElement(tile.idOnTable, false);
+    return tile;
+  },
+
+  addTileToIgloo: function (tile) {
+    setVisibilityOfElement(tile.idOnIgloo, true);
+  },
+
+  handleTileClickOnTable: function (tileIdOnTable, isTopLeft, isTopRight) {
+    if (this.whosRound !== 0) {
+      return;
+    }
+    const tile = this.findTileOnTable(tileIdOnTable);
+    if (!tile.isFaceUp) {
+      tile.flipOnTable(isTopLeft, isTopRight);
+      switch (tile.name) {
+        case gameMaterials.nameIgloo:
+          setInterval(function(){ 
+            gameState.removeTileFromTable(tile);
+            gameState.addTileToIgloo(tile);
+          }, 2000);
+          break;
+        case gameMaterials.nameReindeer:
+          const pieceBoard = gameMaterials.getBoardPiece();
+          if (gameState.sunPosition < pieceBoard.sunCenters.length - 1) {
+            ++gameState.sunPosition;
+            setBoardPiecesPosition();
+          };
+          break;
+      }
+    }
+  },
 };
 
 function getRandomInt(max) {
@@ -195,9 +250,9 @@ function generateGameBoard() {
   boardPiecesHTML += `<img id="${pieceSun.id}" src="${path}${pieceSun.filename}" alt="game piece sun">`;
   // add hidden IGLOO TILES to the middle of the board
   boardPiecesHTML += `<div id="tiles-igloo">`;
-  for (let tile of gameState.tilesOnTable) {
+  for (let tile of gameState.tiles) {
     if (tile.name === gameMaterials.nameIgloo) {
-      boardPiecesHTML += `<img id="${tile.id}" class="tile-igloo" 
+      boardPiecesHTML += `<img id="${tile.idOnIgloo}" class="tile-igloo" 
                             src="${path}${tile.filename}"
                             style="visibility: hidden;"
                             alt="game tile ${tile.name}">`;
@@ -222,12 +277,13 @@ function generateGameBoard() {
   const boardElement = document.getElementById('board');
   boardElement.innerHTML = boardPiecesHTML;
 
-  if (!gameState.isTest) { shuffleArrayInplace(gameState.tiles) };
-
   let tilesElement = document.getElementById('tiles');
   // assemble tiles
-  for (let tile of gameState.tilesOnTable) {
+  while (true) {
+    let tile = gameState.tiles.shift();
+    if (tile === undefined) { break }
     tileElement = tile.placeOnTable(false);
+    gameState.tilesOnTable.push(tile);
     tilesElement.appendChild(tileElement);
   }
 }
@@ -267,39 +323,9 @@ function setBoardPiecesPosition() {
 }
 
 function handleTileClick(event) {
-  if (gameState.whosRound !== 0) {
-    return;
-  }
-  let tileInner = event.currentTarget.children[0];
   let isTopRight = event.layerY < event.layerX;
   let isTopLeft = event.layerY < (event.currentTarget.offsetWidth - event.layerX);
-  if (tileInner.classList.contains('tile-flip-up')
-    || tileInner.classList.contains('tile-flip-down')
-    || tileInner.classList.contains('tile-flip-left')
-    || tileInner.classList.contains('tile-flip-right')) {
-    tileInner.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
-  } else {
-    if (isTopLeft && isTopRight) { tileInner.classList.add('tile-flip-up'); }
-    else if (isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-left'); }
-    else if (!isTopLeft && isTopRight) { tileInner.classList.add('tile-flip-right'); }
-    else if (!isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-down'); }
-    // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
-    let tile = gameState.tilesOnTable.find(function (element, index) {
-      if (element.id === event.currentTarget.dataset.id) return true;
-    })
-    switch (tile.name) {
-      case gameMaterials.nameIgloo:
-        setVisibilityOfElement(event.currentTarget.dataset.id, true);
-        break;
-      case gameMaterials.nameReindeer:
-        const pieceBoard = gameMaterials.getBoardPiece();
-        if (gameState.sunPosition < pieceBoard.sunCenters.length - 1) {
-          ++gameState.sunPosition;
-          setBoardPiecesPosition();
-        };
-        break;
-    }
-  }
+  gameState.handleTileClickOnTable(event.currentTarget.id, isTopLeft, isTopRight);
 }
 
 function setVisibilityOfElement(elementID, isVisible) {
