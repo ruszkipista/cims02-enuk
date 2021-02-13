@@ -85,9 +85,45 @@ const gameMaterials = {
   },
 }
 
+class Tile {
+  constructor(id,name,filename){
+    this.id = id;
+    this.name = name;
+    this.filename = filename;
+    this.isFaceUp = null;
+  }
+  placeOnTable(isFaceUp){
+    this.isFaceUp = isFaceUp;
+    const tileElement = document.createElement('div');
+    const backtileName = gameMaterials.getTileBack().filename;
+    const path = gameMaterials.imagePath;
+    tileElement.classList.add('tile');
+    tileElement.setAttribute('data-id', this.id);
+    tileElement.innerHTML = `
+        <div class="tile-inner">
+          <div class="tile-front">
+            <img src="${path}${backtileName}" alt="game tile back">
+          </div>
+          <div class="tile-front">
+            ${(gameState.isTest) ? this.name : ""}
+          </div>
+          <div class="tile-back">
+            <img src="${path}${this.filename}" alt="game tile ${this.name}">
+          </div>
+        </div>
+        `
+    tileElement.addEventListener('click', handleTileClick);
+    return tileElement;
+  }
+  flipOnTable(){
+    this.isFaceUp = !this.isFaceUp;
+  }
+}
+
 const gameState = {
   isTest: null,
-  tiles: null,
+  tilesOnTable: null,
+  tilesOnIgloo: null,
   sunPosition: null,
   round: null,
   whosRound: null,
@@ -108,6 +144,7 @@ const gameState = {
         figures: [],
         // generate ID for each Tile Stack (score) - one for each player
         tileStackID: `tiles-stack-player${i}`,
+        tilesInStack: [],
         score: 0,
       };
       // generate ID for each Figure
@@ -116,13 +153,14 @@ const gameState = {
       };
     }
 
-    this.tiles = [];
+    this.tilesOnIgloo = [];
+    this.tilesOnTable = [];
     const tileFaces = gameMaterials.getTileFace();
     let counter = 0;
     for (let piece of tileFaces) {
       for (let i = 0; i < piece.count; i++) {
         // generate ID for each Tile
-        this.tiles.push({ name: piece.name, filename: piece.filename, id: `tile-${counter}` });
+        this.tilesOnTable.push( new Tile( `tile-${counter}`, piece.name, piece.filename));
         counter++;
       };
     }
@@ -157,7 +195,7 @@ function generateGameBoard() {
   boardPiecesHTML += `<img id="${pieceSun.id}" src="${path}${pieceSun.filename}" alt="game piece sun">`;
   // add hidden IGLOO TILES to the middle of the board
   boardPiecesHTML += `<div id="tiles-igloo">`;
-  for (let tile of gameState.tiles) {
+  for (let tile of gameState.tilesOnTable) {
     if (tile.name === gameMaterials.nameIgloo) {
       boardPiecesHTML += `<img id="${tile.id}" class="tile-igloo" 
                             src="${path}${tile.filename}"
@@ -187,27 +225,9 @@ function generateGameBoard() {
   if (!gameState.isTest) { shuffleArrayInplace(gameState.tiles) };
 
   let tilesElement = document.getElementById('tiles');
-  let backtileName = gameMaterials.getTileBack().filename;
-
   // assemble tiles
-  for (let tile of gameState.tiles) {
-    tileElement = document.createElement('div');
-    tileElement.classList.add('tile');
-    tileElement.setAttribute('data-id', tile.id);
-    tileElement.innerHTML = `
-        <div class="tile-inner">
-          <div class="tile-front">
-            <img src="${path}${backtileName}" alt="game tile back">
-          </div>
-          <div class="tile-front">
-            ${(gameState.isTest) ? tile.name : ""}
-          </div>
-          <div class="tile-back">
-            <img src="${path}${tile.filename}" alt="game tile ${tile.name}">
-          </div>
-        </div>
-        `
-    tileElement.addEventListener('click', handleTileClick);
+  for (let tile of gameState.tilesOnTable) {
+    tileElement = tile.placeOnTable(false);
     tilesElement.appendChild(tileElement);
   }
 }
@@ -264,7 +284,7 @@ function handleTileClick(event) {
     else if (!isTopLeft && isTopRight) { tileInner.classList.add('tile-flip-right'); }
     else if (!isTopLeft && !isTopRight) { tileInner.classList.add('tile-flip-down'); }
     // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
-    let tile = gameState.tiles.find(function (element, index) {
+    let tile = gameState.tilesOnTable.find(function (element, index) {
       if (element.id === event.currentTarget.dataset.id) return true;
     })
     switch (tile.name) {
@@ -310,3 +330,4 @@ function setScoresOnBoard() {
     stackElement.innerHTML = tilesHTML;
   }
 }
+
