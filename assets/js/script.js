@@ -216,11 +216,12 @@ const gameViewer = {
 class Tile {
   constructor(id, name, filename) {
     this.id = id;
+    this.isFaceUp = null;
     this.idOnTable = id + '-ontable';
     this.idOnIgloo = id + '-onigloo';
     this.name = name;
     this.filename = filename;
-    this.isFaceUp = null;
+
   }
   placeOnTable(isFaceUp) {
     this.isFaceUp = isFaceUp;
@@ -338,7 +339,7 @@ const gameController = {
     let tileIndex = this.tilesOnTable.findIndex(function (element, index) {
       if (element.idOnTable === tile.idOnTable) return true;
     })
-    this.tilesOnTable.splice(tileIndex, 1);
+    this.tilesOnTable[tileIndex].isFaceUp = null;
     return tile;
   },
 
@@ -351,7 +352,7 @@ const gameController = {
       return;
     }
     const tile = this.findTileOnTable(tileIdOnTable);
-    if (!tile.isFaceUp) {
+    if (tile.isFaceUp === false) {
       tile.flipOnTable(isTopLeft, isTopRight);
       switch (tile.name) {
         case gameViewer.nameIgloo:
