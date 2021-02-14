@@ -4,9 +4,7 @@
  }
  /* GLOBAL VARIABLES */
 :root { 
-    /* tile sizes */
     --tile-normal-side: 6rem;
-    --color-board: dodgerblue;
 }
 body {
   background: url("../img/enuk-background.jpg") center top / cover;
@@ -33,7 +31,6 @@ header {
 #piece-sun {
   position: absolute;
   width: var(--piece-sun-length);
-  height: var(--piece-sun-length);
   top: var(--piece-sun-fromtop);
   left: var(--piece-sun-fromleft);
   transform: rotate(var(--piece-sun-rotate));
@@ -41,8 +38,7 @@ header {
 }
 #icon-collect {
   position: absolute;
-  width: var(--tile-normal-side);
-  height: var(--tile-normal-side);
+  width: var(--piece-sun-length);
   top: var(--icon-collect-fromtop);
   left: var(--icon-collect-fromleft);
 }
