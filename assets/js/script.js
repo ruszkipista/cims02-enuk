@@ -46,7 +46,7 @@ const gameViewer = {
     { filename: 'tileedge-top.png' },
   ],
 
-  iconCollectTiles: { filename: 'icon-collect.png', },
+  iconCollectTiles: { id: 'icon-collect', filename: 'icon-collect.png', },
 
   tileBack: { filename: 'tileback-ice.jpg' },
 
@@ -64,6 +64,7 @@ const gameViewer = {
       [0.086, 0.73],
       [0.112, 0.835],
       [0.143, 0.935]],
+    iconCollectTopLeftCorner: [0, 0.885],
     iglooLength: 0.1355,
     igloo3x3TopLeftCorner: [0.232, 0.297],
     figureOnBoardWidth: 0.025,
@@ -117,8 +118,16 @@ const gameViewer = {
       boardPiecesHTML += `</div>`;
     };
 
+    // add CollectTiles icon
+    boardPiecesHTML += `<img id="${gameViewer.iconCollectTiles.id}" 
+                         src="${this.imagePath}${gameViewer.iconCollectTiles.filename}"
+                         alt="collect tiles button">`;
+
     const boardElement = document.getElementById('board');
     boardElement.innerHTML = boardPiecesHTML;
+
+    const collectElement = document.getElementById(gameViewer.iconCollectTiles.id);
+    collectElement.addEventListener('click', gameViewer.handleIconClick);
 
     // assemble tiles
     const tilesElement = document.getElementById('tiles');
@@ -131,15 +140,6 @@ const gameViewer = {
       tilesElement.appendChild(tileElement);
     };
 
-    // add CollectTiles icon
-    tileElement = document.createElement('div');
-    tileElement.setAttribute('id', "icon-collect");
-    tileElement.classList.add("tile");
-    tileElement.innerHTML += `
-        <img class="tile" src="${this.imagePath}${gameViewer.iconCollectTiles.filename}"
-        alt="collect tiles button">`;
-    tileElement.addEventListener('click', gameViewer.handleIconClick);
-    tilesElement.appendChild(tileElement);
   },
 
   setVisibilityOfElement: function (elementID, isVisible) {
@@ -183,6 +183,11 @@ const gameViewer = {
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
         `${boardLeftOffset + boardWidth * this.boardPiece.figuresOnBoardFromLeft[i]}px`);
     }
+    // collect icon position
+    document.documentElement.style.setProperty('--icon-collect-fromtop',
+      `${boardWidth * this.boardPiece.iconCollectTopLeftCorner[0]}px`);
+    document.documentElement.style.setProperty('--icon-collect-fromleft',
+      `${boardLeftOffset + boardWidth * this.boardPiece.iconCollectTopLeftCorner[1]}px`);
   },
 
   handleTileClick: function (event) {
@@ -378,7 +383,7 @@ const gameController = {
   },
 
   handleIconClick: function (iconID) {
-    if (this.whosMove === this.human) {
+    if (iconID === gameViewer.iconCollectTiles.id && this.whosMove === this.human) {
       this.removeUpTurnedTilesFromTable();
     }
   },

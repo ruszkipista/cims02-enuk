@@ -5,7 +5,7 @@
  /* GLOBAL VARIABLES */
 :root { 
     /* tile sizes */
-    --tile-normal-side: 7rem;
+    --tile-normal-side: 6rem;
     --color-board: dodgerblue;
 }
 body {
@@ -38,6 +38,13 @@ header {
   left: var(--piece-sun-fromleft);
   transform: rotate(var(--piece-sun-rotate));
   transition: top 2s linear, left 2s linear, transform 2s linear;
+}
+#icon-collect {
+  position: absolute;
+  width: var(--tile-normal-side);
+  height: var(--tile-normal-side);
+  top: var(--icon-collect-fromtop);
+  left: var(--icon-collect-fromleft);
 }
 #tiles-igloo {
   position: absolute;
@@ -95,7 +102,6 @@ header {
     width: var(--tile-normal-side);
     height: var(--tile-normal-side);
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
-    vertical-align: initial;
   }
   
   /* This container is needed to position the two sides */
