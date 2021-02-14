@@ -51,65 +51,55 @@ const gameViewer = {
 
   iconCollectTiles: { filename: 'icon-collect.png', },
 
-  getTileBack: function () {
-    return { filename: 'tileback-ice.jpg' };
+  tileBack: { filename: 'tileback-ice.jpg' },
+
+  boardPiece: {
+    id: 'piece-board',
+    name: 'enuk-board-front.jpg',
+    sunLength: 0.08556,
+    sunCenters: [
+      [0.146, 0.0728],
+      [0.115, 0.185],
+      [0.09, 0.291],
+      [0.074, 0.404],
+      [0.068, 0.51],
+      [0.07, 0.622],
+      [0.086, 0.73],
+      [0.112, 0.835],
+      [0.143, 0.935]],
+    iglooLength: 0.1355,
+    igloo3x3TopLeftCorner: [0.232, 0.297],
+    figureOnBoardWidth: 0.025,
+    figuresOnBoardFromTop: 0.65,
+    figuresOnBoardFromLeft: [0.02, 0.16, .73, .86],
   },
-  getBoardPiece: function () {
-    return {
-      id: 'piece-board',
-      name: 'enuk-board-front.jpg',
-      sunLength: 0.08556,
-      sunCenters: [
-        [0.146, 0.0728],
-        [0.115, 0.185],
-        [0.09, 0.291],
-        [0.074, 0.404],
-        [0.068, 0.51],
-        [0.07, 0.622],
-        [0.086, 0.73],
-        [0.112, 0.835],
-        [0.143, 0.935]],
-      iglooLength: 0.1355,
-      igloo3x3TopLeftCorner: [0.232, 0.297],
-      figureOnBoardWidth: 0.025,
-      figuresOnBoardFromTop: 0.65,
-      figuresOnBoardFromLeft: [0.02, 0.16, .73, .86],
-    };
-  },
-  getSunPiece: function () {
-    return {
-      id: 'piece-sun',
-      filename: 'piece-sun.png',
-      count: 1
-    }
-  },
+
+  sunPiece: { id: 'piece-sun', filename: 'piece-sun.png', count: 1 },
+
   figurePieces: [
-      { name: 'blue', filenameHuman: 'piece-figure-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
-      { name: 'red', filenameHuman: 'piece-figure-red.png', filenameMachine: 'piece-laptop-red.png', count: 4 },
-      { name: 'green', filenameHuman: 'piece-figure-green.png', filenameMachine: 'piece-laptop-green.png', count: 4 },
-      { name: 'orange', filenameHuman: 'piece-figure-orange.png', filenameMachine: 'piece-laptop-orange.png', count: 4 },
-      { name: 'purple', filenameHuman: 'piece-figure-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
-    ],
+    { name: 'blue', filenameHuman: 'piece-figure-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
+    { name: 'red', filenameHuman: 'piece-figure-red.png', filenameMachine: 'piece-laptop-red.png', count: 4 },
+    { name: 'green', filenameHuman: 'piece-figure-green.png', filenameMachine: 'piece-laptop-green.png', count: 4 },
+    { name: 'orange', filenameHuman: 'piece-figure-orange.png', filenameMachine: 'piece-laptop-orange.png', count: 4 },
+    { name: 'purple', filenameHuman: 'piece-figure-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
+  ],
 
   generateGameBoard: function () {
-    const path = gameViewer.imagePath;
 
-    // put game board and sun piece in place
-    const pieceBoard = gameViewer.getBoardPiece();
-    const pieceSun = gameViewer.getSunPiece();
-
+    // put game board in place
     let boardPiecesHTML = "";
     // add BOARD to game space
-    boardPiecesHTML = `<img id="${pieceBoard.id}" src="${path}${pieceBoard.name}" alt="game board">`;
-    // addd SUN piece to the top of the board
+    boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
 
-    boardPiecesHTML += `<img id="${pieceSun.id}" src="${path}${pieceSun.filename}" alt="game piece sun">`;
+    // addd SUN piece to the top of the board
+    boardPiecesHTML += `<img id="${this.sunPiece.id}" src="${this.imagePath}${this.sunPiece.filename}" alt="game piece sun">`;
+
     // add hidden IGLOO TILES to the middle of the board
     boardPiecesHTML += `<div id="tiles-igloo">`;
     for (let tile of gameController.tiles) {
       if (tile.name === gameViewer.nameIgloo) {
         boardPiecesHTML += `<img id="${tile.idOnIgloo}" class="tile-igloo" 
-                              src="${path}${tile.filename}"
+                              src="${this.imagePath}${tile.filename}"
                               style="visibility: hidden;"
                               alt="game tile ${tile.name}">`;
       }
@@ -124,7 +114,7 @@ const gameViewer = {
                                style="border-top-color:${gameController.players[i].name}">`;
       for (let figure of gameController.players[i].figures) {
         boardPiecesHTML += `<img id="${figure.id}" class="figure-on-board" 
-                              src="${path}${gameController.players[i].filename}"
+                              src="${this.imagePath}${gameController.players[i].filename}"
                               alt="game figure ${gameController.players[i].name}">`;
       }
       boardPiecesHTML += `</div>`;
@@ -149,7 +139,7 @@ const gameViewer = {
     tileElement.setAttribute('id', "icon-collect");
     tileElement.classList.add("tile");
     tileElement.innerHTML += `
-        <img class="tile" src="${path}${gameViewer.iconCollectTiles.filename}"
+        <img class="tile" src="${this.imagePath}${gameViewer.iconCollectTiles.filename}"
         alt="collect tiles button">`;
     tileElement.addEventListener('click', gameViewer.handleIconClick);
     tilesElement.appendChild(tileElement);
@@ -165,36 +155,36 @@ const gameViewer = {
   },
 
   setBoardPiecesPosition: function () {
-    const pieceBoard = gameViewer.getBoardPiece();
-    const boardElement = document.getElementById(pieceBoard.id);
+    const boardElement = document.getElementById(this.boardPiece.id);
     const boardWidth = boardElement.clientWidth;
     const boardLeftOffset = boardElement.offsetLeft;
-    const sunLength = boardWidth * pieceBoard.sunLength;
+    // sun piece position
+    const sunLength = boardWidth * this.boardPiece.sunLength;
     document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
     document.documentElement.style.setProperty('--piece-sun-fromtop',
-      `${boardWidth * pieceBoard.sunCenters[gameController.sunPosition][0] - sunLength / 2}px`);
+      `${boardWidth * this.boardPiece.sunCenters[gameController.sunPosition][0] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-fromleft',
-      `${boardLeftOffset + boardWidth * pieceBoard.sunCenters[gameController.sunPosition][1] - sunLength / 2}px`);
+      `${boardLeftOffset + boardWidth * this.boardPiece.sunCenters[gameController.sunPosition][1] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-rotate',
       `${gameController.sunPosition * 130}deg`);
-
-    const iglooLength = boardWidth * pieceBoard.iglooLength;
+    // igloo position
+    const iglooLength = boardWidth * this.boardPiece.iglooLength;
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 4) * 3 + 2}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromtop',
-      `${boardWidth * pieceBoard.igloo3x3TopLeftCorner[0]}px`);
+      `${boardWidth * this.boardPiece.igloo3x3TopLeftCorner[0]}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromleft',
-      `${boardLeftOffset + boardWidth * pieceBoard.igloo3x3TopLeftCorner[1]}px`);
-
-    const figureWidth = boardWidth * pieceBoard.figureOnBoardWidth;
+      `${boardLeftOffset + boardWidth * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
+    // figure pieces position
+    const figureWidth = boardWidth * this.boardPiece.figureOnBoardWidth;
     document.documentElement.style.setProperty('--figure-onboard-width', `${figureWidth}px`);
     document.documentElement.style.setProperty('--tile-edge-width', `${figureWidth * 4}px`);
-    document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * pieceBoard.figuresOnBoardFromTop}px`);
+    document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * this.boardPiece.figuresOnBoardFromTop}px`);
     for (let i = 0; i < gameController.players.length; i++) {
       document.documentElement.style.setProperty('--board-figures-fromtop',
-        `${boardWidth * pieceBoard.figuresOnBoardFromTop}px`);
+        `${boardWidth * this.boardPiece.figuresOnBoardFromTop}px`);
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
-        `${boardLeftOffset + boardWidth * pieceBoard.figuresOnBoardFromLeft[i]}px`);
+        `${boardLeftOffset + boardWidth * this.boardPiece.figuresOnBoardFromLeft[i]}px`);
     }
   },
 
@@ -219,32 +209,31 @@ class Tile {
     this.idOnIgloo = id + '-onigloo';
     this.name = name;
     this.filename = filename;
-
   }
+
   placeOnTable(isFaceUp) {
     this.isFaceUp = isFaceUp;
     const tileElement = document.createElement('div');
-    const backtileName = gameViewer.getTileBack().filename;
-    const path = gameViewer.imagePath;
     tileElement.classList.add('tile');
     tileElement.setAttribute('id', this.idOnTable);
     tileElement.setAttribute('data-id', this.id);
     tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
-            <img src="${path}${backtileName}" alt="game tile back">
+            <img src="${gameViewer.imagePath}${gameViewer.tileBack.filename}" alt="game tile back">
           </div>
           <div class="tile-front">
             ${(gameController.isTest) ? this.name : ""}
           </div>
           <div class="tile-back">
-            <img src="${path}${this.filename}" alt="game tile ${this.name}">
+            <img src="${gameViewer.imagePath}${this.filename}" alt="game tile ${this.name}">
           </div>
         </div>
         `
     tileElement.addEventListener('click', gameViewer.handleTileClick);
     return tileElement;
   }
+
   flipOnTable(isClickedOnTopLeft, isClickedOnTopRight) {
     this.isFaceUp = !this.isFaceUp;
     let tileInnerElement = document.getElementById(this.idOnTable).children[0];
@@ -257,6 +246,7 @@ class Tile {
       tileInnerElement.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
     }
   }
+
   addToStack(playerIndex) {
     let player = gameController.players[playerIndex]
     let stackElement = document.getElementById(player.tileStackID);
@@ -265,7 +255,7 @@ class Tile {
                          src="${gameViewer.imagePath}${gameViewer.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
                          style="margin-left: ${getRandomInt(5) - 2}px"
                          alt="tile edge for score keeping">`
-                         + stackElement.innerHTML;
+        + stackElement.innerHTML;
     }
   }
 }
@@ -296,7 +286,7 @@ const gameController = {
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
         name: gameViewer.figurePieces[i].name,
-        filename: (i===0) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
+        filename: (i === 0) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
         figures: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
@@ -304,7 +294,8 @@ const gameController = {
       };
       // generate ID for each Figure
       for (let j = 0; j < gameViewer.figurePieces[i].count; j++) {
-        this.players[i].figures[j] = { id: `player${i}-figure${j}` };
+        this.players[i].figures[j] = { idOnTable: `player${i}-figure${j}-ontable`,
+                                       idOnIgloo: `player${i}-figure${j}-onigloo`,};
       };
     }
   },
@@ -361,8 +352,7 @@ const gameController = {
           }, 2000);
           break;
         case gameViewer.nameReindeer:
-          const pieceBoard = gameViewer.getBoardPiece();
-          if (this.sunPosition < pieceBoard.sunCenters.length - 1) {
+          if (this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
             this.sunPosition++;
             gameViewer.setBoardPiecesPosition();
           };
