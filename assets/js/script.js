@@ -18,27 +18,94 @@ document.addEventListener('DOMContentLoaded', function () {
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () { gameViewer.setBoardPiecesPosition(); });
 
+// class TILE
+//============
+class Tile {
+  static NAME_REINDEER = 'reindeer';
+  static NAME_POLARBEAR = 'polarbear';
+  static NAME_SEAL = 'seal';
+  static NAME_SALMON = 'salmon';
+  static NAME_HERRING = 'herring';
+  static AFRAID_OF = [Tile.NAME_HERRING, Tile.NAME_SALMON, Tile.NAME_SEAL, Tile.NAME_POLARBEAR, Tile.NAME_REINDEER]
+  static NAME_IGLOO = 'igloo';
+
+  constructor(id, name, filename) {
+    this.id = id;
+    this.isFaceUp = null;
+    this.idOnTable = `${id}${(name===Tile.NAME_IGLOO)? '-ontable' : ''}`
+    this.idOnIgloo = `${id}${(name===Tile.NAME_IGLOO)? '-onigloo' : ''}`;
+    this.name = name;
+    this.filename = filename;
+  }
+
+  placeOnTable(isFaceUp) {
+    this.isFaceUp = isFaceUp;
+    const tileElement = document.createElement('div');
+    tileElement.classList.add('tile');
+    tileElement.setAttribute('id', this.idOnTable);
+    tileElement.setAttribute('data-id', this.id);
+    tileElement.innerHTML = `
+        <div class="tile-inner">
+          <div class="tile-front">
+            <img src="${gameViewer.imagePath}${gameViewer.tileBack.filename}" alt="game tile back">
+          </div>
+          <div class="tile-front">
+            ${(gameController.isTest) ? this.name : ""}
+          </div>
+          <div class="tile-back">
+            <img src="${gameViewer.imagePath}${this.filename}" alt="game tile ${this.name}">
+          </div>
+        </div>
+        `
+    tileElement.addEventListener('click', gameViewer.handleTileClick);
+    return tileElement;
+  }
+
+  flipOnTable(isClickedOnLeft) {
+    this.isFaceUp = !this.isFaceUp;
+    let tileInnerElement = document.getElementById(this.idOnTable).children[0];
+    if (this.isFaceUp) {
+      if (isClickedOnLeft) { tileInnerElement.classList.add('tile-flip-left'); }
+      else { tileInnerElement.classList.add('tile-flip-right'); };
+     
+    } else {
+      tileInnerElement.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
+    }
+  }
+
+  addToStack(playerIndex) {
+    let player = gameController.players[playerIndex]
+    let stackElement = document.getElementById(player.tileStackID);
+    if (player.tilesInStack.length > 0) {
+      stackElement.innerHTML = `<img class="tile-edge" 
+                         src="${gameViewer.imagePath}${gameViewer.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
+                         style="margin-left: ${getRandomInt(5) - 2}px"
+                         alt="tile edge for score keeping">`
+        + stackElement.innerHTML;
+    }
+  }
+}
+
 // object GAMEVIEWER
 //===================
 const gameViewer = {
   imagePath: './assets/img/',
-  nameIgloo: 'igloo',
-  nameReindeer: 'reindeer',
+
   tileFaces: [
-    { name: 'reindeer', filename: 'tileface-reindeer.jpg', count: 9 },
-    { name: 'polarbear', filename: 'tileface-polarbear.jpg', count: 14 },
-    { name: 'seal', filename: 'tileface-seal.jpg', count: 14 },
-    { name: 'salmon', filename: 'tileface-salmon.jpg', count: 14 },
-    { name: 'herring', filename: 'tileface-herring.jpg', count: 9 },
-    { name: 'igloo', filename: 'tileface-igloo00.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo01.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo02.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo10.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo11.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo12.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo20.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo21.jpg', count: 1 },
-    { name: 'igloo', filename: 'tileface-igloo22.jpg', count: 1 }
+    { name: Tile.NAME_REINDEER, filename: 'tileface-reindeer.jpg', count: 9 },
+    { name: Tile.NAME_POLARBEAR, filename: 'tileface-polarbear.jpg', count: 14 },
+    { name: Tile.NAME_SEAL, filename: 'tileface-seal.jpg', count: 14 },
+    { name: Tile.NAME_SALMON, filename: 'tileface-salmon.jpg', count: 14 },
+    { name: Tile.NAME_HERRING, filename: 'tileface-herring.jpg', count: 9 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo00.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo01.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo02.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo10.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo11.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo12.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo20.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo21.jpg', count: 1 },
+    { name: Tile.NAME_IGLOO, filename: 'tileface-igloo22.jpg', count: 1 }
   ],
 
   tileEdges: [
@@ -95,7 +162,7 @@ const gameViewer = {
     // add hidden IGLOO TILES to the middle of the board
     boardPiecesHTML += `<div id="tiles-igloo">`;
     for (let tile of gameController.tiles) {
-      if (tile.name === gameViewer.nameIgloo) {
+      if (tile.name === Tile.NAME_IGLOO) {
         boardPiecesHTML += `<img id="${tile.idOnIgloo}" class="tile-igloo" 
                               src="${this.imagePath}${tile.filename}"
                               style="visibility: hidden;"
@@ -191,76 +258,14 @@ const gameViewer = {
   },
 
   handleTileClick: function (event) {
-    let isTopRight = event.layerY < event.layerX;
-    let isTopLeft = event.layerY < (event.currentTarget.offsetWidth - event.layerX);
-    gameController.handleTileClickOnTable(event.currentTarget.id, isTopLeft, isTopRight);
+    let isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth/2);
+    gameController.handleTileClickOnTable(event.currentTarget.id, isClickedOnLeft);
   },
 
   handleIconClick: function (event) {
     gameController.handleIconClick(event.currentTarget.id);
   },
 };
-
-// class TILE
-//============
-class Tile {
-  constructor(id, name, filename) {
-    this.id = id;
-    this.isFaceUp = null;
-    this.idOnTable = id + '-ontable';
-    this.idOnIgloo = id + '-onigloo';
-    this.name = name;
-    this.filename = filename;
-  }
-
-  placeOnTable(isFaceUp) {
-    this.isFaceUp = isFaceUp;
-    const tileElement = document.createElement('div');
-    tileElement.classList.add('tile');
-    tileElement.setAttribute('id', this.idOnTable);
-    tileElement.setAttribute('data-id', this.id);
-    tileElement.innerHTML = `
-        <div class="tile-inner">
-          <div class="tile-front">
-            <img src="${gameViewer.imagePath}${gameViewer.tileBack.filename}" alt="game tile back">
-          </div>
-          <div class="tile-front">
-            ${(gameController.isTest) ? this.name : ""}
-          </div>
-          <div class="tile-back">
-            <img src="${gameViewer.imagePath}${this.filename}" alt="game tile ${this.name}">
-          </div>
-        </div>
-        `
-    tileElement.addEventListener('click', gameViewer.handleTileClick);
-    return tileElement;
-  }
-
-  flipOnTable(isClickedOnTopLeft, isClickedOnTopRight) {
-    this.isFaceUp = !this.isFaceUp;
-    let tileInnerElement = document.getElementById(this.idOnTable).children[0];
-    if (this.isFaceUp) {
-      if (isClickedOnTopLeft && isClickedOnTopRight) { tileInnerElement.classList.add('tile-flip-up'); }
-      else if (isClickedOnTopLeft && !isClickedOnTopRight) { tileInnerElement.classList.add('tile-flip-left'); }
-      else if (!isClickedOnTopLeft && isClickedOnTopRight) { tileInnerElement.classList.add('tile-flip-right'); }
-      else if (!isClickedOnTopLeft && !isClickedOnTopRight) { tileInnerElement.classList.add('tile-flip-down'); }
-    } else {
-      tileInnerElement.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
-    }
-  }
-
-  addToStack(playerIndex) {
-    let player = gameController.players[playerIndex]
-    let stackElement = document.getElementById(player.tileStackID);
-    if (player.tilesInStack.length > 0) {
-      stackElement.innerHTML = `<img class="tile-edge" 
-                         src="${gameViewer.imagePath}${gameViewer.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
-                         style="margin-left: ${getRandomInt(5) - 2}px"
-                         alt="tile edge for score keeping">`
-        + stackElement.innerHTML;
-    }
-  }
-}
 
 // object GAMECONTROLLER
 //======================
@@ -345,15 +350,15 @@ const gameController = {
     this.tilesOnIgloo.push(tile);
   },
 
-  handleTileClickOnTable: function (tileIdOnTable, isTopLeft, isTopRight) {
+  handleTileClickOnTable: function (tileIdOnTable, isClickedOnLeft) {
     if (this.whosMove !== this.human) {
       return;
     }
     const tile = this.findTileOnTable(tileIdOnTable);
     if (tile.isFaceUp === false) {
-      tile.flipOnTable(isTopLeft, isTopRight);
+      tile.flipOnTable(isClickedOnLeft);
       switch (tile.name) {
-        case gameViewer.nameIgloo:
+        case Tile.NAME_IGLOO:
           this.removeTileFromTable(tile);
           this.addTileToIgloo(tile);
           setInterval(function () {
@@ -361,7 +366,7 @@ const gameController = {
             gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
           }, 2000);
           break;
-        case gameViewer.nameReindeer:
+        case Tile.NAME_REINDEER:
           if (this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
             this.sunPosition++;
             gameViewer.setBoardPiecesPosition();
