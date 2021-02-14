@@ -269,6 +269,7 @@ const gameController = {
   sunPosition: null,
   round: null,
   whosMove: null,
+  human: 0,
   players: null,
 
   setupGame: function (numberOfPlayers, isTest) {
@@ -286,7 +287,7 @@ const gameController = {
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
         name: gameViewer.figurePieces[i].name,
-        filename: (i === 0) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
+        filename: (i === gameController.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
         figures: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
@@ -294,8 +295,10 @@ const gameController = {
       };
       // generate ID for each Figure
       for (let j = 0; j < gameViewer.figurePieces[i].count; j++) {
-        this.players[i].figures[j] = { idOnTable: `player${i}-figure${j}-ontable`,
-                                       idOnIgloo: `player${i}-figure${j}-onigloo`,};
+        this.players[i].figures[j] = {
+          idOnTable: `player${i}-figure${j}-ontable`,
+          idOnIgloo: `player${i}-figure${j}-onigloo`,
+        };
       };
     }
   },
@@ -361,7 +364,7 @@ const gameController = {
     }
   },
 
-  removeTilesFromTable: function () {
+  removeUpTurnedTilesFromTable: function () {
     for (let tile of this.tilesOnTable) {
       if (tile.isFaceUp) {
         this.removeTileFromTable(tile);
@@ -373,6 +376,8 @@ const gameController = {
   },
 
   handleIconClick: function (iconID) {
-    this.removeTilesFromTable();
+    if (this.whosMove === this.human) {
+      this.removeUpTurnedTilesFromTable();
+    }
   },
 }
