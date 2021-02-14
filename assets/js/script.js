@@ -287,7 +287,7 @@ const gameController = {
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
         name: gameViewer.figurePieces[i].name,
-        filename: (i === gameController.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
+        filename: (i === this.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
         figures: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
@@ -320,7 +320,7 @@ const gameController = {
 
   findTileOnTable: function (idOnTable) {
     // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
-    let tile = gameController.tilesOnTable.find(function (element, index) {
+    let tile = this.tilesOnTable.find(function (element, index) {
       if (element.idOnTable === idOnTable) return true;
     })
     return tile;
@@ -339,7 +339,7 @@ const gameController = {
   },
 
   handleTileClickOnTable: function (tileIdOnTable, isTopLeft, isTopRight) {
-    if (this.whosMove !== 0) {
+    if (this.whosMove !== this.human) {
       return;
     }
     const tile = this.findTileOnTable(tileIdOnTable);
