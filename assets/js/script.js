@@ -14,9 +14,6 @@ function shuffleArrayInplace(arr) {
 // initialize game space
 document.addEventListener('DOMContentLoaded', function () {
   gameController.setupGame(4, true);
-  gameViewer.generateGameBoard();
-  gameViewer.setBoardPiecesPosition();
-  gameController.whosMove = 0;
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () { gameViewer.setBoardPiecesPosition(); });
@@ -269,18 +266,23 @@ const gameController = {
   sunPosition: null,
   round: null,
   whosMove: null,
-  human: 0,
+  human: null,
   players: null,
 
   setupGame: function (numberOfPlayers, isTest) {
     this.setupPlayers(numberOfPlayers, isTest);
     this.setupTiles(isTest);
+    gameViewer.generateGameBoard();
+    gameViewer.setBoardPiecesPosition();
+    if (isTest) { this.whosMove = this.human }
+    else { this.whosMove = 0 }
   },
 
   setupPlayers: function (numberOfPlayers, isTest) {
     this.isTest = isTest;
     this.sunPosition = 0;
     this.round = 0;
+    this.human = getRandomInt(numberOfPlayers);
 
     this.players = [];
     shuffleArrayInplace(gameViewer.figurePieces);
