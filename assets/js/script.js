@@ -83,15 +83,13 @@ const gameViewer = {
       count: 1
     }
   },
-  getFigurePiece: function () {
-    return [
-      { name: 'blue', filename: 'piece-figure-blue.png', count: 4 },
-      { name: 'red', filename: 'piece-figure-red.png', count: 4 },
-      { name: 'green', filename: 'piece-figure-green.png', count: 4 },
-      { name: 'orange', filename: 'piece-figure-orange.png', count: 4 },
-      { name: 'purple', filename: 'piece-figure-purple.png', count: 4 }
-    ];
-  },
+  figurePieces: [
+      { name: 'blue', filenameHuman: 'piece-figure-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
+      { name: 'red', filenameHuman: 'piece-figure-red.png', filenameMachine: 'piece-laptop-red.png', count: 4 },
+      { name: 'green', filenameHuman: 'piece-figure-green.png', filenameMachine: 'piece-laptop-green.png', count: 4 },
+      { name: 'orange', filenameHuman: 'piece-figure-orange.png', filenameMachine: 'piece-laptop-orange.png', count: 4 },
+      { name: 'purple', filenameHuman: 'piece-figure-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
+    ],
 
   generateGameBoard: function () {
     const path = gameViewer.imagePath;
@@ -294,19 +292,18 @@ const gameController = {
     this.round = 0;
 
     this.players = [];
-    const pieceFigures = gameViewer.getFigurePiece();
-    shuffleArrayInplace(pieceFigures);
+    shuffleArrayInplace(gameViewer.figurePieces);
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
-        name: pieceFigures[i].name,
-        filename: pieceFigures[i].filename,
+        name: gameViewer.figurePieces[i].name,
+        filename: (i===0) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
         figures: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
         tilesInStack: [],
       };
       // generate ID for each Figure
-      for (let j = 0; j < pieceFigures[i].count; j++) {
+      for (let j = 0; j < gameViewer.figurePieces[i].count; j++) {
         this.players[i].figures[j] = { id: `player${i}-figure${j}` };
       };
     }
