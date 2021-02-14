@@ -124,5 +124,3 @@ header {
 /* Flip!  */
 .tile-flip-right { transform: rotateY(180deg); }
 .tile-flip-left  { transform: rotateY(-180deg); }
-.tile-flip-down  { transform: rotateX(-180deg); }
-.tile-flip-up    { transform: rotateX(180deg); }
