@@ -32,11 +32,12 @@ class Tile {
   constructor(id, name, filename) {
     this.id = id;
     this.isFaceUp = null;
-    this.idOnTable = `${id}${(name === Tile.NAME_IGLOO) ? '-ontable' : ''}`
-    this.idOnIgloo = `${id}${(name === Tile.NAME_IGLOO) ? '-onigloo' : ''}`;
+    this.idOnTable = `${id}-ontable`;
+    this.idOnIgloo = `${(name === Tile.NAME_IGLOO) ? id + '-onigloo' : ''}`;
     this.name = name;
     this.filename = filename;
     this.rank = Tile.RANKING.indexOf(name);
+    this.idFigureOnIgloo = `${(name === Tile.NAME_IGLOO) ? 'figure-on-' + id : ''}`;
   }
 
   placeOnTable(isFaceUp) {
@@ -86,12 +87,55 @@ class Tile {
   }
 }
 
+// class FIGURE
+//============
+class Figure {
+
+  constructor(id, name, filename) {
+    this.id = id;
+    this.isOnBoard = true;
+    this.idOnBoard = `${id}-onboard`;
+    this.idOnIgloo = "";
+    this.name = name;
+    this.filename = filename;
+  }
+
+  placeOnBoard() {
+    return `<img id="${this.idOnBoard}" class="figure-on-board" 
+    src="${gameViewer.imagePath}${this.filename}"
+    alt="game figure ${this.name}">`;
+  }
+
+  removeFromBoardToIgloo(idOnIgloo) {
+    if (this.isOnBoard) {
+      this.isOnBoard = false;
+      gameViewer.setVisibilityOfElement(this.idOnBoard, false);
+      this.idOnIgloo = idOnIgloo;
+      const figureOnIglooElement = document.getElementById(idOnIgloo);
+      figureOnIglooElement.setProperty('src', this.filename);
+      gameViewer.setVisibilityOfElement(this.idOnIgloo, true);
+    }
+  }
+
+  removeFromIglooToBoard() {
+    if (!this.isOnBoard) {
+      this.isOnBoard = true;
+      const figureOnIglooElement = document.getElementById(this.idOnIgloo);
+      figureOnIglooElement.setProperty('src', "");
+      gameViewer.setVisibilityOfElement(this.idOnIgloo, false);
+
+      gameViewer.setVisibilityOfElement(this.idOnBoard, true);
+      this.idOnIgloo = idOnIgloo;
+    }
+  }
+}
+
 // object GAMEVIEWER
 //===================
 const gameViewer = {
   imagePath: './assets/img/',
 
-  backgrounds: ['enuk-background-phase1.jpg','enuk-background-phase2.jpg'],
+  backgrounds: [{ filename: 'enuk-background-phase1.jpg' }, { filename: 'enuk-background-phase2.jpg' }],
 
   tileFaces: [
     { name: Tile.NAME_REINDEER, filename: 'tileface-reindeer.jpg', count: 9 },
@@ -151,13 +195,12 @@ const gameViewer = {
     { name: 'purple', filenameHuman: 'piece-figure-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
   ],
 
-  setBackground: function(){
+  setBackground: function () {
     const bodyElement = document.getElementsByTagName('body')[0];
-    bodyElement.style.backgroundImage = `url("${this.imagePath}${this.backgrounds[gameController.phase]}")`;
+    bodyElement.style.backgroundImage = `url("${this.imagePath}${this.backgrounds[gameController.phase].filename}")`;
   },
 
   generateGameBoard: function () {
-
     this.setBackground();
     // put game board in place
     let boardPiecesHTML = "";
@@ -186,9 +229,7 @@ const gameViewer = {
                                class="figures-group tiles-stack-player${i}" 
                                style="border-top-color:${gameController.players[i].name}">`;
       for (let figure of gameController.players[i].figures) {
-        boardPiecesHTML += `<img id="${figure.id}" class="figure-on-board" 
-                              src="${this.imagePath}${gameController.players[i].filename}"
-                              alt="game figure ${gameController.players[i].name}">`;
+        boardPiecesHTML += figure.placeOnBoard();
       }
       boardPiecesHTML += `</div>`;
     };
@@ -293,7 +334,10 @@ const gameController = {
 
   setupGame: function (numberOfPlayers, isTest) {
     this.phase = this.PHASE1;
-    this.setupPlayers(numberOfPlayers, isTest);
+    this.isTest = isTest;
+    this.sunPosition = 0;
+    this.round = 0;
+    this.setupPlayers(numberOfPlayers);
     this.setupTiles(isTest);
     gameViewer.generateGameBoard();
     gameViewer.setBoardPiecesPosition();
@@ -301,10 +345,7 @@ const gameController = {
     else { this.whosMove = 0 };
   },
 
-  setupPlayers: function (numberOfPlayers, isTest) {
-    this.isTest = isTest;
-    this.sunPosition = 0;
-    this.round = 0;
+  setupPlayers: function (numberOfPlayers) {
     this.human = getRandomInt(numberOfPlayers);
 
     this.players = [];
@@ -312,18 +353,16 @@ const gameController = {
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
         name: gameViewer.figurePieces[i].name,
-        filename: (i === this.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine,
         figures: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
         tilesInStack: [],
       };
-      // generate ID for each Figure
+      // generate Figures
       for (let j = 0; j < gameViewer.figurePieces[i].count; j++) {
-        this.players[i].figures[j] = {
-          idOnTable: `player${i}-figure${j}-ontable`,
-          idOnIgloo: `player${i}-figure${j}-onigloo`,
-        };
+        this.players[i].figures[j] = new Figure(`player${i}-figure${j}`,
+          `figure-${gameController.players[i].name}`,
+          (i === this.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine);
       };
     }
   },
@@ -359,10 +398,6 @@ const gameController = {
     return tile;
   },
 
-  addTileToIgloo: function (tile) {
-    this.tilesOnIgloo.push(tile);
-  },
-
   handleTileClickOnTable: function (tileIdOnTable, isClickedOnLeft) {
     if (this.whosMove !== this.human) {
       return;
@@ -385,12 +420,20 @@ const gameController = {
   removeTileFromTableToIgloo(tile) {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
-      this.addTileToIgloo(tile);
+      this.tilesOnIgloo.push(tile);
       // delayed animation of tile removal to the igloo on board
       setInterval(function () {
         gameViewer.setVisibilityOfElement(tile.idOnTable, false);
         gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
       }, 2000);
+
+      for (let i = this.players[this.whosMove].figures.length - 1; i >= 0; i--) {
+        let figure = this.players[this.whosMove].figures[i];
+        if (figure.isOnBoard) {
+          figure.removeFromBoardToIgloo(tile.idFigureOnIgloo);
+          break;
+        }
+      }
     }
   },
 
