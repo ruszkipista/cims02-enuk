@@ -44,7 +44,6 @@ class Tile {
     const tileElement = document.createElement('div');
     tileElement.classList.add('tile');
     tileElement.setAttribute('id', this.idOnTable);
-    tileElement.setAttribute('data-id', this.id);
     tileElement.innerHTML = `
         <div class="tile-inner">
           <div class="tile-front">
@@ -91,6 +90,8 @@ class Tile {
 //===================
 const gameViewer = {
   imagePath: './assets/img/',
+
+  backgrounds: ['enuk-background-phase1.jpg','enuk-background-phase2.jpg'],
 
   tileFaces: [
     { name: Tile.NAME_REINDEER, filename: 'tileface-reindeer.jpg', count: 9 },
@@ -150,8 +151,14 @@ const gameViewer = {
     { name: 'purple', filenameHuman: 'piece-figure-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
   ],
 
+  setBackground: function(){
+    const bodyElement = document.getElementsByTagName('body')[0];
+    bodyElement.style.backgroundImage = `url("${this.imagePath}${this.backgrounds[gameController.phase]}")`;
+  },
+
   generateGameBoard: function () {
 
+    this.setBackground();
     // put game board in place
     let boardPiecesHTML = "";
     // add BOARD to game space
@@ -271,8 +278,11 @@ const gameViewer = {
 // object GAMECONTROLLER
 //======================
 const gameController = {
+  PHASE1: 0,
+  PHASE2: 1,
+
   isTest: null,
-  isPhase1: null,
+  phase: null,
   tilesOnTable: null,
   tilesOnIgloo: null,
   sunPosition: null,
@@ -282,13 +292,13 @@ const gameController = {
   players: null,
 
   setupGame: function (numberOfPlayers, isTest) {
+    this.phase = this.PHASE1;
     this.setupPlayers(numberOfPlayers, isTest);
     this.setupTiles(isTest);
     gameViewer.generateGameBoard();
     gameViewer.setBoardPiecesPosition();
     if (isTest) { this.whosMove = this.human }
     else { this.whosMove = 0 };
-    this.isPhase1 = true;
   },
 
   setupPlayers: function (numberOfPlayers, isTest) {
@@ -394,7 +404,7 @@ const gameController = {
   },
 
   evaluateTilesOnTablePhase1: function (clickedTile, isPlayerWantToCollect) {
-    if (!this.isPhase1) { return {} }
+    if (this.phase !== this.PHASE1) { return {} }
 
     let evaluation = {
       toBeCollectedIntoStack: new Set(),
