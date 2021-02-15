@@ -102,7 +102,7 @@ class Figure {
     this.id = id;
     this.isOnBoard = true;
     this.idOnBoard = `${id}-onboard`;
-    this.idOnIgloo = "";
+    this.idOnIgloo = null;
     this.name = name;
     this.filename = filename;
   }
@@ -127,11 +127,22 @@ class Figure {
       this.isOnBoard = true;
       const figureOnIglooElement = document.getElementById(this.idOnIgloo);
       figureOnIglooElement.setAttribute('src', "");
+      this.idOnIgloo = null;
       gameViewer.setVisibilityOfElement(this.idOnIgloo, false);
-
       gameViewer.setVisibilityOfElement(this.idOnBoard, true);
-      this.idOnIgloo = idOnIgloo;
     }
+  }
+}
+
+class Evaluation {
+  constructor() {
+    this.toBeMovedToStack = [];
+    this.toBeTurnedDown = [];
+    this.toBeMovedToIgloo = [];
+    this.isSunToBeMoved = false;
+    this.isEndOfMove = false;
+    this.isEndOfPhase1 = false;
+    this.isEndOfPhase2 = false;
   }
 }
 
@@ -166,7 +177,7 @@ const gameViewer = {
 
   iconCollectTiles: { id: 'icon-collect', filename: 'icon-collect.png', },
 
-  tileBack: { filename: 'tileback-ice.jpg' },
+  tileBack: { filename: 'tileback-ice.jpg', fliptime: 0.8 },
 
   boardPiece: {
     id: 'piece-board',
@@ -285,6 +296,8 @@ const gameViewer = {
     const boardElement = document.getElementById(this.boardPiece.id);
     const boardWidth = boardElement.clientWidth;
     const boardLeftOffset = boardElement.offsetLeft;
+    // flip transition time
+    document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.fliptime}s`);
     // sun piece position
     const sunLength = boardWidth * this.boardPiece.sunLength;
     document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
@@ -421,14 +434,16 @@ const gameController = {
     if (tile.isFaceUp === false) {
       tile.flipOnTable(isClickedOnLeft);
       let evaluationResult = this.evaluateTilesOnTablePhase1(tile, false);
+      gameController.actOnEvaluation(evaluationResult);
     }
   },
+
   removeTileFromTableToStack(tile) {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
-      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
       this.players[this.whosMove].tilesInStack.push(tile);
       tile.addToStack(this.whosMove);
+      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
     }
   },
 
@@ -437,10 +452,8 @@ const gameController = {
       this.removeTileFromTable(tile);
       this.tilesOnIgloo.push(tile);
       // delayed animation of tile removal to the igloo on board
-      setInterval(function () {
-        gameViewer.setVisibilityOfElement(tile.idOnTable, false);
-        gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
-      }, 2000);
+      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
+      gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
     }
   },
 
@@ -450,10 +463,8 @@ const gameController = {
       if (figure.isOnBoard) {
         figure.removeFromBoardToIgloo(tile.idFigureOnIgloo);
         // delayed animation of tile removal to the igloo on board
-        setInterval(function () {
-          gameViewer.setVisibilityOfElement(figure.idOnBoard, false);
-          gameViewer.setVisibilityOfElement(figure.idOnIgloo, true);
-        }, 2500);
+        gameViewer.setVisibilityOfElement(figure.idOnBoard, false);
+        gameViewer.setVisibilityOfElement(figure.idOnIgloo, true);
         break;
       }
     }
@@ -464,63 +475,60 @@ const gameController = {
     if (iconID === gameViewer.iconCollectTiles.id
       // and it is the Human player's move
       && this.whosMove === this.human) {
-      this.evaluateTilesOnTablePhase1(null, true);
+      let evaluationResult = this.evaluateTilesOnTablePhase1(null, true);
+      this.actOnEvaluation(evaluationResult);
     }
   },
 
   evaluateTilesOnTablePhase1: function (clickedTile, isPlayerWantToCollect) {
-    if (this.phase !== this.PHASE1) { return {} }
+    let evaluation = new Evaluation();
 
-    let evaluation = {
-      toBeCollectedIntoStack: new Set(),
-      toBeTurnedDown: new Set(),
-      isEndOfMove: false,
-      isEndOfPhase1: false,
-      isEndOfPhase2: false,
+    if (this.phase !== this.PHASE1) { return evaluation; }
+
+    let toBeMovedToStack = new Set();
+    let toBeTurnedDown = new Set();
+
+    if (clickedTile !== null && clickedTile.name === Tile.NAME_REINDEER) {
+      evaluation.isSunToBeMoved = true;
     }
 
     for (let i = 0; i < this.tilesOnTable.length; i++) {
       if (this.tilesOnTable[i].isFaceUp) {
-        // assume, that the current tile can be removed from the table
-        // that means, there is not one tile to hide from
-        evaluation.toBeCollectedIntoStack.add(i);
-        for (let j = i + 1; j < this.tilesOnTable.length; j++) {
-          if (this.tilesOnTable[j].isFaceUp) {
-            if (this.tilesOnTable[i].rank === this.tilesOnTable[j].rank + 1) {
-              // j hides from i
-              evaluation.toBeTurnedDown.add(j);
-            } else if (this.tilesOnTable[i].rank + 1 === this.tilesOnTable[j].rank) {
-              // i hides from j
-              evaluation.toBeTurnedDown.add(i);
+        if (this.tilesOnTable[i].rank < 0) {
+          if (this.tilesOnTable[i].name === Tile.NAME_IGLOO) {
+            evaluation.toBeMovedToIgloo.push(i);
+          };
+        } else {
+          // assume, that the current tile can be removed from the table
+          // that means, there is not one tile to hide from
+          toBeMovedToStack.add(i);
+          for (let j = i + 1; j < this.tilesOnTable.length; j++) {
+            if (this.tilesOnTable[j].isFaceUp && this.tilesOnTable[j].rank >= 0) {
+              if (this.tilesOnTable[i].rank === this.tilesOnTable[j].rank + 1) {
+                // j hides from i
+                toBeTurnedDown.add(j);
+              } else if (this.tilesOnTable[i].rank + 1 === this.tilesOnTable[j].rank) {
+                // i hides from j
+                toBeTurnedDown.add(i);
+              }
             }
           }
         }
       }
     }
-
     // remove those tiles which to be turned down, they can not be collected
-    for (let k of evaluation.toBeTurnedDown) {
-      evaluation.toBeCollectedIntoStack.delete(k);
+    for (let k of toBeTurnedDown) {
+      toBeMovedToStack.delete(k);
     }
     // convert the 2 Sets into Arrays
-    evaluation.toBeCollectedIntoStack = Array.from(evaluation.toBeCollectedIntoStack);
-    evaluation.toBeTurnedDown = Array.from(evaluation.toBeTurnedDown);
+    evaluation.toBeMovedToStack = Array.from(toBeMovedToStack);
+    evaluation.toBeTurnedDown = Array.from(toBeTurnedDown);
 
     // Phase_1 ends if
     // last tile is a reindeer AND the sun reached the last place
-    if (clickedTile !== null) {
-      if (clickedTile.name === Tile.NAME_REINDEER) {
-        if (this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
-          this.sunPosition++;
-          gameViewer.setBoardPiecesPosition();
-        };
-        if (this.sunPosition === gameViewer.boardPiece.sunCenters.length - 1) {
-          evaluation.isEndOfPhase1 = true;
-        }
-      } else if (clickedTile.name === Tile.NAME_IGLOO) {
-        this.removeTileFromTableToIgloo(clickedTile);
-        this.removeFigureFromBoardToIgloo(clickedTile);
-      }
+    if (evaluation.isSunToBeMoved
+      && this.sunPosition === gameViewer.boardPiece.sunCenters.length - 2) {
+      evaluation.isEndOfPhase1 = true;
     }
     // move ends if
     // - player decided to collect the turned up tiles, or
@@ -533,16 +541,31 @@ const gameController = {
       evaluation.isEndOfMove = true;
     }
 
+    return evaluation;
+  },
+
+  actOnEvaluation: function (evaluation) {
+    if (evaluation.isSunToBeMoved
+      && this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
+      this.sunPosition++;
+      gameViewer.setBoardPiecesPosition();
+    };
+
+    if (evaluation.isEndOfPhase1) { gameViewer.setBackground(); }
+
+
     if (evaluation.isEndOfMove) {
-      for (let tileIndex of evaluation.toBeCollectedIntoStack) {
+      for (let tileIndex of evaluation.toBeMovedToStack) {
         this.removeTileFromTableToStack(this.tilesOnTable[tileIndex]);
       }
       for (let tileIndex of evaluation.toBeTurnedDown) {
         this.tilesOnTable[tileIndex].flipOnTable();
       }
+      for (let tileIndex of evaluation.toBeMovedToIgloo) {
+        this.removeTileFromTableToIgloo(this.tilesOnTable[tileIndex]);
+        this.removeFigureFromBoardToIgloo(this.tilesOnTable[tileIndex]);
+      }
     }
-
-    return evaluation;
   },
 
 }

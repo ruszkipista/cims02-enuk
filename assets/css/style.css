@@ -59,6 +59,8 @@ header {
 }
 .figure-onigloo {
   width: var(--figure-onigloo-width);
+  vertical-align: top;
+  margin-top: 2vw;
 }
 .tiles-stack {
   position: absolute;
@@ -111,7 +113,7 @@ header {
     position: relative;
     width: 100%;
     height: 100%;
-    transition: transform 0.8s;
+    transition: transform var(--flip-transition-time);
     transform-style: preserve-3d;
 }
   
