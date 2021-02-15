@@ -62,6 +62,13 @@ class Tile {
     return tileElement;
   }
 
+  placeOnIgloo() {
+    return `<img id="${this.idOnIgloo}" class="tile-onigloo" 
+              src="${gameViewer.imagePath}${this.filename}"
+              style="visibility: hidden;"
+              alt="game tile ${this.name}">`;
+  }
+
   flipOnTable(isClickedOnLeft) {
     this.isFaceUp = !this.isFaceUp;
     let tileInnerElement = document.getElementById(this.idOnTable).children[0];
@@ -109,11 +116,9 @@ class Figure {
   removeFromBoardToIgloo(idOnIgloo) {
     if (this.isOnBoard) {
       this.isOnBoard = false;
-      gameViewer.setVisibilityOfElement(this.idOnBoard, false);
       this.idOnIgloo = idOnIgloo;
       const figureOnIglooElement = document.getElementById(idOnIgloo);
-      figureOnIglooElement.setProperty('src', this.filename);
-      gameViewer.setVisibilityOfElement(this.idOnIgloo, true);
+      figureOnIglooElement.setAttribute('src', gameViewer.imagePath + this.filename);
     }
   }
 
@@ -121,7 +126,7 @@ class Figure {
     if (!this.isOnBoard) {
       this.isOnBoard = true;
       const figureOnIglooElement = document.getElementById(this.idOnIgloo);
-      figureOnIglooElement.setProperty('src', "");
+      figureOnIglooElement.setAttribute('src', "");
       gameViewer.setVisibilityOfElement(this.idOnIgloo, false);
 
       gameViewer.setVisibilityOfElement(this.idOnBoard, true);
@@ -211,13 +216,22 @@ const gameViewer = {
     boardPiecesHTML += `<img id="${this.sunPiece.id}" src="${this.imagePath}${this.sunPiece.filename}" alt="game piece sun">`;
 
     // add hidden IGLOO TILES to the middle of the board
-    boardPiecesHTML += `<div id="tiles-igloo">`;
+    boardPiecesHTML += `<div id="tiles-onigloo" class="layer-onigloo">`;
     for (let tile of gameController.tiles) {
       if (tile.name === Tile.NAME_IGLOO) {
-        boardPiecesHTML += `<img id="${tile.idOnIgloo}" class="tile-igloo" 
-                              src="${this.imagePath}${tile.filename}"
-                              style="visibility: hidden;"
-                              alt="game tile ${tile.name}">`;
+        boardPiecesHTML += tile.placeOnIgloo();
+      }
+    }
+    boardPiecesHTML += `</div>`;
+
+    // add hidden FIGURES on top of igloo tiles - without src and alt
+    boardPiecesHTML += `<div id="figures-onigloo" class="layer-onigloo">`;
+    for (let tile of gameController.tiles) {
+      if (tile.name === Tile.NAME_IGLOO) {
+        boardPiecesHTML += `<div class="tile-onigloo"><img 
+                                id="${tile.idFigureOnIgloo}"
+                                class="figure-onigloo"
+                                style="visibility: hidden;" src="" alt="game figure"></div>`;
       }
     }
     boardPiecesHTML += `</div>`;
@@ -280,7 +294,7 @@ const gameViewer = {
       `${boardLeftOffset + boardWidth * this.boardPiece.sunCenters[gameController.sunPosition][1] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-rotate',
       `${gameController.sunPosition * 130}deg`);
-    // igloo position
+    // igloo3x3 on board position
     const iglooLength = boardWidth * this.boardPiece.iglooLength;
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 4) * 3 + 2}px`);
@@ -291,7 +305,8 @@ const gameViewer = {
     // figure pieces position
     const figureWidth = boardWidth * this.boardPiece.figureOnBoardWidth;
     document.documentElement.style.setProperty('--figure-onboard-width', `${figureWidth}px`);
-    document.documentElement.style.setProperty('--tile-edge-width', `${figureWidth * 4}px`);
+    document.documentElement.style.setProperty('--figure-onigloo-width', `${figureWidth * 2}px`);
+    document.documentElement.style.setProperty('--tile-edge-width', `${figureWidth * this.figurePieces[0].count}px`);
     document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * this.boardPiece.figuresOnBoardFromTop}px`);
     for (let i = 0; i < gameController.players.length; i++) {
       document.documentElement.style.setProperty('--board-figures-fromtop',
@@ -426,13 +441,20 @@ const gameController = {
         gameViewer.setVisibilityOfElement(tile.idOnTable, false);
         gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
       }, 2000);
+    }
+  },
 
-      for (let i = this.players[this.whosMove].figures.length - 1; i >= 0; i--) {
-        let figure = this.players[this.whosMove].figures[i];
-        if (figure.isOnBoard) {
-          figure.removeFromBoardToIgloo(tile.idFigureOnIgloo);
-          break;
-        }
+  removeFigureFromBoardToIgloo(tile) {
+    for (let i = this.players[this.whosMove].figures.length - 1; i >= 0; i--) {
+      let figure = this.players[this.whosMove].figures[i];
+      if (figure.isOnBoard) {
+        figure.removeFromBoardToIgloo(tile.idFigureOnIgloo);
+        // delayed animation of tile removal to the igloo on board
+        setInterval(function () {
+          gameViewer.setVisibilityOfElement(figure.idOnBoard, false);
+          gameViewer.setVisibilityOfElement(figure.idOnIgloo, true);
+        }, 2500);
+        break;
       }
     }
   },
@@ -496,7 +518,8 @@ const gameController = {
           evaluation.isEndOfPhase1 = true;
         }
       } else if (clickedTile.name === Tile.NAME_IGLOO) {
-        this.removeTileFromTableToIgloo(clickedTile)
+        this.removeTileFromTableToIgloo(clickedTile);
+        this.removeFigureFromBoardToIgloo(clickedTile);
       }
     }
     // move ends if

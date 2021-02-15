@@ -42,7 +42,7 @@ header {
   top: var(--icon-collect-fromtop);
   left: var(--icon-collect-fromleft);
 }
-#tiles-igloo {
+.layer-onigloo {
   position: absolute;
   width: var(--piece-igloo3x3-length);
   height: var(--piece-igloo3x3-length);
@@ -50,9 +50,15 @@ header {
   left: var(--piece-igloo3x3-fromleft);
   text-align:justify;
 }
-.tile-igloo {
+.tile-onigloo {
   width: var(--piece-igloo-length);
+  height: var(--piece-igloo-length);
+  display: inline-block;
+  text-align: center;
   margin:2px;
+}
+.figure-onigloo {
+  width: var(--figure-onigloo-width);
 }
 .tiles-stack {
   position: absolute;
