@@ -177,7 +177,7 @@ const gameViewer = {
 
   iconCollectTiles: { id: 'icon-collect', filename: 'icon-collect.png', },
 
-  tileBack: { filename: 'tileback-ice.jpg', fliptime: 0.8 },
+  tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
 
   boardPiece: {
     id: 'piece-board',
@@ -297,7 +297,7 @@ const gameViewer = {
     const boardWidth = boardElement.clientWidth;
     const boardLeftOffset = boardElement.offsetLeft;
     // flip transition time
-    document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.fliptime}s`);
+    document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.flipTimeMS}ms`);
     // sun piece position
     const sunLength = boardWidth * this.boardPiece.sunLength;
     document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
@@ -359,6 +359,7 @@ const gameController = {
   whosMove: null,
   human: null,
   players: null,
+  listenToClick: false,
 
   setupGame: function (numberOfPlayers, isTest) {
     this.phase = this.PHASE1;
@@ -371,6 +372,7 @@ const gameController = {
     gameViewer.setBoardPiecesPosition();
     if (isTest) { this.whosMove = this.human }
     else { this.whosMove = 0 };
+    this.listenToClick = true;
   },
 
   setupPlayers: function (numberOfPlayers) {
@@ -426,24 +428,12 @@ const gameController = {
     return tile;
   },
 
-  handleTileClickOnTable: function (tileIdOnTable, isClickedOnLeft) {
-    if (this.whosMove !== this.human) {
-      return;
-    }
-    const tile = this.findTileOnTable(tileIdOnTable);
-    if (tile.isFaceUp === false) {
-      tile.flipOnTable(isClickedOnLeft);
-      let evaluationResult = this.evaluateTilesOnTablePhase1(tile, false);
-      gameController.actOnEvaluation(evaluationResult);
-    }
-  },
-
   removeTileFromTableToStack(tile) {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
       this.players[this.whosMove].tilesInStack.push(tile);
       tile.addToStack(this.whosMove);
-      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
+      gameViewer.setVisibilityOfElement(tile.idOnTable, false)
     }
   },
 
@@ -451,7 +441,6 @@ const gameController = {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
       this.tilesOnIgloo.push(tile);
-      // delayed animation of tile removal to the igloo on board
       gameViewer.setVisibilityOfElement(tile.idOnTable, false);
       gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
     }
@@ -462,7 +451,6 @@ const gameController = {
       let figure = this.players[this.whosMove].figures[i];
       if (figure.isOnBoard) {
         figure.removeFromBoardToIgloo(tile.idFigureOnIgloo);
-        // delayed animation of tile removal to the igloo on board
         gameViewer.setVisibilityOfElement(figure.idOnBoard, false);
         gameViewer.setVisibilityOfElement(figure.idOnIgloo, true);
         break;
@@ -470,7 +458,31 @@ const gameController = {
     }
   },
 
+  handleTileClickOnTable: function (tileIdOnTable, isClickedOnLeft) {
+    if (this.whosMove !== this.human || !this.listenToClick) {
+      return;
+    }
+    const tile = this.findTileOnTable(tileIdOnTable);
+    if (tile.isFaceUp === false) {
+      tile.flipOnTable(isClickedOnLeft);
+      let evaluationResult = this.evaluateTilesOnTablePhase1(tile, false);
+      if (evaluationResult.isEndOfMove) {
+        gameController.listenToClick = false;
+        setTimeout(function () {
+          gameController.listenToClick = true;          
+          gameController.actOnEvaluation(evaluationResult);
+        }, gameViewer.tileBack.flipTimeMS * 2);
+      } else {
+        gameController.actOnEvaluation(evaluationResult);
+      }
+
+    }
+  },
+
   handleIconClick: function (iconID) {
+    if (this.whosMove !== this.human) {
+      return;
+    }
     // if clicked on the CollecTiles icon
     if (iconID === gameViewer.iconCollectTiles.id
       // and it is the Human player's move
@@ -551,7 +563,10 @@ const gameController = {
       gameViewer.setBoardPiecesPosition();
     };
 
-    if (evaluation.isEndOfPhase1) { gameViewer.setBackground(); }
+    if (evaluation.isEndOfPhase1) {
+      this.phase++;
+      gameViewer.setBackground(); 
+    }
 
 
     if (evaluation.isEndOfMove) {
