@@ -12,8 +12,8 @@ function shuffleArrayInplace(arr) {
 }
 
 // initialize game space
-document.addEventListener('DOMContentLoaded', function () {
-  gameController.setupGame(4, true);
+window.addEventListener('load', function () {
+  gameController.play();
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () { gameViewer.setBoardPiecesPosition(); });
@@ -57,7 +57,7 @@ class Tile {
             <img src="${gameViewer.imagePath}${this.filename}" alt="game tile ${this.name}">
           </div>
         </div>
-        `
+        `;
     tileElement.addEventListener('click', gameViewer.handleTileClick);
     return tileElement;
   }
@@ -74,7 +74,7 @@ class Tile {
     let tileInnerElement = document.getElementById(this.idOnTable).children[0];
     if (this.isFaceUp) {
       if (isClickedOnLeft) { tileInnerElement.classList.add('tile-flip-left'); }
-      else { tileInnerElement.classList.add('tile-flip-right'); };
+      else { tileInnerElement.classList.add('tile-flip-right'); }
 
     } else {
       tileInnerElement.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
@@ -82,14 +82,15 @@ class Tile {
   }
 
   addToStack(playerIndex) {
-    let player = gameController.players[playerIndex]
+    let player = gameController.players[playerIndex];
     let stackElement = document.getElementById(player.tileStackID);
     if (player.tilesInStack.length > 0) {
-      stackElement.innerHTML = `<img class="tile-edge" 
-                         src="${gameViewer.imagePath}${gameViewer.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
-                         style="margin-left: ${getRandomInt(5) - 2}px"
-                         alt="tile edge for score keeping">`
-        + stackElement.innerHTML;
+      stackElement.innerHTML = `
+         <img class="tile-edge" 
+              src="${gameViewer.imagePath}${gameViewer.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
+              style="margin-left: ${getRandomInt(5) - 2}px"
+              alt="tile edge for score keeping">`
+         + stackElement.innerHTML;
     }
   }
 }
@@ -151,7 +152,7 @@ class Evaluation {
 const gameViewer = {
   imagePath: './assets/img/',
 
-  backgrounds: [{ filename: 'enuk-background-phase1.jpg' }, { filename: 'enuk-background-phase2.jpg' }],
+  backgrounds: ['enuk-background-phase1.jpg', 'enuk-background-phase2.jpg'],
 
   tileFaces: [
     { name: Tile.NAME_REINDEER, filename: 'tileface-reindeer.jpg', count: 9 },
@@ -198,7 +199,7 @@ const gameViewer = {
     igloo3x3TopLeftCorner: [0.232, 0.297],
     figureOnBoardWidth: 0.025,
     figuresOnBoardFromTop: 0.65,
-    figuresOnBoardFromLeft: [0.02, 0.16, .73, .86],
+    figuresOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
   },
 
   sunPiece: { id: 'piece-sun', filename: 'piece-sun.png', count: 1 },
@@ -213,7 +214,8 @@ const gameViewer = {
 
   setBackground: function () {
     const bodyElement = document.getElementsByTagName('body')[0];
-    bodyElement.style.backgroundImage = `url("${this.imagePath}${this.backgrounds[gameController.phase].filename}")`;
+    bodyElement.style.backgroundImage = 
+    `url("${this.imagePath}${this.backgrounds[(gameController.status===gameController.PHASE2)?1:0]}")`;
   },
 
   generateGameBoard: function () {
@@ -257,7 +259,7 @@ const gameViewer = {
         boardPiecesHTML += figure.placeOnBoard();
       }
       boardPiecesHTML += `</div>`;
-    };
+    }
 
     // add CollectTiles icon
     boardPiecesHTML += `<img id="${gameViewer.iconCollectTiles.id}" 
@@ -275,11 +277,11 @@ const gameViewer = {
     let tileElement;
     while (true) {
       let tile = gameController.tiles.shift();
-      if (tile === undefined) { break }
+      if (tile === undefined) { break; }
       gameController.tilesOnTable.push(tile);
       tileElement = tile.placeOnTable(false);
       tilesElement.appendChild(tileElement);
-    };
+    }
 
   },
 
@@ -347,11 +349,13 @@ const gameViewer = {
 // object GAMECONTROLLER
 //======================
 const gameController = {
-  PHASE1: 0,
-  PHASE2: 1,
+  PHASE1: 'A',
+  PHASE1ENDED: 'B',
+  PHASE2: 'C',
+  PHASE2ENDED: 'D',
 
   isTest: null,
-  phase: null,
+  status: null,
   tilesOnTable: null,
   tilesOnIgloo: null,
   sunPosition: null,
@@ -361,8 +365,22 @@ const gameController = {
   players: null,
   listenToClick: false,
 
-  setupGame: function (numberOfPlayers, isTest) {
-    this.phase = this.PHASE1;
+  play: function () {
+    switch (this.status) {
+      case undefined || null:
+        this.setupGamePhase1(4, true);
+        break;
+
+      case this.PHASE1:
+        break;
+
+      case this.PHASE2:
+        break;
+    }
+  },
+
+  setupGamePhase1: function (numberOfPlayers, isTest) {
+    this.status = this.PHASE1;
     this.isTest = isTest;
     this.sunPosition = 0;
     this.round = 0;
@@ -370,8 +388,8 @@ const gameController = {
     this.setupTiles(isTest);
     gameViewer.generateGameBoard();
     gameViewer.setBoardPiecesPosition();
-    if (isTest) { this.whosMove = this.human }
-    else { this.whosMove = 0 };
+    if (isTest) { this.whosMove = this.human; }
+    else { this.whosMove = 0; }
     this.listenToClick = true;
   },
 
@@ -393,7 +411,7 @@ const gameController = {
         this.players[i].figures[j] = new Figure(`player${i}-figure${j}`,
           `figure-${gameController.players[i].name}`,
           (i === this.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine);
-      };
+      }
     }
   },
 
@@ -407,23 +425,23 @@ const gameController = {
         // generate ID for each Tile
         this.tiles.push(new Tile(`tile-${counter}`, tileFace.name, tileFace.filename));
         counter++;
-      };
+      }
     }
-    if (!this.isTest) { shuffleArrayInplace(this.tiles) };
+    if (!this.isTest) { shuffleArrayInplace(this.tiles); }
   },
 
   findTileOnTable: function (idOnTable) {
     // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
     let tile = this.tilesOnTable.find(function (element, index) {
       if (element.idOnTable === idOnTable) return true;
-    })
+    });
     return tile;
   },
 
   removeTileFromTable: function (tile) {
     let tileIndex = this.tilesOnTable.findIndex(function (element, index) {
       if (element.idOnTable === tile.idOnTable) return true;
-    })
+    });
     this.tilesOnTable[tileIndex].isFaceUp = null;
     return tile;
   },
@@ -433,7 +451,7 @@ const gameController = {
       this.removeTileFromTable(tile);
       this.players[this.whosMove].tilesInStack.push(tile);
       tile.addToStack(this.whosMove);
-      gameViewer.setVisibilityOfElement(tile.idOnTable, false)
+      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
     }
   },
 
@@ -469,7 +487,7 @@ const gameController = {
       if (evaluationResult.isEndOfMove) {
         gameController.listenToClick = false;
         setTimeout(function () {
-          gameController.listenToClick = true;          
+          gameController.listenToClick = true;
           gameController.actOnEvaluation(evaluationResult);
         }, gameViewer.tileBack.flipTimeMS * 2);
       } else {
@@ -495,7 +513,7 @@ const gameController = {
   evaluateTilesOnTablePhase1: function (clickedTile, isPlayerWantToCollect) {
     let evaluation = new Evaluation();
 
-    if (this.phase !== this.PHASE1) { return evaluation; }
+    if (this.status !== this.PHASE1) { return evaluation; }
 
     let toBeMovedToStack = new Set();
     let toBeTurnedDown = new Set();
@@ -509,7 +527,7 @@ const gameController = {
         if (this.tilesOnTable[i].rank < 0) {
           if (this.tilesOnTable[i].name === Tile.NAME_IGLOO) {
             evaluation.toBeMovedToIgloo.push(i);
-          };
+          }
         } else {
           // assume, that the current tile can be removed from the table
           // that means, there is not one tile to hide from
@@ -561,13 +579,12 @@ const gameController = {
       && this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
       this.sunPosition++;
       gameViewer.setBoardPiecesPosition();
-    };
-
-    if (evaluation.isEndOfPhase1) {
-      this.phase++;
-      gameViewer.setBackground(); 
     }
 
+    if (evaluation.isEndOfPhase1) {
+      this.status = this.PHASE1ENDED;
+      gameViewer.setBackground();
+    }
 
     if (evaluation.isEndOfMove) {
       for (let tileIndex of evaluation.toBeMovedToStack) {
@@ -583,4 +600,4 @@ const gameController = {
     }
   },
 
-}
+};
