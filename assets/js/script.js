@@ -95,7 +95,7 @@ class Tile {
   }
 }
 
-// class FIGURE
+// class MEEPLE
 //============
 class Meeple {
 
@@ -237,7 +237,7 @@ const gameViewer = {
     }
     boardPiecesHTML += `</div>`;
 
-    // add hidden FIGURES on top of igloo tiles - without src and alt
+    // add hidden MEEPLES on top of igloo tiles - without src and alt
     boardPiecesHTML += `<div id="meeples-onigloo" class="layer-onigloo">`;
     for (let tile of gameController.tiles) {
       if (tile.name === Tile.NAME_IGLOO) {
@@ -249,7 +249,7 @@ const gameViewer = {
     }
     boardPiecesHTML += `</div>`;
 
-    // add TILE STACKS and FIGURES for all players on the board
+    // add TILE STACKS and MEEPLES for all players on the board
     for (let i = 0; i < gameController.players.length; i++) {
       boardPiecesHTML += `<div id="${gameController.players[i].tileStackID}" class="tiles-stack tiles-stack-player${i}"></div>`;
       boardPiecesHTML += `<div id="meeples-player${i}" 
