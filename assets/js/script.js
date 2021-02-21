@@ -37,7 +37,7 @@ class Tile {
     this.name = name;
     this.filename = filename;
     this.rank = Tile.RANKING.indexOf(name);
-    this.idFigureOnIgloo = `${(name === Tile.NAME_IGLOO) ? 'figure-on-' + id : ''}`;
+    this.idMeepleOnIgloo = `${(name === Tile.NAME_IGLOO) ? 'meeple-on-' + id : ''}`;
   }
 
   placeOnTable(isFaceUp) {
@@ -97,7 +97,7 @@ class Tile {
 
 // class FIGURE
 //============
-class Figure {
+class Meeple {
 
   constructor(id, name, filename) {
     this.id = id;
@@ -109,25 +109,25 @@ class Figure {
   }
 
   placeOnBoard() {
-    return `<img id="${this.idOnBoard}" class="figure-on-board" 
+    return `<img id="${this.idOnBoard}" class="meeple-on-board" 
     src="${gameViewer.imagePath}${this.filename}"
-    alt="game figure ${this.name}">`;
+    alt="game meeple ${this.name}">`;
   }
 
   removeFromBoardToIgloo(idOnIgloo) {
     if (this.isOnBoard) {
       this.isOnBoard = false;
       this.idOnIgloo = idOnIgloo;
-      const figureOnIglooElement = document.getElementById(idOnIgloo);
-      figureOnIglooElement.setAttribute('src', gameViewer.imagePath + this.filename);
+      const meepleOnIglooElement = document.getElementById(idOnIgloo);
+      meepleOnIglooElement.setAttribute('src', gameViewer.imagePath + this.filename);
     }
   }
 
   removeFromIglooToBoard() {
     if (!this.isOnBoard) {
       this.isOnBoard = true;
-      const figureOnIglooElement = document.getElementById(this.idOnIgloo);
-      figureOnIglooElement.setAttribute('src', "");
+      const meepleOnIglooElement = document.getElementById(this.idOnIgloo);
+      meepleOnIglooElement.setAttribute('src', "");
       this.idOnIgloo = null;
       gameViewer.setVisibilityOfElement(this.idOnIgloo, false);
       gameViewer.setVisibilityOfElement(this.idOnBoard, true);
@@ -159,7 +159,7 @@ const gameViewer = {
     { name: Tile.NAME_POLARBEAR, filename: 'tileface-polarbear.jpg', count: 14 },
     { name: Tile.NAME_SEAL, filename: 'tileface-seal.jpg', count: 14 },
     { name: Tile.NAME_SALMON, filename: 'tileface-salmon.jpg', count: 14 },
-    { name: Tile.NAME_HERRING, filename: 'tileface-herring.jpg', count: 9 },
+    { name: Tile.NAME_HERRING, filename: 'tileface-herring.jpg', count: 14 },
     { name: Tile.NAME_IGLOO, filename: 'tileface-igloo00.jpg', count: 1 },
     { name: Tile.NAME_IGLOO, filename: 'tileface-igloo01.jpg', count: 1 },
     { name: Tile.NAME_IGLOO, filename: 'tileface-igloo02.jpg', count: 1 },
@@ -197,19 +197,19 @@ const gameViewer = {
     iconCollectTopLeftCorner: [0, 0.885],
     iglooLength: 0.1355,
     igloo3x3TopLeftCorner: [0.232, 0.297],
-    figureOnBoardWidth: 0.025,
-    figuresOnBoardFromTop: 0.65,
-    figuresOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
+    meepleOnBoardWidth: 0.025,
+    meeplesOnBoardFromTop: 0.65,
+    meeplesOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
   },
 
   sunPiece: { id: 'piece-sun', filename: 'piece-sun.png', count: 1 },
 
-  figurePieces: [
-    { name: 'blue', filenameHuman: 'piece-figure-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
-    { name: 'red', filenameHuman: 'piece-figure-red.png', filenameMachine: 'piece-laptop-red.png', count: 4 },
-    { name: 'green', filenameHuman: 'piece-figure-green.png', filenameMachine: 'piece-laptop-green.png', count: 4 },
-    { name: 'orange', filenameHuman: 'piece-figure-orange.png', filenameMachine: 'piece-laptop-orange.png', count: 4 },
-    { name: 'purple', filenameHuman: 'piece-figure-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
+  meeplePieces: [
+    { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
+    { name: 'red', filenameHuman: 'piece-meeple-red.png', filenameMachine: 'piece-laptop-red.png', count: 4 },
+    { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', count: 4 },
+    { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', count: 4 },
+    { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
   ],
 
   setBackground: function () {
@@ -238,13 +238,13 @@ const gameViewer = {
     boardPiecesHTML += `</div>`;
 
     // add hidden FIGURES on top of igloo tiles - without src and alt
-    boardPiecesHTML += `<div id="figures-onigloo" class="layer-onigloo">`;
+    boardPiecesHTML += `<div id="meeples-onigloo" class="layer-onigloo">`;
     for (let tile of gameController.tiles) {
       if (tile.name === Tile.NAME_IGLOO) {
         boardPiecesHTML += `<div class="tile-onigloo"><img 
-                                id="${tile.idFigureOnIgloo}"
-                                class="figure-onigloo"
-                                style="visibility: hidden;" src="" alt="game figure"></div>`;
+                                id="${tile.idMeepleOnIgloo}"
+                                class="meeple-onigloo"
+                                style="visibility: hidden;" src="" alt="game meeple"></div>`;
       }
     }
     boardPiecesHTML += `</div>`;
@@ -252,11 +252,11 @@ const gameViewer = {
     // add TILE STACKS and FIGURES for all players on the board
     for (let i = 0; i < gameController.players.length; i++) {
       boardPiecesHTML += `<div id="${gameController.players[i].tileStackID}" class="tiles-stack tiles-stack-player${i}"></div>`;
-      boardPiecesHTML += `<div id="figures-player${i}" 
-                               class="figures-group tiles-stack-player${i}" 
+      boardPiecesHTML += `<div id="meeples-player${i}" 
+                               class="meeples-group tiles-stack-player${i}" 
                                style="border-top-color:${gameController.players[i].name}">`;
-      for (let figure of gameController.players[i].figures) {
-        boardPiecesHTML += figure.placeOnBoard();
+      for (let meeple of gameController.players[i].meeples) {
+        boardPiecesHTML += meeple.placeOnBoard();
       }
       boardPiecesHTML += `</div>`;
     }
@@ -317,17 +317,17 @@ const gameViewer = {
       `${boardWidth * this.boardPiece.igloo3x3TopLeftCorner[0]}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromleft',
       `${boardLeftOffset + boardWidth * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
-    // figure pieces position
-    const figureWidth = boardWidth * this.boardPiece.figureOnBoardWidth;
-    document.documentElement.style.setProperty('--figure-onboard-width', `${figureWidth}px`);
-    document.documentElement.style.setProperty('--figure-onigloo-width', `${figureWidth * 2}px`);
-    document.documentElement.style.setProperty('--tile-edge-width', `${figureWidth * this.figurePieces[0].count}px`);
-    document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * this.boardPiece.figuresOnBoardFromTop}px`);
+    // meeple pieces position
+    const meepleWidth = boardWidth * this.boardPiece.meepleOnBoardWidth;
+    document.documentElement.style.setProperty('--meeple-onboard-width', `${meepleWidth}px`);
+    document.documentElement.style.setProperty('--meeple-onigloo-width', `${meepleWidth * 2}px`);
+    document.documentElement.style.setProperty('--tile-edge-width', `${meepleWidth * this.meeplePieces[0].count}px`);
+    document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * this.boardPiece.meeplesOnBoardFromTop}px`);
     for (let i = 0; i < gameController.players.length; i++) {
-      document.documentElement.style.setProperty('--board-figures-fromtop',
-        `${boardWidth * this.boardPiece.figuresOnBoardFromTop}px`);
+      document.documentElement.style.setProperty('--board-meeples-fromtop',
+        `${boardWidth * this.boardPiece.meeplesOnBoardFromTop}px`);
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
-        `${boardLeftOffset + boardWidth * this.boardPiece.figuresOnBoardFromLeft[i]}px`);
+        `${boardLeftOffset + boardWidth * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
     }
     // collect icon position
     document.documentElement.style.setProperty('--icon-collect-fromtop',
@@ -397,20 +397,20 @@ const gameController = {
     this.human = getRandomInt(numberOfPlayers);
 
     this.players = [];
-    shuffleArrayInplace(gameViewer.figurePieces);
+    shuffleArrayInplace(gameViewer.meeplePieces);
     for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
-        name: gameViewer.figurePieces[i].name,
-        figures: [],
+        name: gameViewer.meeplePieces[i].name,
+        meeples: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
         tilesInStack: [],
       };
-      // generate Figures
-      for (let j = 0; j < gameViewer.figurePieces[i].count; j++) {
-        this.players[i].figures[j] = new Figure(`player${i}-figure${j}`,
-          `figure-${gameController.players[i].name}`,
-          (i === this.human) ? gameViewer.figurePieces[i].filenameHuman : gameViewer.figurePieces[i].filenameMachine);
+      // generate Meeples
+      for (let j = 0; j < gameViewer.meeplePieces[i].count; j++) {
+        this.players[i].meeples[j] = new Meeple(`player${i}-meeple${j}`,
+          `meeple-${gameController.players[i].name}`,
+          (i === this.human) ? gameViewer.meeplePieces[i].filenameHuman : gameViewer.meeplePieces[i].filenameMachine);
       }
     }
   },
@@ -464,13 +464,13 @@ const gameController = {
     }
   },
 
-  removeFigureFromBoardToIgloo(tile) {
-    for (let i = this.players[this.whosMove].figures.length - 1; i >= 0; i--) {
-      let figure = this.players[this.whosMove].figures[i];
-      if (figure.isOnBoard) {
-        figure.removeFromBoardToIgloo(tile.idFigureOnIgloo);
-        gameViewer.setVisibilityOfElement(figure.idOnBoard, false);
-        gameViewer.setVisibilityOfElement(figure.idOnIgloo, true);
+  removeMeepleFromBoardToIgloo(tile) {
+    for (let i = this.players[this.whosMove].meeples.length - 1; i >= 0; i--) {
+      let meeple = this.players[this.whosMove].meeples[i];
+      if (meeple.isOnBoard) {
+        meeple.removeFromBoardToIgloo(tile.idMeepleOnIgloo);
+        gameViewer.setVisibilityOfElement(meeple.idOnBoard, false);
+        gameViewer.setVisibilityOfElement(meeple.idOnIgloo, true);
         break;
       }
     }
@@ -556,8 +556,7 @@ const gameController = {
 
     // Phase_1 ends if
     // last tile is a reindeer AND the sun reached the last place
-    if (evaluation.isSunToBeMoved
-      && this.sunPosition === gameViewer.boardPiece.sunCenters.length - 2) {
+    if (evaluation.isSunToBeMoved && this.sunPosition === gameViewer.boardPiece.sunCenters.length - 2) {
       evaluation.isEndOfPhase1 = true;
     }
     // move ends if
@@ -566,7 +565,7 @@ const gameController = {
     // - at least one animal hid (tile to be turned down)
     if (evaluation.isEndOfPhase1
       || isPlayerWantToCollect
-      || clickedTile.name === Tile.NAME_IGLOO
+      || (clickedTile && clickedTile.name === Tile.NAME_IGLOO)
       || evaluation.toBeTurnedDown.length > 0) {
       evaluation.isEndOfMove = true;
     }
@@ -595,7 +594,7 @@ const gameController = {
       }
       for (let tileIndex of evaluation.toBeMovedToIgloo) {
         this.removeTileFromTableToIgloo(this.tilesOnTable[tileIndex]);
-        this.removeFigureFromBoardToIgloo(this.tilesOnTable[tileIndex]);
+        this.removeMeepleFromBoardToIgloo(this.tilesOnTable[tileIndex]);
       }
     }
   },

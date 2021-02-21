@@ -57,8 +57,8 @@ header {
   text-align: center;
   margin:2px;
 }
-.figure-onigloo {
-  width: var(--figure-onigloo-width);
+.meeple-onigloo {
+  width: var(--meeple-onigloo-width);
   vertical-align: top;
   margin-top: 2vw;
 }
@@ -72,9 +72,9 @@ header {
   display: block;
   width: var(--tile-edge-width);
 }
-.figures-group {
+.meeples-group {
   position: absolute;
-  top: var(--board-figures-fromtop);
+  top: var(--board-meeples-fromtop);
   border-top: 3px solid;
 }
 .tiles-stack-player0 {
@@ -89,8 +89,8 @@ header {
 .tiles-stack-player3 {
   left: var(--tiles-stack-fromleft3);
 }
-.figure-on-board {
-  width: var(--figure-onboard-width);
+.meeple-on-board {
+  width: var(--meeple-onboard-width);
   margin-top:2px;
 }
 #tiles {
