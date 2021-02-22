@@ -93,7 +93,7 @@ there are 2 phases in the game:
 
 The following statuses represent the stages the game play goes through from rendering the game board until declaring the winner.
 
-**A.** status **BeforePhase1** (generate game area for Phase 1)
+**A.** status <a id="A">**BeforePhase1**</a> (generate game area for Phase 1)
 1. generate game table with 74 tiles face down, random order in matrix layout (rows and columns)
     - 9 `igloo` pieces
     - 14 `herring`
@@ -110,13 +110,13 @@ The following statuses represent the stages the game play goes through from rend
     - place invisible icons of `herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`
 3. determine order of player moves
 4. set `ActualPlayer` to the first player
-5. continue to status **InPhase1-BeforeMove**
+5. continue to status <a href="#B">**InPhase1-BeforeMove**</a>
 
-**B.** status **InPhase1-BeforeMove** (prepare actual player’s move)
+**B.** status <a id="B">**InPhase1-BeforeMove**</a> (prepare actual player’s move)
 1. instruct `ActualPlayer` to move (flip or collect)
 2. wait for request
 
-**C.** status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
+**C.** status <a id="C">**InPhase1-ProcessMove**</a> (collecting tiles and building the igloo)
 -  receive move from `ActualPlayer` (`ClickedTile`, `Request`)
   1. If `Request` is `RequestToFlip` to flip a face-down tile up, then
      * -> set flag `RequestToFlip`
@@ -124,9 +124,9 @@ The following statuses represent the stages the game play goes through from rend
      * If `ClickedTile` is `reindeer` -> move the sun piece to the next position. if there is no next position (already on the final), then do not move sun
   2. If `Request` is `CollectTiles` to collect face-up tiles from table -> set flag `RequestToCollect`
   3. If `Request` is something else -> continue to status **InPhase1-BeforeMove**
-  4. continue to status **InPhase1-Evaluation**
+  4. continue to status <a href="#D">**InPhase1-Evaluation**</a>
 
-**D.** status **InPhase1-Evaluation** (evaluate status after move)
+**D.** status <a id="D">**InPhase1-Evaluation**</a> (evaluate status after move)
 1. clear evaluation flags
 2. check face-up tiles on table:
     - determine the list of animals fleeing from any other animal<br>
@@ -143,54 +143,54 @@ OR `ClickedTile` is `igloo`<br>
 OR flag `AnimalFled`<br>
 OR flag `RequestToCollect`<br>
 -> set flag `EndOfMove`
-6. continue to status **InPhase1-Execution**
+6. continue to status <a href="#E">**InPhase1-Execution**</a>
 
-**E.** status **InPhase1-Execution** (execute actions based on evaluation)
-1. If `ClickedTile` -> wait some time for that each player memorizes the last tile flip
+**E.** status <a id="E">**InPhase1-Execution**</a> (execute actions based on evaluation)
+1. If `ClickedTile` -> wait some time for that each player can memorize the last tile flip
 2. turn tiles of fleeing animals back face-down
 3. move `igloo` tiles onto the board's 3x3 igloo and mark each tile with the player's one (of 4) meeples under its stack. If there are no meeples left, do not mark.
 4. If `EndOfMove` -> collect remaining face-up tiles into player’s stack
 5. wait some time for that each player memorizes the actions (if there was)
-6. If flag `EndOfPhase2` -> continue to status **EndOfGame**
+6. If flag `EndOfPhase2` -> continue to status <a href="#M">**EndOfGame**</a>
 7. If flag `EndOfMove` -> set `ActualPlayer` to the next player
-8. If flag `EndOfPhase1` -> continue to status **BeforePhase2**
-9. Else continue to status **InPhase1-BeforeMove**
+8. If flag `EndOfPhase1` -> continue to status <a href="#F">**BeforePhase2**</a>
+9. Else continue to status <a href="#B">**InPhase1-BeforeMove**</a>
 
-**F.** status **BeforePhase2** (set up board for Phase 2)
+**F.** status <a id="F">**BeforePhase2**</a> (set up board for Phase 2)
 1. set invisible the `CollectTiles` icon on board
 2. set visible the icons for each tile type on the board for getting tile type declaration from players:<br>
 (`herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`)
-3. continue to status **InPhase2-CollectOneIgloo**
+3. continue to status <a href="#G">**InPhase2-CollectOneIgloo**</a>
 
-**G.** status **InPhase2-CollectOneIgloo** (collect one tile from the igloo)
-1. If ActualPlayer hasn’t got meeple on igloo -> continue to status **InPhase2-Evaluation**
+**G.** status <a id="G">**InPhase2-CollectOneIgloo**</a> (collect one tile from the igloo)
+1. If ActualPlayer hasn’t got meeple on igloo -> continue to status <a href="#K">**InPhase2-Evaluation**</a>
 2. remove `ActualPlayer`’s one meeple from igloo
 3. remove tile underneath the removed meeple and move it to the tile stack of the `ActualPlayer`
-4. continue to status **InPhase2-BeforeDeclaration**
+4. continue to status <a href="#H">**InPhase2-BeforeDeclaration**</a>
 
-**H.** status **InPhase2-BeforeDeclaration**
+**H.** status <a id="H">**InPhase2-BeforeDeclaration**</a>
 1. instruct ActualPlayer to declare its next flip, choose one of the following:<br>
 (`herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`)
 2. wait for request
 
-**I.** status **InPhase2-BeforeMove**
+**I.** status <a id="I">**InPhase2-BeforeMove**</a>
 1. instruct `ActualPlayer` to flip one tile
 2. wait for request
 
-**J.** status **InPhase2-ProcessMove**
+**J.** status <a id="J">**InPhase2-ProcessMove**</a>
 - receive move from player: (`ClickedElement` (Tile or Icon), `Request`)
 1. If `Request` is `DeclareNextTileType` AND `ClickedElement` is valid:
    - -> set `Declaration`
    - -> mark `Declaration` on board
-   - -> continue to status **InPhase2-BeforeMove**
+   - -> continue to status <a href="#I">**InPhase2-BeforeMove**</a>
 2. If `Request` is to flip a face-down tile up AND `Declaration` is set
    - -> flag `RequestToFlip`
    - -> flip the clicked tile face-up
-   - -> continue to status **InPhase2-Evaluation**
-3. If `Declaration` is set -> continue to status **InPhase2-BeforeMove**
-4. Else -> continue to status **InPhase2-BeforeDeclaration**
+   - -> continue to status <a href="#">**InPhase2-Evaluation**</a>
+3. If `Declaration` is set -> continue to status <a href="#I">**InPhase2-BeforeMove**</a>
+4. Else -> continue to status <a href="#H">**InPhase2-BeforeDeclaration**</a>
 
-**K.** status **InPhase2-Evaluation** (evaluate status after move)
+**K.** status <a id="K">**InPhase2-Evaluation**</a> (evaluate status after move)
 1. clear evaluation flags
 2. If all tiles on table are face-up<br>
 	OR `ClickedElement` tile is the last `reindeer`<br>
@@ -199,27 +199,26 @@ OR flag `RequestToCollect`<br>
 3. If NOT `ClickedElement` tile -> set flag `EndOfMove`
 4. Else If `ClickedElement` tile is the same as `Declaration` -> set flag `CorrectDeclaration`
 5. Else -> set flag `EndOfMove`
-6. continue to status **InPhase2-Execution**
+6. continue to status <a href="#L">**InPhase2-Execution**</a>
 
-**L.** status **InPhase2-Execution** (execute actions based on evaluation)
+**L.** status <a id="L">**InPhase2-Execution**</a> (execute actions based on evaluation)
 1. If `ClickedElement` tile -> wait some time for that each player memorizes the last tile flip
 2. If flag `CorrectDeclaration` -> move tile `ClickedElement` to player’s stack
 3. wait some time that each player memorizes the actions (if there was)
-4. If flag `EndOfPhase2` -> continue to status **EndOfGame**
+4. If flag `EndOfPhase2` -> continue to status <a href="#M">**EndOfGame**</a>
 5. Else If flag `EndOfMove` -> set `ActualPlayer` to the next player
-6. continue to status **InPhase2-CollectOneIgloo**
+6. continue to status <a href="#G">**InPhase2-CollectOneIgloo**</a>
 
-**M.** status **EndOfGame** details:
+**M.** status <a id="M">**EndOfGame**</a> details:
 1. Announce winner (most collected tiles)
 2. Allow free tile flipping on tiles remaining on the table
 3. Offer to restart the game
-4. wait
+4. wait for request
 
-**N.** status **EndOfGame-ProcessMove**
+**N.** status <a id="N">**EndOfGame-ProcessMove**</a>
 - receive move from player: (`ClickedElement`, `Request`)
-1. If `Request` is `RequestToRestart` -> continue to status **BeforePhase1**
-2. If `Request` is `RequestToFlip` 
-    - -> flip `ClickedElement`
+1. If `Request` is `RequestToRestart` -> continue to status <a href="#A">**BeforePhase1**<a>
+2. If `Request` is `RequestToFlip` -> flip `ClickedElement`
 
 ### 2.3 Pseudo code of machine player model
 
