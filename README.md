@@ -146,11 +146,11 @@ OR flag `RequestToCollect`<br>
 6. continue to status <a href="#E">**InPhase1-Execution**</a>
 
 **E.** status <a id="E">**InPhase1-Execution**</a> (execute actions based on evaluation)
-1. If `ClickedTile` -> wait some time for that each player can memorize the last tile flip
+1. If `ClickedTile` -> wait some time that each player can memorize the last tile flip
 2. turn tiles of fleeing animals back face-down
 3. move `igloo` tiles onto the board's 3x3 igloo and mark each tile with the player's one (of 4) meeples under its stack. If there are no meeples left, do not mark.
 4. If `EndOfMove` -> collect remaining face-up tiles into player’s stack
-5. wait some time for that each player memorizes the actions (if there was)
+5. wait some time that each player can memorize the actions (if there was)
 6. If flag `EndOfPhase2` -> continue to status <a href="#M">**EndOfGame**</a>
 7. If flag `EndOfMove` -> set `ActualPlayer` to the next player
 8. If flag `EndOfPhase1` -> continue to status <a href="#F">**BeforePhase2**</a>
@@ -186,7 +186,7 @@ OR flag `RequestToCollect`<br>
 2. If `Request` is to flip a face-down tile up AND `Declaration` is set
    - -> flag `RequestToFlip`
    - -> flip the clicked tile face-up
-   - -> continue to status <a href="#">**InPhase2-Evaluation**</a>
+   - -> continue to status <a href="#K">**InPhase2-Evaluation**</a>
 3. If `Declaration` is set -> continue to status <a href="#I">**InPhase2-BeforeMove**</a>
 4. Else -> continue to status <a href="#H">**InPhase2-BeforeDeclaration**</a>
 
@@ -202,9 +202,9 @@ OR flag `RequestToCollect`<br>
 6. continue to status <a href="#L">**InPhase2-Execution**</a>
 
 **L.** status <a id="L">**InPhase2-Execution**</a> (execute actions based on evaluation)
-1. If `ClickedElement` tile -> wait some time for that each player memorizes the last tile flip
+1. If `ClickedElement` tile -> wait some time that each player can memorize the last tile flip
 2. If flag `CorrectDeclaration` -> move tile `ClickedElement` to player’s stack
-3. wait some time that each player memorizes the actions (if there was)
+3. wait some time that each player can memorize the actions (if there was)
 4. If flag `EndOfPhase2` -> continue to status <a href="#M">**EndOfGame**</a>
 5. Else If flag `EndOfMove` -> set `ActualPlayer` to the next player
 6. continue to status <a href="#G">**InPhase2-CollectOneIgloo**</a>
