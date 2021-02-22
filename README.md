@@ -93,7 +93,7 @@ there are 2 phases in the game:
 
 The following statuses represent the stages the game play goes through from rendering the game board until declaring the winner.
 
-A. status **BeforePhase1** (generate game area for Phase 1)
+**A.** status **BeforePhase1** (generate game area for Phase 1)
 1. generate game table with 74 tiles face down, random order in matrix layout (rows and columns)
     - 9 `igloo` pieces
     - 14 `herring`
@@ -112,11 +112,11 @@ A. status **BeforePhase1** (generate game area for Phase 1)
 4. set `ActualPlayer` to the first player
 5. continue to status **InPhase1-BeforeMove**
 
-B. status **InPhase1-BeforeMove** (prepare actual player’s move)
+**B.** status **InPhase1-BeforeMove** (prepare actual player’s move)
 1. instruct `ActualPlayer` to move (flip or collect)
 2. wait for move
 
-C. status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
+**C.** status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
 -  receive move from `ActualPlayer` (`ClickedTile`, `Request`)
   1. If `Request` is `RequestToFlip` to flip a face-down tile up, then
      * -> set flag `RequestToFlip`
@@ -126,7 +126,7 @@ C. status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
   3. If `Request` is something else -> continue to status **InPhase1-BeforeMove**
   4. continue to status **InPhase1-Evaluation**
 
-D. status **InPhase1-Evaluation** (evaluate status after move)
+**D.** status **InPhase1-Evaluation** (evaluate status after move)
 1. clear evaluation flags
 2. check face-up tiles on table:
     - determine the list of animals fleeing from any other animal<br>
@@ -155,6 +155,8 @@ E. status **InPhase1-Execution** (execute actions based on evaluation)
 7. If flag `EndOfMove` -> set `ActualPlayer` to the next player
 8. If flag `EndOfPhase1` -> continue to status **BeforePhase2**
 9. Else continue to status **InPhase1-BeforeMove**
+
+2.3 Pseudo code of machine player model
 
 
 ## 3. Features Left to Implement
