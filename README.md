@@ -95,20 +95,20 @@ The following statuses represent the stages the game play goes through from rend
 
 A. status **BeforePhase1** (generate game area for Phase 1)
 1. generate game table with 74 tiles face down, random order in matrix layout (rows and columns)
-  - 9 `igloo` pieces
-  - 14 `herring`
-  - 14 `salmon`, 
-  - 14 `seal``, 
-  - 14 `polarbear`s, 
-  - 9 `reindeer` (with eskimo)
+    - 9 `igloo` pieces
+    - 14 `herring`
+    - 14 `salmon`, 
+    - 14 `seal`, 
+    - 14 `polarbear`s, 
+    - 9 `reindeer` (with eskimo)
 2. generate game board with 
-  - player(s) empty tile stack, 
-  - 4 meeples for each player under their stack,
-  - empty 3x3 tile holder over the igloo,
-  - empty 3x3 meeple holder on top of the 3x3 tile holder
-  - place the sun piece on the first of 9 positions
-  - place invisible icons of `herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`
-3. determine players' move order
+    - player(s) empty tile stack, 
+    - 4 meeples for each player under their stack,
+    - empty 3x3 tile holder over the igloo,
+    - empty 3x3 meeple holder on top of the 3x3 tile holder
+    - place the sun piece on the first of 9 positions
+    - place invisible icons of `herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`
+3. determine order of player moves
 4. set `ActualPlayer` to the first player
 5. continue to status **InPhase1-BeforeMove**
 
@@ -129,10 +129,12 @@ C. status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
 D. status **InPhase1-Evaluation** (evaluate status after move)
 1. clear evaluation flags
 2. check face-up tiles on table:
-  - determine the list of animals fleeing from any other animal ( rank order: `herring` < `salmon` < `seal` < `polarbear` < `reindeer`. An animal flees from the next higher ranked animal only, e.g. `salmon` flees from `seal`, but not from `polarbear` or from any others)
-  - If any flees -> set flag `AnimalFled`
-  - determine the list of `igloo` tiles to be removed to the board
-  - determine the list of other face-up tiles
+    - determine the list of animals fleeing from any other animal<br>
+    ( rank order: `herring` < `salmon` < `seal` < `polarbear` < `reindeer`.<br>
+    An animal flees from the next higher ranked animal only, e.g. `salmon` flees from `seal`, but not from `polarbear` or from any others)
+    - If any flees -> set flag `AnimalFled`
+    - determine the list of `igloo` tiles to be removed to the board
+    - determine the list of other face-up tiles
 3. If NOT flag `AnimalFled` AND all tiles are face-up -> set flags `EndOfPhase2`, `EndOfPhase1`
 4. Else If `ClickedTile` is `reindeer` AND the sun piece is on the last position -> set flag `EndOfPhase1`
 5. If flag `EndOfPhase1`<br>
@@ -240,7 +242,9 @@ Just because this is a static website, you can even start up the Home page by do
 ### Acknowledgements
 My inspiration for this project came from the assessment booklet mentioning memory game as a possible project and this board game jumped into my mind immediatelly. We played this game with our kids many times, even recently during the [pandemic](https://en.wikipedia.org/wiki/COVID-19_pandemic) lockdown.
 
-I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project.
+I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project. He suggested to make the gameboard stowaway so all tiles can be accessed without scrolling.
+
+My family had sevaeral suggestion on the UI and how to avoid using text on the game board during play.
 
 ### Media
 See the exact source of images in the code comments. Here is the short list of sources:
