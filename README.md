@@ -1,14 +1,10 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
 Interactive website to play [Enuk](https://boardgamegeek.com/boardgame/36554/enuk) in the browser. This project is the second milestone in obtaining a [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
 
-# [Limerick Kettlebell Lifting Club](https://ruszkipista.github.io/cims01-lkc/)
-
-Static website to promote the [Limerick Kettlebell Club](https://www.facebook.com/Limerick-Kettlebell-Club-201978196542853) and [Kettlebell Sport](https://en.wikipedia.org/wiki/Kettlebell_lifting) around Limerick city, Ireland. This project is the first milestone in obtaining a [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
-
 ![the webpage on different devices](./assets/doc/responsive-am-i.png "the webpage on different size devices")
 
 ### Attention assessor!
-I kept a journal during the development about my daily activities, see it [here](./assets/doc/ci-ms1-study-notes-journal.pdf) frozen in time or [live](https://docs.google.com/document/d/19ohtJUawBUjIifB0DIKjILhsNA2ryk4tIevXz4fkTWM/edit?usp=sharing).
+I kept a journal during the development about my daily activities, see it [here](./assets/doc/ci-ms2-study-notes-journal.pdf) frozen in time or [live](https://docs.google.com/document/d/1eooOU-uZVoeEShXQkXs86pQumJEob1c4Pa6hwJqahNw/edit?usp=sharing).
 
 ## Contents
 - [1. UX design](#1-ux-design "1. UX design")
@@ -21,21 +17,15 @@ I kept a journal during the development about my daily activities, see it [here]
 - [2. Features Left to Implement](#2-features-left-to-implement "2. Features Left to Implement")
 - [3. Technologies and Tools Used](#3-technologies-and-tools-used "3. Technologies and Tools Used")
 - [4. Issues solved during development](#4-issues-solved-during-development "4. Issues solved during development")
-  - [4.1 Top-Fixed navbar and anchors](#41-top-fixed-navbar-and-anchors "4.1 Top-Fixed navbar and anchors")
-  - [4.2 Trouble with opacity layer on hero image](#42-trouble-with-opacity-layer-on-hero-image "4.2 Trouble with opacity layer on hero image")
-  - [4.3 Style list item decorators](#43-style-list-item-decorators "4.3 Style list item decorators")
-  - [4.4 Content hinting on mobile device](#44-content-hinting-on-mobile-device "4.4 Content hinting on mobile device")
 - [5. Testing](#5-testing "5. Testing")
 - [6. Deployment](#6-deployment "6. Deployment")
 - [7. Credits](#7-credits "7. Credits")
+- [8. Disclaimer](#7-disclaimer "8. Disclaimer")
 
 ## 1. UX design
 ### 1.1 Strategy Plane
 Stakeholders of the website:
-- visitor - a person visiting the website, not a club member
-- member - club member, who actively trains or trained with the club
-- officer - affiliated with the club who executes or organises club matters though official capacity
-- AIKLF - sport organization which the club is associated with
+- player
 
 #### 1.1.1 Goals and Objectives of Stakeholders (users)
 |G#|User|Goals, Needs, Objectives|
@@ -130,15 +120,15 @@ The website is deployed to GitHub Pages automatically by GitHub. The assigned we
 I followed [this](https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) tutorial to deploy the project on GitHub Pages, these were the steps:
 1. On GitHub navigate to the repository's main page
 2. Under your repository name, click Settings
-![Repository/Settings](./assets/doc/ci-ms1-deployment-1.png "Click on Settings")
+![Repository/Settings](./assets/doc/ci-ms2-deployment-1.png "Click on Settings")
 3. Under "GitHub Pages", use the None or Branch drop-down menu and select a publishing source
-![Settings/GitHub Pages/Branch](./assets/doc/ci-ms1-deployment-2.png "Click on Branch")
+![Settings/GitHub Pages/Branch](./assets/doc/ci-ms2-deployment-2.png "Click on Branch")
 4. Optionally, use the drop-down menu to select a folder for your publishing source
-![Settings/GitHub Pages/Source](./assets/doc/ci-ms1-deployment-3.png "Click on Root")
+![Settings/GitHub Pages/Source](./assets/doc/ci-ms2-deployment-3.png "Click on Root")
 5. Click Save
-![Settings/GitHub Pages/Save](./assets/doc/ci-ms1-deployment-4.png "Click on Save")
+![Settings/GitHub Pages/Save](./assets/doc/ci-ms2-deployment-4.png "Click on Save")
 6. After a while you are presented whith this status message at the same place
-![Settings/GitHub Pages](./assets/doc/ci-ms1-deployment-5.png "Your site is published")
+![Settings/GitHub Pages](./assets/doc/ci-ms2-deployment-5.png "Your site is published")
 
 If you want to deploy this project to a different hosting solution, you need to copy all the files from this repository. Follow the repository cloning steps from [this](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) tutorial.
 After you have your local copies of these files, you copy them into the home folder of the webserver, keeping the folder structure as is.
