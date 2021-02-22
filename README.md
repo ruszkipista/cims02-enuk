@@ -102,7 +102,7 @@ The following statuses represent the stages the game play goes through from rend
     - 14 `polarbear`s, 
     - 9 `reindeer` (with eskimo)
 2. generate game board with 
-    - player(s) empty tile stack, 
+    - empty tile stack of player(s), 
     - 4 meeples for each player under their stack,
     - empty 3x3 tile holder over the igloo,
     - empty 3x3 meeple holder on top of the 3x3 tile holder
@@ -114,7 +114,7 @@ The following statuses represent the stages the game play goes through from rend
 
 **B.** status **InPhase1-BeforeMove** (prepare actual player’s move)
 1. instruct `ActualPlayer` to move (flip or collect)
-2. wait for move
+2. wait for request
 
 **C.** status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
 -  receive move from `ActualPlayer` (`ClickedTile`, `Request`)
@@ -145,9 +145,9 @@ OR flag `RequestToCollect`<br>
 -> set flag `EndOfMove`
 6. continue to status **InPhase1-Execution**
 
-E. status **InPhase1-Execution** (execute actions based on evaluation)
+**E.** status **InPhase1-Execution** (execute actions based on evaluation)
 1. If `ClickedTile` -> wait some time for that each player memorizes the last tile flip
-2. flip tiles of fleeing animals back face-down
+2. turn tiles of fleeing animals back face-down
 3. move `igloo` tiles onto the board's 3x3 igloo and mark each tile with the player's one (of 4) meeples under its stack. If there are no meeples left, do not mark.
 4. If `EndOfMove` -> collect remaining face-up tiles into player’s stack
 5. wait some time for that each player memorizes the actions (if there was)
@@ -156,7 +156,72 @@ E. status **InPhase1-Execution** (execute actions based on evaluation)
 8. If flag `EndOfPhase1` -> continue to status **BeforePhase2**
 9. Else continue to status **InPhase1-BeforeMove**
 
-2.3 Pseudo code of machine player model
+**F.** status **BeforePhase2** (set up board for Phase 2)
+1. set invisible the `CollectTiles` icon on board
+2. set visible the icons for each tile type on the board for getting tile type declaration from players:<br>
+(`herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`)
+3. continue to status **InPhase2-CollectOneIgloo**
+
+**G.** status **InPhase2-CollectOneIgloo** (collect one tile from the igloo)
+1. If ActualPlayer hasn’t got meeple on igloo -> continue to status **InPhase2-Evaluation**
+2. remove `ActualPlayer`’s one meeple from igloo
+3. remove tile underneath the removed meeple and move it to the tile stack of the `ActualPlayer`
+4. continue to status **InPhase2-BeforeDeclaration**
+
+**H.** status **InPhase2-BeforeDeclaration**
+1. instruct ActualPlayer to declare its next flip, choose one of the following:<br>
+(`herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`)
+2. wait for request
+
+**I.** status **InPhase2-BeforeMove**
+1. instruct `ActualPlayer` to flip one tile
+2. wait for request
+
+**J.** status **InPhase2-ProcessMove**
+- receive move from player: (`ClickedElement` (Tile or Icon), `Request`)
+1. If `Request` is `DeclareNextTileType` AND `ClickedElement` is valid:
+   - -> set `Declaration`
+   - -> mark `Declaration` on board
+   - -> continue to status **InPhase2-BeforeMove**
+2. If `Request` is to flip a face-down tile up AND `Declaration` is set
+   - -> flag `RequestToFlip`
+   - -> flip the clicked tile face-up
+   - -> continue to status **InPhase2-Evaluation**
+3. If `Declaration` is set -> continue to status **InPhase2-BeforeMove**
+4. Else -> continue to status **InPhase2-BeforeDeclaration**
+
+**K.** status **InPhase2-Evaluation** (evaluate status after move)
+1. clear evaluation flags
+2. If all tiles on table are face-up<br>
+	OR `ClickedElement` tile is the last `reindeer`<br>
+	OR there is no more meeple on the igloo<br>
+->  set flag `EndOfPhase2`
+3. If NOT `ClickedElement` tile -> set flag `EndOfMove`
+4. Else If `ClickedElement` tile is the same as `Declaration` -> set flag `CorrectDeclaration`
+5. Else -> set flag `EndOfMove`
+6. continue to status **InPhase2-Execution**
+
+**L.** status **InPhase2-Execution** (execute actions based on evaluation)
+1. If `ClickedElement` tile -> wait some time for that each player memorizes the last tile flip
+2. If flag `CorrectDeclaration` -> move tile `ClickedElement` to player’s stack
+3. wait some time that each player memorizes the actions (if there was)
+4. If flag `EndOfPhase2` -> continue to status **EndOfGame**
+5. Else If flag `EndOfMove` -> set `ActualPlayer` to the next player
+6. continue to status **InPhase2-CollectOneIgloo**
+
+**M.** status **EndOfGame** details:
+1. Announce winner (most collected tiles)
+2. Allow free tile flipping on tiles remaining on the table
+3. Offer to restart the game
+4. wait
+
+**N.** status **EndOfGame-ProcessMove**
+- receive move from player: (`ClickedElement`, `Request`)
+1. If `Request` is `RequestToRestart` -> continue to status **BeforePhase1**
+2. If `Request` is `RequestToFlip` 
+    - -> flip `ClickedElement`
+
+### 2.3 Pseudo code of machine player model
 
 
 ## 3. Features Left to Implement
