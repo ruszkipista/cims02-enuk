@@ -6,13 +6,12 @@ Interactive website to play [Enuk](https://boardgamegeek.com/boardgame/36554/enu
   - Animals 
   - Children's Game 
   - Memory
-* Mechanisms - Memory
 * Age - 5 years and up
 
 #### Publisher's description:
-The small Eskimo child Enuk is already completely excited. Today he may go with his large brothers on journey into the ice. Finally he may see the wild polar bears on their way, watch the seals fishing and fish himself through the ice holes. At most, however, he looks forward to building the igloo with the others. However, the day goes on much too fast...
+The small Eskimo child Enuk is already excited. Today he may go with his large brothers on a journey into the ice. Finally he may see the wild polar bears on their way, watch the seals fishing and fish through the ice holes. He looks forward to building an igloo with the others. However, the day goes by too fast...
 
-The children have to build the igloo and to observe as many animals as possible at the same time. Who collects most animal tiles and builds the igloo successfully, will win!
+The children have to build the igloo and to observe as many animals as possible at the same time. Who collects the most animal tiles and builds the igloo successfully, will win!
 
 #### Description of the mechanics:
 Enuk is a mixture of memory and push-your-luck. Players turn over animal tiles, until they want to quit or one of the animals is scared and flees: the herring flee from the salmon, salmon flees from the seal, the seal flees from the polar bear and the polar bear flees from the Eskimo. How many tiles dare you turn over?
@@ -81,9 +80,9 @@ Chose font [Roboto](https://fonts.google.com/specimen/Roboto) for the headers.
 
 ## 2. Program design
 The interactivity is provided with JavaScript program running in the browser on the client side. It has 3 theoretically distinct parts:
-1. Viewer - responsible for visual representation of data and and game elements - governed by the UX design
-2. Model - responsible for logic and decisions in the game, abstracted algorithm, possibly free from interference of visual representation
-3. Controller - responsible for gluing together Model and Viewer code parts - connecting the 2 sides
+1. Viewer - responsible for visual representation of data and and game elements - governed by the UX design,
+2. Model - responsible for logic and decisions in the game. It is abstracted away from the visual representation,
+3. Controller - responsible for connecting the Model and Viewer code parts together.
 
 ### 2.1 Generating HTML code with Viewer
 
@@ -94,7 +93,7 @@ there are 2 phases in the game:
 
 The following statuses represent the stages the game play goes through from rendering the game board until declaring the winner.
 
-status **BeforePhase1** (generate game area for Phase 1) details:
+A. status **BeforePhase1** (generate game area for Phase 1)
 1. generate game table with 74 tiles face down, random order in matrix layout (rows and columns)
   - 9 `igloo` pieces
   - 14 `herring`
@@ -113,11 +112,11 @@ status **BeforePhase1** (generate game area for Phase 1) details:
 4. set `ActualPlayer` to the first player
 5. continue to status **InPhase1-BeforeMove**
 
-status **InPhase1-BeforeMove** (prepare actual player’s move) details:
+B. status **InPhase1-BeforeMove** (prepare actual player’s move)
 1. instruct `ActualPlayer` to move (flip or collect)
 2. wait for move
 
-status **InPhase1-ProcessMove** (collecting tiles and building the igloo) details:
+C. status **InPhase1-ProcessMove** (collecting tiles and building the igloo)
 -  receive move from `ActualPlayer` (`ClickedTile`, `Request`)
   1. If `Request` is `RequestToFlip` to flip a face-down tile up, then
      * -> set flag `RequestToFlip`
@@ -127,7 +126,7 @@ status **InPhase1-ProcessMove** (collecting tiles and building the igloo) detail
   3. If `Request` is something else -> continue to status **InPhase1-BeforeMove**
   4. continue to status **InPhase1-Evaluation**
 
-status **InPhase1-Evaluation** (evaluate status after move)
+D. status **InPhase1-Evaluation** (evaluate status after move)
 1. clear evaluation flags
 2. check face-up tiles on table:
   - determine the list of animals fleeing from any other animal ( rank order: `herring` < `salmon` < `seal` < `polarbear` < `reindeer`. An animal flees from the next higher ranked animal only, e.g. `salmon` flees from `seal`, but not from `polarbear` or from any others)
@@ -144,7 +143,7 @@ OR flag `RequestToCollect`<br>
 -> set flag `EndOfMove`
 6. continue to status **InPhase1-Execution**
 
-status **InPhase1-Execution** (execute actions based on evaluation)
+E. status **InPhase1-Execution** (execute actions based on evaluation)
 1. If `ClickedTile` -> wait some time for that each player memorizes the last tile flip
 2. flip tiles of fleeing animals back face-down
 3. move `igloo` tiles onto the board's 3x3 igloo and mark each tile with the player's one (of 4) meeples under its stack. If there are no meeples left, do not mark.
