@@ -1,5 +1,21 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
-Interactive website to play [Enuk](https://boardgamegeek.com/boardgame/36554/enuk) in the browser. This project is the second milestone in obtaining a [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+Interactive website to play [Enuk](https://boardgamegeek.com/boardgame/36554/enuk) boardgame in the browser. This project is the second milestone in obtaining a [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+
+**Game Classification**
+* Category
+  - Animals 
+  - Children's Game 
+  - Memory
+* Mechanisms - Memory
+* Age - 5 years and up
+
+#### Publisher's description:
+The small Eskimo child Enuk is already completely excited. Today he may go with his large brothers on journey into the ice. Finally he may see the wild polar bears on their way, watch the seals fishing and fish himself through the ice holes. At most, however, he looks forward to building the igloo with the others. However, the day goes on much too fast...
+
+The children have to build the igloo and to observe as many animals as possible at the same time. Who collects most animal tiles and builds the igloo successfully, will win!
+
+#### Description of the mechanics:
+Enuk is a mixture of memory and push-your-luck. Players turn over animal tiles, until they want to quit or one of the animals is scared and flees: the herring flee from the salmon, salmon flees from the seal, the seal flees from the polar bear and the polar bear flees from the Eskimo. How many tiles dare you turn over?
 
 ![the webpage on different devices](./assets/doc/responsive-am-i.png "the webpage on different size devices")
 
@@ -14,13 +30,14 @@ I kept a journal during the development about my daily activities, see it [here]
   - [1.4 Structure plane](#14-structure-plane "1.4 Structure plane")
   - [1.5 Skeleton plane](#15-skeleton-plane "1.5 Skeleton plane")
   - [1.6 Surface plane](#16-surface-plane "1.6 Surface plane")
-- [2. Features Left to Implement](#2-features-left-to-implement "2. Features Left to Implement")
-- [3. Technologies and Tools Used](#3-technologies-and-tools-used "3. Technologies and Tools Used")
-- [4. Issues solved during development](#4-issues-solved-during-development "4. Issues solved during development")
-- [5. Testing](#5-testing "5. Testing")
-- [6. Deployment](#6-deployment "6. Deployment")
-- [7. Credits](#7-credits "7. Credits")
-- [8. Disclaimer](#7-disclaimer "8. Disclaimer")
+- [2. Program design](#2-program-design "2. Program design")
+- [3. Features Left to Implement](#3-features-left-to-implement "3. Features Left to Implement")
+- [4. Technologies and Tools Used](#4-technologies-and-tools-used "4. Technologies and Tools Used")
+- [5. Issues solved during development](#5-issues-solved-during-development "5. Issues solved during development")
+- [6. Testing](#6-testing "6. Testing")
+- [7. Deployment](#7-deployment "7. Deployment")
+- [8. Credits](#8-credits "8 Credits")
+- [9. Disclaimer](#9-disclaimer "9. Disclaimer")
 
 ## 1. UX design
 ### 1.1 Strategy Plane
@@ -62,10 +79,87 @@ Created wireframes for **XXX** page in 3 width, see the others as well [here](./
 ### 1.6 Surface plane
 Chose font [Roboto](https://fonts.google.com/specimen/Roboto) for the headers.
 
-## 2. Features Left to Implement
+## 2. Program design
+The interactivity is provided with JavaScript program running in the browser on the client side. It has 3 theoretically distinct parts:
+1. Viewer - responsible for visual representation of data and and game elements - governed by the UX design
+2. Model - responsible for logic and decisions in the game, abstracted algorithm, possibly free from interference of visual representation
+3. Controller - responsible for gluing together Model and Viewer code parts - connecting the 2 sides
+
+### 2.1 Generating HTML code with Viewer
+
+### 2.2 Pseudo code of Controller
+there are 2 phases in the game:
+- Phase 1: flipping and collecting tiles, building the igloo
+- Phase 2: player declares next tile before flipping it, if correct, collects the tile
+
+The following statuses represent the stages the game play goes through from rendering the game board until declaring the winner.
+
+status **BeforePhase1** (generate game area for Phase 1) details:
+1. generate game table with 74 tiles face down, random order in matrix layout (rows and columns)
+  - 9 `igloo` pieces
+  - 14 `herring`
+  - 14 `salmon`, 
+  - 14 `seal``, 
+  - 14 `polarbear`s, 
+  - 9 `reindeer` (with eskimo)
+2. generate game board with 
+  - player(s) empty tile stack, 
+  - 4 meeples for each player under their stack,
+  - empty 3x3 tile holder over the igloo,
+  - empty 3x3 meeple holder on top of the 3x3 tile holder
+  - place the sun piece on the first of 9 positions
+  - place invisible icons of `herring`, `salmon`, `seal`, `polarbear`, `reindeer`, `igloo`
+3. determine players' move order
+4. set `ActualPlayer` to the first player
+5. continue to status **InPhase1-BeforeMove**
+
+status **InPhase1-BeforeMove** (prepare actual player’s move) details:
+1. instruct `ActualPlayer` to move (flip or collect)
+2. wait for move
+
+status **InPhase1-ProcessMove** (collecting tiles and building the igloo) details:
+-  receive move from `ActualPlayer` (`ClickedTile`, `Request`)
+  1. If `Request` is `RequestToFlip` to flip a face-down tile up, then
+     * -> set flag `RequestToFlip`
+     * -> flip the tile face-up 
+     * If `ClickedTile` is `reindeer` -> move the sun piece to the next position. if there is no next position (already on the final), then do not move sun
+  2. If `Request` is `CollectTiles` to collect face-up tiles from table -> set flag `RequestToCollect`
+  3. If `Request` is something else -> continue to status **InPhase1-BeforeMove**
+  4. continue to status **InPhase1-Evaluation**
+
+status **InPhase1-Evaluation** (evaluate status after move)
+1. clear evaluation flags
+2. check face-up tiles on table:
+  - determine the list of animals fleeing from any other animal ( rank order: `herring` < `salmon` < `seal` < `polarbear` < `reindeer`. An animal flees from the next higher ranked animal only, e.g. `salmon` flees from `seal`, but not from `polarbear` or from any others)
+  - If any flees -> set flag `AnimalFled`
+  - determine the list of `igloo` tiles to be removed to the board
+  - determine the list of other face-up tiles
+3. If NOT flag `AnimalFled` AND all tiles are face-up -> set flags `EndOfPhase2`, `EndOfPhase1`
+4. Else If `ClickedTile` is `reindeer` AND the sun piece is on the last position -> set flag `EndOfPhase1`
+5. If flag `EndOfPhase1`<br>
+OR flag `EndOfPhase2`<br>
+OR `ClickedTile` is `igloo`<br>
+OR flag `AnimalFled`<br>
+OR flag `RequestToCollect`<br>
+-> set flag `EndOfMove`
+6. continue to status **InPhase1-Execution**
+
+status **InPhase1-Execution** (execute actions based on evaluation)
+1. If `ClickedTile` -> wait some time for that each player memorizes the last tile flip
+2. flip tiles of fleeing animals back face-down
+3. move `igloo` tiles onto the board's 3x3 igloo and mark each tile with the player's one (of 4) meeples under its stack. If there are no meeples left, do not mark.
+4. If `EndOfMove` -> collect remaining face-up tiles into player’s stack
+5. wait some time for that each player memorizes the actions (if there was)
+6. If flag `EndOfPhase2` -> continue to status **EndOfGame**
+7. If flag `EndOfMove` -> set `ActualPlayer` to the next player
+8. If flag `EndOfPhase1` -> continue to status **BeforePhase2**
+9. Else continue to status **InPhase1-BeforeMove**
 
 
-## 3. Technologies and Tools Used
+## 3. Features Left to Implement
+
+
+## 4. Technologies and Tools Used
 
 - The project's product (the website) was written in HTML, CSS and JavaScript, utilising [Bootstrap 5.0 Beta](https://getbootstrap.com/docs/5.0/) framework (which itself uses CSS and JavaScript). Bootstrap is used for its responsive utilities. 
 - Manipulated images with program [Paint.NET](https://www.getpaint.net/). Mainly used for cropping, resizing, background removal and format conversion.
@@ -85,11 +179,11 @@ Chose font [Roboto](https://fonts.google.com/specimen/Roboto) for the headers.
 - Searched the internet to find content, documentation and solution for issues using [Google](www.google.com)'s search service.
 - connected to the internet using [Vodafone](https://n.vodafone.ie/shop/broadband.html)'s broadband service.
 
-## 4. Issues solved during development
-### 4.1 X
+## 5. Issues solved during development
+### 5.1 X
 
 
-## 5. Testing
+## 6. Testing
 
 First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/) [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now all html pages validate to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." `The script.js` validates to a couple of readibility warnings which I chose to ignore.
 
@@ -114,7 +208,7 @@ The website performs on desktop and mobile devices as intended, no responsivity 
 
 No additional bugs were discovered during the final testing.
 
-## 6. Deployment
+## 7. Deployment
 
 The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims01-lkc/](https://ruszkipista.github.io/cims01-lkc/).
 I followed [this](https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) tutorial to deploy the project on GitHub Pages, these were the steps:
@@ -134,17 +228,25 @@ If you want to deploy this project to a different hosting solution, you need to 
 After you have your local copies of these files, you copy them into the home folder of the webserver, keeping the folder structure as is.
 Just because this is a static website, you can even start up the Home page by double clicking on the `index.html` file in your local file system - effectively launching you default browser with the starting page.
 
-## 7. Credits
+## 8. Credits
+### Boardgame Designers
+* [Stefan Dorra](https://boardgamegeek.com/boardgamedesigner/13/stefan-dorra), own [website](https://dorra-spiele.de/enuk/)
+* [Manfred Reindl](https://boardgamegeek.com/boardgamedesigner/10614/manfred-reindl)
+### Boardgame Artist
+* [Alexander Jung](https://boardgamegeek.com/boardgameartist/12123/alexander-jung)
+### Boardgame Publishers
+* [Queen Games](https://boardgamegeek.com/boardgamepublisher/47/queen-games)
+* [Piatnik](https://boardgamegeek.com/boardgamepublisher/22/piatnik)
 
 ### Acknowledgements
-My inspiration for this project came from ...
+My inspiration for this project came from the assessment booklet mentioning memory game as a possible project and this board game jumped into my mind immediatelly. We played this game with our kids many times, even recently during the [pandemic](https://en.wikipedia.org/wiki/COVID-19_pandemic) lockdown.
+
 I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project.
 
-### Content
-
 ### Media
-See the source of images in the code comments. Here is the short list of sources:
-- x
+See the exact source of images in the code comments. Here is the short list of sources:
+- BoardGameGeek's [webpage](https://boardgamegeek.com/boardgame/36554/enuk) about the game, especially this [pdf](https://boardgamegeek.com/filepage/33267/english-rules-enuk),
+- my own photos of the boardgame's board, tiles, meeples
 
-## 8. Disclaimer
+## 9. Disclaimer
 The content of this website is for educational purposes only.
