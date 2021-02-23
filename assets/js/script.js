@@ -16,7 +16,9 @@ window.addEventListener('load', function () {
   gameController.play();
 });
 // reposition the sun piece after window resize or change between landscape and portrait
-window.addEventListener('resize', function () { gameViewer.setBoardPiecesPosition(); });
+window.addEventListener('resize', function () {
+  gameViewer.setBoardPiecesPosition(gameController.sunPosition, gameController.numberOfPlayers);
+});
 
 // class TILE
 //============
@@ -28,11 +30,7 @@ class Tile {
   static NAME_HERRING() { return 'herring'; }
   static NAME_IGLOO() { return 'igloo'; }  // igloo is not ranked!
   static RANKING() {
-    return [Tile.NAME_HERRING(),
-    Tile.NAME_SALMON(),
-    Tile.NAME_SEAL(),
-    Tile.NAME_POLARBEAR(),
-    Tile.NAME_REINDEER()];
+    return [Tile.NAME_HERRING(), Tile.NAME_SALMON(), Tile.NAME_SEAL(), Tile.NAME_POLARBEAR(), Tile.NAME_REINDEER()];
   }
 
   constructor(id, name, filename) {
@@ -64,7 +62,7 @@ class Tile {
           </div>
         </div>
         `;
-    tileElement.addEventListener('click', gameViewer.handleTileClick);
+    tileElement.addEventListener('click', gameController.handleTileClick);
     return tileElement;
   }
 
@@ -87,8 +85,7 @@ class Tile {
     }
   }
 
-  addToStack(playerIndex) {
-    let player = gameController.players[playerIndex];
+  addToStack(player) {
     let stackElement = document.getElementById(player.tileStackID);
     if (player.tilesInStack.length > 0) {
       stackElement.innerHTML =
@@ -141,6 +138,29 @@ class Meeple {
   }
 }
 
+// class ICON
+//============
+class Icon {
+
+  constructor(id, name, filename) {
+    this.id = id;
+    this.name = name;
+    this.filename = filename;
+  }
+
+  createElement() {
+    const imgElement = document.createElement('img');
+    imgElement.setAttribute('id', this.id);
+    imgElement.setAttribute('src', gameViewer.imagePath+this.filename);
+    imgElement.setAttribute('alt', this.name+' button');
+    imgElement.addEventListener('click', gameController.handleIconClick);    
+    return imgElement;
+  }
+
+}
+
+// class EVALUATION
+//==================
 class Evaluation {
   constructor() {
     this.toBeMovedToStack = [];
@@ -182,7 +202,9 @@ const gameViewer = {
     { filename: 'tileedge-top.png' },
   ],
 
-  iconCollectTiles: { id: 'icon-collect', filename: 'icon-collect.png', },
+  icons: [
+    { id: 'icon-collect', name: 'CollectTiles', filename: 'icon-collect.png' },
+  ],
 
   tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
 
@@ -200,7 +222,7 @@ const gameViewer = {
       [0.086, 0.73],
       [0.112, 0.835],
       [0.143, 0.935]],
-    iconCollectTopLeftCorner: [0, 0.885],
+    iconTopLeftCorners: [[0, 0.885]],
     iglooLength: 0.1355,
     igloo3x3TopLeftCorner: [0.232, 0.297],
     meepleOnBoardWidth: 0.025,
@@ -224,7 +246,7 @@ const gameViewer = {
       `url("${this.imagePath}${this.backgrounds[backgroundIndex]}")`;
   },
 
-  generateGameBoard: function (tiles, players, isTest) {
+  generateGameBoard: function (tiles, tilesOnTable, players, icons, isTest) {
     this.setBackground(0);
     // put game board in place
     let boardPiecesHTML = "";
@@ -267,24 +289,21 @@ const gameViewer = {
       boardPiecesHTML += `</div>`;
     }
 
-    // add CollectTiles icon
-    boardPiecesHTML += `<img id="${gameViewer.iconCollectTiles.id}" 
-                         src="${this.imagePath}${gameViewer.iconCollectTiles.filename}"
-                         alt="collect tiles button">`;
-
     const boardElement = document.getElementById('board');
     boardElement.innerHTML = boardPiecesHTML;
 
-    const collectElement = document.getElementById(gameViewer.iconCollectTiles.id);
-    collectElement.addEventListener('click', gameViewer.handleIconClick);
+    // add CollectTiles icon
+    for (let icon of icons) {
+      boardElement.appendChild(icon.createElement());
+    }
 
     // assemble tiles
     const tilesElement = document.getElementById('tiles');
     let tileElement;
     while (true) {
-      let tile = gameController.tiles.shift();
+      let tile = tiles.shift();
       if (tile === undefined) { break; }
-      gameController.tilesOnTable.push(tile);
+      tilesOnTable.push(tile);
       tileElement = tile.placeOnTable(false, isTest);
       tilesElement.appendChild(tileElement);
     }
@@ -300,7 +319,7 @@ const gameViewer = {
     }
   },
 
-  setBoardPiecesPosition: function () {
+  setBoardPiecesPosition: function (sunPosition, numberOfPlayers) {
     const boardElement = document.getElementById(this.boardPiece.id);
     const boardWidth = boardElement.clientWidth;
     const boardLeftOffset = boardElement.offsetLeft;
@@ -310,11 +329,11 @@ const gameViewer = {
     const sunLength = boardWidth * this.boardPiece.sunLength;
     document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
     document.documentElement.style.setProperty('--piece-sun-fromtop',
-      `${boardWidth * this.boardPiece.sunCenters[gameController.sunPosition][0] - sunLength / 2}px`);
+      `${boardWidth * this.boardPiece.sunCenters[sunPosition][0] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-fromleft',
-      `${boardLeftOffset + boardWidth * this.boardPiece.sunCenters[gameController.sunPosition][1] - sunLength / 2}px`);
+      `${boardLeftOffset + boardWidth * this.boardPiece.sunCenters[sunPosition][1] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-rotate',
-      `${gameController.sunPosition * 130}deg`);
+      `${sunPosition * 130}deg`);
     // igloo3x3 on board position
     const iglooLength = boardWidth * this.boardPiece.iglooLength;
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
@@ -329,7 +348,7 @@ const gameViewer = {
     document.documentElement.style.setProperty('--meeple-onigloo-width', `${meepleWidth * 2}px`);
     document.documentElement.style.setProperty('--tile-edge-width', `${meepleWidth * this.meeplePieces[0].count}px`);
     document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * this.boardPiece.meeplesOnBoardFromTop}px`);
-    for (let i = 0; i < gameController.players.length; i++) {
+    for (let i = 0; i < numberOfPlayers; i++) {
       document.documentElement.style.setProperty('--board-meeples-fromtop',
         `${boardWidth * this.boardPiece.meeplesOnBoardFromTop}px`);
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
@@ -337,18 +356,9 @@ const gameViewer = {
     }
     // collect icon position
     document.documentElement.style.setProperty('--icon-collect-fromtop',
-      `${boardWidth * this.boardPiece.iconCollectTopLeftCorner[0]}px`);
+      `${boardWidth * this.boardPiece.iconTopLeftCorners[0][0]}px`);
     document.documentElement.style.setProperty('--icon-collect-fromleft',
-      `${boardLeftOffset + boardWidth * this.boardPiece.iconCollectTopLeftCorner[1]}px`);
-  },
-
-  handleTileClick: function (event) {
-    let isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
-    gameController.handleTileClickOnTable(event.currentTarget.id, isClickedOnLeft);
-  },
-
-  handleIconClick: function (event) {
-    gameController.handleIconClick(event.currentTarget.id);
+      `${boardLeftOffset + boardWidth * this.boardPiece.iconTopLeftCorners[0][1]}px`);
   },
 };
 
@@ -381,11 +391,12 @@ const gameController = {
   human: null,
   players: null,
   numberOfPlayers: null,
+  icons: null,
   listenToClick: false,
 
   play: function () {
-    if (typeof this.status === 'undefined' || this.status === null) {this.status = this.statusBeforePhase1;}
-    
+    if (typeof this.status === 'undefined' || this.status === null) { this.status = this.statusBeforePhase1; }
+
     infiniteLoop: while (true) {
 
       switch (this.status) {
@@ -396,8 +407,9 @@ const gameController = {
           this.round = 0;
           this.setupPlayers();
           this.setupTiles();
-          gameViewer.generateGameBoard(this.tiles, this.players, this.isTest);
-          gameViewer.setBoardPiecesPosition();
+          this.setupIcons();
+          gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.icons, this.isTest);
+          gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
           this.whosMove = (this.isTest) ? this.human : 0;
           this.listenToClick = true;
           this.status = this.statusInPhase1BeforeMove;
@@ -484,6 +496,13 @@ const gameController = {
     if (!this.isTest) { shuffleArrayInplace(this.tiles); }
   },
 
+  setupIcons: function () {
+    this.icons = [];
+    for (let icon of gameViewer.icons) {
+      this.icons.push(new Icon(icon.id, icon.name, icon.filename));
+    }
+  },
+
   findTileOnTable: function (idOnTable) {
     // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
     let tile = this.tilesOnTable.find(function (element, index) {
@@ -504,7 +523,7 @@ const gameController = {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
       this.players[this.whosMove].tilesInStack.push(tile);
-      tile.addToStack(this.whosMove);
+      tile.addToStack(this.players[this.whosMove]);
       gameViewer.setVisibilityOfElement(tile.idOnTable, false);
     }
   },
@@ -530,37 +549,37 @@ const gameController = {
     }
   },
 
-  handleTileClickOnTable: function (tileIdOnTable, isClickedOnLeft) {
-    if (this.whosMove !== this.human || !this.listenToClick) {
+  handleTileClick: function (event) {
+    if (gameController.whosMove !== gameController.human || !gameController.listenToClick) {
       return;
     }
-    const tile = this.findTileOnTable(tileIdOnTable);
+    const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
+    const tile = gameController.findTileOnTable(event.currentTarget.id);
     if (tile.isFaceUp === false) {
       tile.flipOnTable(isClickedOnLeft);
-      let evaluationResult = this.evaluateTilesOnTablePhase1(tile, false);
+      let evaluationResult = gameController.evaluateTilesOnTablePhase1(tile, false);
       if (evaluationResult.isEndOfMove) {
-        this.listenToClick = false;
+        gameController.listenToClick = false;
         setTimeout(function () {
           gameController.listenToClick = true;
           gameController.actOnEvaluation(evaluationResult);
         }, gameViewer.tileBack.flipTimeMS * 2);
       } else {
-        this.actOnEvaluation(evaluationResult);
+        gameController.actOnEvaluation(evaluationResult);
       }
-
     }
   },
 
-  handleIconClick: function (iconID) {
-    if (this.whosMove !== this.human) {
+  handleIconClick: function (event) {
+    if (gameController.whosMove !== gameController.human) {
       return;
     }
     // if clicked on the CollecTiles icon
-    if (iconID === gameViewer.iconCollectTiles.id
+    if (event.currentTarget.id === gameViewer.icons[0].id
       // and it is the Human player's move
-      && this.whosMove === this.human) {
-      let evaluationResult = this.evaluateTilesOnTablePhase1(null, true);
-      this.actOnEvaluation(evaluationResult);
+      && gameController.whosMove === gameController.human) {
+      let evaluationResult = gameController.evaluateTilesOnTablePhase1(null, true);
+      gameController.actOnEvaluation(evaluationResult);
     }
   },
 
@@ -628,7 +647,7 @@ const gameController = {
     if (evaluation.isSunToBeMoved
       && this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
       this.sunPosition++;
-      gameViewer.setBoardPiecesPosition();
+      gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
     }
 
     if (evaluation.isEndOfMove) {
