@@ -6,22 +6,21 @@
 :root { 
     --tile-normal-side: 6rem;
 }
+header {
+  max-width: 1200px;
+  margin: 0 auto;
+}
 body {
   background: url("") center top / cover;
-}
-header {
   text-align: center;
 }
 #title {
-  display: inline-block;
   width:100%;
   height: 10vh;
   background: url("../img/enuk-title.png") center / contain no-repeat;
 }
-
 #board {
   position: relative;
-  text-align: center;
 }
 #piece-board {
   display: inline-block;
@@ -35,12 +34,6 @@ header {
   left: var(--piece-sun-fromleft);
   transform: rotate(var(--piece-sun-rotate));
   transition: top 2s linear, left 2s linear, transform 2s linear;
-}
-#icon-collect-tiles {
-  position: absolute;
-  width: var(--piece-sun-length);
-  top: var(--icon-collect-tiles-fromtop);
-  left: var(--icon-collect-tiles-fromleft);
 }
 .layer-onigloo {
   position: absolute;
