@@ -157,8 +157,6 @@ class Evaluation {
 const gameViewer = {
   imagePath: './assets/img/',
 
-  backgrounds: ['enuk-background-phase1.jpg', 'enuk-background-phase2.jpg'],
-
   tileFaces: [
     { name: Tile.NAME_REINDEER(), filename: 'tileface-reindeer.jpg', count: 9 },
     { name: Tile.NAME_POLARBEAR(), filename: 'tileface-polarbear.jpg', count: 14 },
@@ -211,16 +209,16 @@ const gameViewer = {
   sunPiece: { id: 'piece-sun', filename: 'piece-sun.png' },
 
   meeplePieces: [
-    { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
-    { name: 'red', filenameHuman: 'piece-meeple-red.png', filenameMachine: 'piece-laptop-red.png', count: 4 },
-    { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', count: 4 },
-    { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', count: 4 },
-    { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
+    { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', background: 'enuk-background-blue.jpg', count: 4 },
+    { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', background: 'enuk-background-green.jpg', count: 4 },
+    { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', background: 'enuk-background-orange.jpg', count: 4 },
+    { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', background: 'enuk-background-purple.jpg', count: 4 },
+    { name: 'red', filenameHuman: 'piece-meeple-red.png', filenameMachine: 'piece-laptop-red.png', background: 'enuk-background-red.jpg', count: 4 },
   ],
 
-  setBackground: function (backgroundIndex) {
+  setBackground: function (backgroundFile) {
     const bodyElement = document.getElementsByTagName('body')[0];
-    bodyElement.style.backgroundImage = `url("${this.imagePath}${this.backgrounds[backgroundIndex]}")`;
+    bodyElement.style.backgroundImage = `url("${this.imagePath}${backgroundFile}")`;
   },
 
   generateGameBoard: function (tiles, tilesOnTable, players, isTest) {
@@ -398,12 +396,12 @@ const gameController = {
           gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.isTest);
           gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
           this.whosMove = (this.isTest) ? this.human : 0;
-          gameViewer.setBackground(0);
           this.listenToClick = true;
           this.status = this.statusInPhase1BeforeMove;
           break;
 
         case this.statusInPhase1BeforeMove:
+          gameViewer.setBackground(this.players[this.whosMove].background);
           break infiniteLoop;
 
         case this.statusInPhase1ProcessMove:
@@ -416,7 +414,6 @@ const gameController = {
           break;
 
         case this.statusBeforePhase2:
-          gameViewer.setBackground(1);
           break;
 
         case this.statusInPhase2CollectOneIgloo:
@@ -460,6 +457,7 @@ const gameController = {
         tileStackID: `tiles-stack-player${i}`,
         tilesInStack: [],
       };
+      this.players[i].background = gameViewer.meeplePieces[i].background;
       // generate Meeples
       for (let j = 0; j < gameViewer.meeplePieces[i].count; j++) {
         this.players[i].meeples[j] = new Meeple(`player${i}-meeple${j}`,
