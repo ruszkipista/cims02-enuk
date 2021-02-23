@@ -36,11 +36,11 @@ header {
   transform: rotate(var(--piece-sun-rotate));
   transition: top 2s linear, left 2s linear, transform 2s linear;
 }
-#icon-collect {
+#icon-collect-tiles {
   position: absolute;
   width: var(--piece-sun-length);
-  top: var(--icon-collect-fromtop);
-  left: var(--icon-collect-fromleft);
+  top: var(--icon-collect-tiles-fromtop);
+  left: var(--icon-collect-tiles-fromleft);
 }
 .layer-onigloo {
   position: absolute;

@@ -17,7 +17,7 @@ window.addEventListener('load', function () {
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () {
-  gameViewer.setBoardPiecesPosition(gameController.sunPosition, gameController.numberOfPlayers);
+  gameViewer.setBoardPiecesPosition(gameController.sunPosition, gameController.numberOfPlayers, gameController.icons);
 });
 
 // class TILE
@@ -142,18 +142,21 @@ class Meeple {
 //============
 class Icon {
 
-  constructor(id, name, filename) {
+  constructor(id, name, filename, clickable, parentId, topLeftCorner) {
     this.id = id;
     this.name = name;
     this.filename = filename;
+    this.clickable = clickable;
+    this.parentId = parentId;
+    this.topLeftCorner = topLeftCorner;
   }
 
   createElement() {
     const imgElement = document.createElement('img');
     imgElement.setAttribute('id', this.id);
-    imgElement.setAttribute('src', gameViewer.imagePath+this.filename);
-    imgElement.setAttribute('alt', this.name+' button');
-    imgElement.addEventListener('click', gameController.handleIconClick);    
+    imgElement.setAttribute('src', gameViewer.imagePath + this.filename);
+    imgElement.setAttribute('alt', this.name + ' button');
+    imgElement.addEventListener('click', gameController.handleIconClick);
     return imgElement;
   }
 
@@ -203,7 +206,7 @@ const gameViewer = {
   ],
 
   icons: [
-    { id: 'icon-collect', name: 'CollectTiles', filename: 'icon-collect.png' },
+    { name: 'collect-tiles', filename: 'icon-collect-tiles.png', clickable: true, parentId: 'piece-board', topLeftCorner: [0, 0.885] },
   ],
 
   tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
@@ -222,7 +225,6 @@ const gameViewer = {
       [0.086, 0.73],
       [0.112, 0.835],
       [0.143, 0.935]],
-    iconTopLeftCorners: [[0, 0.885]],
     iglooLength: 0.1355,
     igloo3x3TopLeftCorner: [0.232, 0.297],
     meepleOnBoardWidth: 0.025,
@@ -230,7 +232,7 @@ const gameViewer = {
     meeplesOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
   },
 
-  sunPiece: { id: 'piece-sun', filename: 'piece-sun.png', count: 1 },
+  sunPiece: { id: 'piece-sun', filename: 'piece-sun.png' },
 
   meeplePieces: [
     { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', count: 4 },
@@ -319,7 +321,7 @@ const gameViewer = {
     }
   },
 
-  setBoardPiecesPosition: function (sunPosition, numberOfPlayers) {
+  setBoardPiecesPosition: function (sunPosition, numberOfPlayers, icons) {
     const boardElement = document.getElementById(this.boardPiece.id);
     const boardWidth = boardElement.clientWidth;
     const boardLeftOffset = boardElement.offsetLeft;
@@ -354,11 +356,12 @@ const gameViewer = {
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
         `${boardLeftOffset + boardWidth * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
     }
-    // collect icon position
-    document.documentElement.style.setProperty('--icon-collect-fromtop',
-      `${boardWidth * this.boardPiece.iconTopLeftCorners[0][0]}px`);
-    document.documentElement.style.setProperty('--icon-collect-fromleft',
-      `${boardLeftOffset + boardWidth * this.boardPiece.iconTopLeftCorners[0][1]}px`);
+    // icon position
+    for (let icon of icons) {
+      document.documentElement.style.setProperty(`--${icon.id}-fromtop`, `${boardWidth * icon.topLeftCorner[0]}px`);
+      document.documentElement.style.setProperty(`--${icon.id}-fromleft`,
+        `${boardLeftOffset + boardWidth * icon.topLeftCorner[1]}px`);
+    }
   },
 };
 
@@ -409,7 +412,7 @@ const gameController = {
           this.setupTiles();
           this.setupIcons();
           gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.icons, this.isTest);
-          gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
+          gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers, this.icons);
           this.whosMove = (this.isTest) ? this.human : 0;
           this.listenToClick = true;
           this.status = this.statusInPhase1BeforeMove;
@@ -499,7 +502,7 @@ const gameController = {
   setupIcons: function () {
     this.icons = [];
     for (let icon of gameViewer.icons) {
-      this.icons.push(new Icon(icon.id, icon.name, icon.filename));
+      this.icons.push(new Icon('icon-'+icon.name, icon.name, icon.filename, icon.clickable, icon.parentId, icon.topLeftCorner));
     }
   },
 
@@ -575,7 +578,7 @@ const gameController = {
       return;
     }
     // if clicked on the CollecTiles icon
-    if (event.currentTarget.id === gameViewer.icons[0].id
+    if (event.currentTarget.id === gameController.icons[0].id
       // and it is the Human player's move
       && gameController.whosMove === gameController.human) {
       let evaluationResult = gameController.evaluateTilesOnTablePhase1(null, true);

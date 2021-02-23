@@ -1,5 +1,5 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
-This is an interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser; my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+An interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser. This project is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
 
 [![Enuk boardgame during play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
 
