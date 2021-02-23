@@ -1,7 +1,7 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
-This is an interactive webpage to play [Enuk boardgame](https://boardgamegeek.com/boardgame/36554/enuk) in a browser. It is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+This is an interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser. It is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
 
-![Enuk boardgame during play](./assets/doc/enuk-game-state.jpg)
+[![Enuk boardgame during play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
 
 **Game Classification**
 * Category
@@ -299,7 +299,7 @@ Just because this is a static website, you can even start up the Home page by do
 
 ## 8. Credits
 ### Boardgame Designers
-* [Stefan Dorra](https://boardgamegeek.com/boardgamedesigner/13/stefan-dorra), own [website](https://dorra-spiele.de/enuk/)
+* [Stefan Dorra](https://boardgamegeek.com/boardgamedesigner/13/stefan-dorra)
 * [Manfred Reindl](https://boardgamegeek.com/boardgamedesigner/10614/manfred-reindl)
 ### Boardgame Artist
 * [Alexander Jung](https://boardgamegeek.com/boardgameartist/12123/alexander-jung)
