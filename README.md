@@ -1,5 +1,5 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
-This is an interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser. It is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+This is an interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser; my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
 
 [![Enuk boardgame during play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
 
@@ -128,7 +128,7 @@ The following statuses represent the stages the game play goes through from rend
   3. If `Request` is something else -> continue to status **InPhase1-BeforeMove**
   4. continue to status <a href="#D">**InPhase1-Evaluation**</a>
 
-**D.** status <a id="D">**InPhase1-Evaluation**</a> (evaluate status after move)
+**D.** status <a id="D">**InPhase1-Evaluation**</a> (evaluate game state after move)
 1. clear evaluation flags
 2. check face-up tiles on table:
     - determine the list of animals fleeing from any other animal<br>
@@ -192,7 +192,7 @@ OR flag `RequestToCollect`<br>
 3. If `Declaration` is set -> continue to status <a href="#I">**InPhase2-BeforeMove**</a>
 4. Else -> continue to status <a href="#H">**InPhase2-BeforeDeclaration**</a>
 
-**K.** status <a id="K">**InPhase2-Evaluation**</a> (evaluate status after move)
+**K.** status <a id="K">**InPhase2-Evaluation**</a> (evaluate game state after move)
 1. clear evaluation flags
 2. If all tiles on table are face-up<br>
 	OR `ClickedElement` tile is the last `reindeer`<br>
@@ -211,7 +211,7 @@ OR flag `RequestToCollect`<br>
 5. Else If flag `EndOfMove` -> set `ActualPlayer` to the next player
 6. continue to status <a href="#G">**InPhase2-CollectOneIgloo**</a>
 
-**M.** status <a id="M">**EndOfGame**</a> details:
+**M.** status <a id="M">**EndOfGame**</a>
 1. Announce winner (most collected tiles)
 2. Allow free tile flipping on tiles remaining on the table
 3. Offer to restart the game

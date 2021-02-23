@@ -46,7 +46,7 @@ class Tile {
     this.idMeepleOnIgloo = `${(name === Tile.NAME_IGLOO()) ? 'meeple-on-' + id : ''}`;
   }
 
-  placeOnTable(isFaceUp) {
+  placeOnTable(isFaceUp, isTest) {
     this.isFaceUp = isFaceUp;
     const tileElement = document.createElement('div');
     tileElement.classList.add('tile');
@@ -57,7 +57,7 @@ class Tile {
             <img src="${gameViewer.imagePath}${gameViewer.tileBack.filename}" alt="game tile back">
           </div>
           <div class="tile-front">
-            ${(gameController.isTest) ? this.name : ""}
+            ${(isTest) ? this.name : ""}
           </div>
           <div class="tile-back">
             <img src="${gameViewer.imagePath}${this.filename}" alt="game tile ${this.name}">
@@ -218,14 +218,14 @@ const gameViewer = {
     { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', count: 4 },
   ],
 
-  setBackground: function () {
+  setBackground: function (backgroundIndex) {
     const bodyElement = document.getElementsByTagName('body')[0];
     bodyElement.style.backgroundImage =
-      `url("${this.imagePath}${this.backgrounds[(gameController.status === gameController.PHASE2) ? 1 : 0]}")`;
+      `url("${this.imagePath}${this.backgrounds[backgroundIndex]}")`;
   },
 
-  generateGameBoard: function () {
-    this.setBackground();
+  generateGameBoard: function (tiles, players, isTest) {
+    this.setBackground(0);
     // put game board in place
     let boardPiecesHTML = "";
     // add BOARD to game space
@@ -236,7 +236,7 @@ const gameViewer = {
 
     // add hidden IGLOO TILES to the middle of the board
     boardPiecesHTML += `<div id="tiles-onigloo" class="layer-onigloo">`;
-    for (let tile of gameController.tiles) {
+    for (let tile of tiles) {
       if (tile.name === Tile.NAME_IGLOO()) {
         boardPiecesHTML += tile.placeOnIgloo();
       }
@@ -245,7 +245,7 @@ const gameViewer = {
 
     // add hidden MEEPLES on top of igloo tiles - without src and alt
     boardPiecesHTML += `<div id="meeples-onigloo" class="layer-onigloo">`;
-    for (let tile of gameController.tiles) {
+    for (let tile of tiles) {
       if (tile.name === Tile.NAME_IGLOO()) {
         boardPiecesHTML += `<div class="tile-onigloo"><img 
                                 id="${tile.idMeepleOnIgloo}"
@@ -256,12 +256,12 @@ const gameViewer = {
     boardPiecesHTML += `</div>`;
 
     // add TILE STACKS and MEEPLES for all players on the board
-    for (let i = 0; i < gameController.players.length; i++) {
-      boardPiecesHTML += `<div id="${gameController.players[i].tileStackID}" class="tiles-stack tiles-stack-player${i}"></div>`;
+    for (let i = 0; i < players.length; i++) {
+      boardPiecesHTML += `<div id="${players[i].tileStackID}" class="tiles-stack tiles-stack-player${i}"></div>`;
       boardPiecesHTML += `<div id="meeples-player${i}" 
                                class="meeples-group tiles-stack-player${i}" 
-                               style="border-top-color:${gameController.players[i].name}">`;
-      for (let meeple of gameController.players[i].meeples) {
+                               style="border-top-color:${players[i].name}">`;
+      for (let meeple of players[i].meeples) {
         boardPiecesHTML += meeple.placeOnBoard();
       }
       boardPiecesHTML += `</div>`;
@@ -285,7 +285,7 @@ const gameViewer = {
       let tile = gameController.tiles.shift();
       if (tile === undefined) { break; }
       gameController.tilesOnTable.push(tile);
-      tileElement = tile.placeOnTable(false);
+      tileElement = tile.placeOnTable(false, isTest);
       tilesElement.appendChild(tileElement);
     }
 
@@ -355,10 +355,21 @@ const gameViewer = {
 // object GAMECONTROLLER
 //======================
 const gameController = {
-  PHASE1: 'A',
-  PHASE1ENDED: 'B',
-  PHASE2: 'C',
-  PHASE2ENDED: 'D',
+  // statuses
+  statusBeforePhase1: 'A',
+  statusInPhase1BeforeMove: 'B',
+  statusInPhase1ProcessMove: 'C',
+  statusInPhase1Evaluation: 'D',
+  statusInPhase1Execution: 'E',
+  statusBeforePhase2: 'F',
+  statusInPhase2CollectOneIgloo: 'G',
+  statusInPhase2BeforeDeclaration: 'H',
+  statusInPhase2BeforeMove: 'I',
+  statusInPhase2ProcessMove: 'J',
+  statusInPhase2Evaluation: 'K',
+  statusInPhase2Execution: 'L',
+  statusEndOfGame: 'M',
+  statusEndOfGameProcessMove: 'N',
 
   isTest: null,
   status: null,
@@ -369,42 +380,79 @@ const gameController = {
   whosMove: null,
   human: null,
   players: null,
+  numberOfPlayers: null,
   listenToClick: false,
 
   play: function () {
-    switch (this.status) {
-      case undefined || null:
-        this.setupGamePhase1(4, true);
-        break;
+    if (typeof this.status === 'undefined' || this.status === null) {this.status = this.statusBeforePhase1;}
+    
+    infiniteLoop: while (true) {
 
-      case this.PHASE1:
-        break;
+      switch (this.status) {
+        case this.statusBeforePhase1:
+          this.isTest = true;
+          this.numberOfPlayers = 4;
+          this.sunPosition = 0;
+          this.round = 0;
+          this.setupPlayers();
+          this.setupTiles();
+          gameViewer.generateGameBoard(this.tiles, this.players, this.isTest);
+          gameViewer.setBoardPiecesPosition();
+          this.whosMove = (this.isTest) ? this.human : 0;
+          this.listenToClick = true;
+          this.status = this.statusInPhase1BeforeMove;
+          break;
 
-      case this.PHASE2:
-        break;
-    }
+        case this.statusInPhase1BeforeMove:
+          break infiniteLoop;
+
+        case this.statusInPhase1ProcessMove:
+          break;
+
+        case this.statusInPhase1Evaluation:
+          break;
+
+        case this.statusInPhase1Execution:
+          break;
+
+        case this.statusBeforePhase2:
+          gameViewer.setBackground(1);
+          break;
+
+        case this.statusInPhase2CollectOneIgloo:
+          break;
+
+        case this.statusInPhase2BeforeDeclaration:
+          break;
+
+        case this.statusInPhase2BeforeMove:
+          break;
+
+        case this.statusInPhase2ProcessMove:
+          break;
+
+        case this.statusInPhase2Evaluation:
+          break;
+
+        case this.statusInPhase2Execution:
+          break;
+
+        case this.statusEndOfGame:
+          break;
+
+        case this.statusEndOfGameProcessMove:
+          break;
+      }
+
+    };
+
   },
 
-  setupGamePhase1: function (numberOfPlayers, isTest) {
-    this.status = this.PHASE1;
-    this.isTest = isTest;
-    this.sunPosition = 0;
-    this.round = 0;
-    this.setupPlayers(numberOfPlayers);
-    this.setupTiles(isTest);
-    gameViewer.generateGameBoard();
-    gameViewer.setBoardPiecesPosition();
-    if (isTest) { this.whosMove = this.human; }
-    else { this.whosMove = 0; }
-    this.listenToClick = true;
-  },
-
-  setupPlayers: function (numberOfPlayers) {
-    this.human = getRandomInt(numberOfPlayers);
-
+  setupPlayers: function () {
+    this.human = getRandomInt(this.numberOfPlayers);
     this.players = [];
     shuffleArrayInplace(gameViewer.meeplePieces);
-    for (let i = 0; i < numberOfPlayers; i++) {
+    for (let i = 0; i < this.numberOfPlayers; i++) {
       this.players[i] = {
         name: gameViewer.meeplePieces[i].name,
         meeples: [],
@@ -415,7 +463,7 @@ const gameController = {
       // generate Meeples
       for (let j = 0; j < gameViewer.meeplePieces[i].count; j++) {
         this.players[i].meeples[j] = new Meeple(`player${i}-meeple${j}`,
-          `meeple-${gameController.players[i].name}`,
+          `meeple-${this.players[i].name}`,
           (i === this.human) ? gameViewer.meeplePieces[i].filenameHuman : gameViewer.meeplePieces[i].filenameMachine);
       }
     }
@@ -491,13 +539,13 @@ const gameController = {
       tile.flipOnTable(isClickedOnLeft);
       let evaluationResult = this.evaluateTilesOnTablePhase1(tile, false);
       if (evaluationResult.isEndOfMove) {
-        gameController.listenToClick = false;
+        this.listenToClick = false;
         setTimeout(function () {
           gameController.listenToClick = true;
           gameController.actOnEvaluation(evaluationResult);
         }, gameViewer.tileBack.flipTimeMS * 2);
       } else {
-        gameController.actOnEvaluation(evaluationResult);
+        this.actOnEvaluation(evaluationResult);
       }
 
     }
@@ -518,9 +566,6 @@ const gameController = {
 
   evaluateTilesOnTablePhase1: function (clickedTile, isPlayerWantToCollect) {
     let evaluation = new Evaluation();
-
-    if (this.status !== this.PHASE1) { return evaluation; }
-
     let toBeMovedToStack = new Set();
     let toBeTurnedDown = new Set();
 
@@ -584,11 +629,6 @@ const gameController = {
       && this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
       this.sunPosition++;
       gameViewer.setBoardPiecesPosition();
-    }
-
-    if (evaluation.isEndOfPhase1) {
-      this.status = this.PHASE1ENDED;
-      gameViewer.setBackground();
     }
 
     if (evaluation.isEndOfMove) {
