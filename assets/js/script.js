@@ -359,8 +359,7 @@ const gameViewer = {
     // icon position
     for (let icon of icons) {
       document.documentElement.style.setProperty(`--${icon.id}-fromtop`, `${boardWidth * icon.topLeftCorner[0]}px`);
-      document.documentElement.style.setProperty(`--${icon.id}-fromleft`,
-        `${boardLeftOffset + boardWidth * icon.topLeftCorner[1]}px`);
+      document.documentElement.style.setProperty(`--${icon.id}-fromleft`,`${boardLeftOffset + boardWidth * icon.topLeftCorner[1]}px`);
     }
   },
 };
@@ -650,7 +649,7 @@ const gameController = {
     if (evaluation.isSunToBeMoved
       && this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
       this.sunPosition++;
-      gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
+      gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers, this.icons);
     }
 
     if (evaluation.isEndOfMove) {
