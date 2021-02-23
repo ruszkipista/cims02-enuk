@@ -188,8 +188,19 @@ const gameViewer = {
   boardPiece: {
     id: 'piece-board',
     name: 'enuk-board-front.jpg',
-    sunLength: 0.08556,
-    sunCenters: [
+    iglooLength: 0.1355,
+    igloo3x3TopLeftCorner: [0.232, 0.297],
+    meepleOnBoardWidth: 0.025,
+    meeplesOnBoardFromTop: 0.65,
+    meeplesOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
+  },
+
+  sunPiece: { id: 'piece-sun', filename: 'piece-sun.png', length: 0.08556 },
+
+  sunPositions: {
+    id: 'piece-sun-positions',
+    filename: 'enuk-sun-positions.png',
+    centers: [
       [0.146, 0.0728],
       [0.115, 0.185],
       [0.09, 0.291],
@@ -199,14 +210,7 @@ const gameViewer = {
       [0.086, 0.73],
       [0.112, 0.835],
       [0.143, 0.935]],
-    iglooLength: 0.1355,
-    igloo3x3TopLeftCorner: [0.232, 0.297],
-    meepleOnBoardWidth: 0.025,
-    meeplesOnBoardFromTop: 0.65,
-    meeplesOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
   },
-
-  sunPiece: { id: 'piece-sun', filename: 'piece-sun.png' },
 
   meeplePieces: [
     { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', background: 'enuk-background-blue.jpg', count: 4 },
@@ -312,12 +316,12 @@ const gameViewer = {
     // flip transition time
     document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.flipTimeMS}ms`);
     // sun piece position
-    const sunLength = boardWidth * this.boardPiece.sunLength;
+    const sunLength = boardWidth * this.sunPiece.length;
     document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
     document.documentElement.style.setProperty('--piece-sun-fromtop',
-      `${boardWidth * this.boardPiece.sunCenters[sunPosition][0] - sunLength / 2}px`);
+      `${boardWidth * this.sunPositions.centers[sunPosition][0] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-fromleft',
-      `${boardLeftOffset + boardWidth * this.boardPiece.sunCenters[sunPosition][1] - sunLength / 2}px`);
+      `${boardLeftOffset + boardWidth * this.sunPositions.centers[sunPosition][1] - sunLength / 2}px`);
     document.documentElement.style.setProperty('--piece-sun-rotate',
       `${sunPosition * 130}deg`);
     // igloo3x3 on board position
@@ -605,7 +609,7 @@ const gameController = {
 
     // Phase_1 ends if
     // last tile is a reindeer AND the sun reached the last place
-    if (evaluation.isSunToBeMoved && this.sunPosition === gameViewer.boardPiece.sunCenters.length - 2) {
+    if (evaluation.isSunToBeMoved && this.sunPosition === gameViewer.sunPositions.centers.length - 2) {
       evaluation.isEndOfPhase1 = true;
     }
     // move ends if
@@ -624,7 +628,7 @@ const gameController = {
 
   actOnEvaluation: function (evaluation) {
     if (evaluation.isSunToBeMoved
-      && this.sunPosition < gameViewer.boardPiece.sunCenters.length - 1) {
+      && this.sunPosition < gameViewer.sunPositions.centers.length - 1) {
       this.sunPosition++;
       gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
     }

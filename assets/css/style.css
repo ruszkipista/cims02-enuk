@@ -1,14 +1,23 @@
- div {
+ div, body, header, main {
      margin: 0;
      padding: 0;
  }
  /* GLOBAL VARIABLES */
 :root { 
     --tile-normal-side: 6rem;
+    --header-height: 10vh;
 }
 header {
   max-width: 1200px;
+  height: var(--header-height);
   margin: 0 auto;
+}
+#sun-positions {
+  position: relative;
+  height: var(--header-height);
+  background: url("../img/enuk-sun-positions.png") center / contain no-repeat;
+  top: calc(-1 * var(--header-height));
+  opacity: 50%;
 }
 body {
   background: url("") center top / cover;
