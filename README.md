@@ -1,5 +1,7 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
-Interactive website to play [Enuk](https://boardgamegeek.com/boardgame/36554/enuk) boardgame in the browser. This project is the second milestone in obtaining a [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+This is an interactive webpage to play [Enuk boardgame](https://boardgamegeek.com/boardgame/36554/enuk) in a browser. It is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
+
+![Enuk boardgame during play](./assets/doc/enuk-game-state.jpg)
 
 **Game Classification**
 * Category
