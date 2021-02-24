@@ -157,6 +157,8 @@ class Evaluation {
 const gameViewer = {
   imagePath: './assets/img/',
 
+  numberOfSunPositions: 9,
+
   tileFaces: [
     { name: Tile.NAME_REINDEER(), filename: 'tileface-reindeer.jpg', count: 9 },
     { name: Tile.NAME_POLARBEAR(), filename: 'tileface-polarbear.jpg', count: 14 },
@@ -180,7 +182,9 @@ const gameViewer = {
   ],
 
   icons: [
-    { name: 'collect-tiles', filename: 'icon-collect-tiles.png', clickable: true, parentId: 'title', height: '9vh', topLeftCorner: [0, 0.885] },
+    { name: 'collect-tiles', count: 1, filename: 'icon-collect-tiles.png', clickable: true, parentId: 'title', height: 0.08, leftTopCorners: [[0.885, 0]] },
+    { name: 'sun-position', count: 9, filename: 'icon-sun-position.png', clickable: false, parentId: 'title', height: 0.05, leftTopCorners: [] },
+    { name: 'piece-sun', count: 1, filename: 'piece-sun.png', clickable: false, parentId: 'title', height: 0.05, leftTopCorners: [] },
   ],
 
   tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
@@ -193,23 +197,6 @@ const gameViewer = {
     meepleOnBoardWidth: 0.025,
     meeplesOnBoardFromTop: 0.65,
     meeplesOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
-  },
-
-  sunPiece: { id: 'piece-sun', filename: 'piece-sun.png', length: 0.08556 },
-
-  sunPositions: {
-    id: 'piece-sun-positions',
-    filename: 'enuk-sun-positions.png',
-    centers: [
-      [0.146, 0.0728],
-      [0.115, 0.185],
-      [0.09, 0.291],
-      [0.074, 0.404],
-      [0.068, 0.51],
-      [0.07, 0.622],
-      [0.086, 0.73],
-      [0.112, 0.835],
-      [0.143, 0.935]],
   },
 
   meeplePieces: [
@@ -225,14 +212,49 @@ const gameViewer = {
     bodyElement.style.backgroundImage = `url("${this.imagePath}${backgroundFile}")`;
   },
 
+  calculateSunPositions: function (rectWidth, rectHeight, iconSideLength, numberOfPositions) {
+    sunPositions = [];
+    const halfIconSideLength = iconSideLength / 2;
+
+    // calculate r radius
+    // learnt about Math.pow() here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/pow
+    const r = Math.pow(rectWidth - iconSideLength, 2) / 8 / (rectHeight - iconSideLength) + (rectHeight - iconSideLength) / 2;
+    // calculate angle between 2 adjacent positions
+    // learnt about Math.asin() here: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/asin
+    const opposite = (rectWidth - iconSideLength) / 2;
+    const hypotenuse = r;
+    const angleStartToFinish = 2 * Math.asin(opposite / hypotenuse);
+    const angleOnePos = angleStartToFinish / (numberOfPositions - 1);
+
+    // learnt about rotation here: https://math.stackexchange.com/questions/270194/how-to-find-the-vertices-angle-after-rotation
+    // rotate point (x,y) into (x′,y′) about point (p,q) counterclockwise by angle θ
+    // x′ = (x−p)cos(θ) − (y−q)sin(θ) + p
+    // y′ = (x−p)sin(θ) + (y−q)cos(θ) + q
+
+    // calculate rotation center (p,q)
+    p = rectWidth / 2;
+    q = iconSideLength / 2 + r;
+    // set up first position (left hand side)
+    let x0 = iconSideLength / 2;
+    let y0 = rectHeight - iconSideLength / 2;
+    // store the icon's top-left corner as (distance from Left side, distance from Top)
+    sunPositions.push([(x0 - halfIconSideLength) / rectWidth, (y0 - halfIconSideLength) / rectWidth]);
+    // calculate rest of the positions relative to the first positon by increasing the angle
+    let angle = 0;
+    for (let i = 1; i < numberOfPositions; i++) {
+      angle += angleOnePos;
+      x = (x0 - p) * Math.cos(angle) - (y0 - q) * Math.sin(angle) + p;
+      y = (x0 - p) * Math.sin(angle) + (y0 - q) * Math.cos(angle) + q;
+      sunPositions.push([(x - halfIconSideLength) / rectWidth, (y - halfIconSideLength) / rectWidth]);
+    }
+    return sunPositions;
+  },
+
   generateGameBoard: function (tiles, tilesOnTable, players, isTest) {
     // put game board in place
     let boardPiecesHTML = "";
     // add BOARD to game space
     boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
-
-    // addd SUN piece to the top of the board
-    boardPiecesHTML += `<img id="${this.sunPiece.id}" src="${this.imagePath}${this.sunPiece.filename}" alt="game piece sun">`;
 
     // add hidden IGLOO TILES to the middle of the board
     boardPiecesHTML += `<div id="tiles-onigloo" class="layer-onigloo">`;
@@ -272,19 +294,26 @@ const gameViewer = {
 
     // add icons
     for (let icon of this.icons) {
-      icon.id = 'icon-' + icon.name;
-      const iconElement = document.createElement('img');
-      iconElement.setAttribute('id', icon.id);
-      iconElement.setAttribute('src', this.imagePath + icon.filename);
-      iconElement.setAttribute('alt', icon.name + ' button');
-      iconElement.addEventListener('click', gameController.handleIconClick);
-      iconElement.style.position = 'absolute';
-      iconElement.style.height = icon.height;
-      iconElement.style.top = `var(--${icon.id}-fromtop)`;
-      iconElement.style.left = `var(--${icon.id}-fromleft)`;
-      // append icon to parent
+      // grab parent
       const parentElement = document.getElementById(icon.parentId);
-      parentElement.appendChild(iconElement);
+      icon.id = `icon-${icon.name}`;
+      for (let i = 0; i < icon.count; i++) {
+        const iconElement = document.createElement('img');
+        iconElement.setAttribute('id', `${icon.id}${i}`);
+        iconElement.setAttribute('src', this.imagePath + icon.filename);
+        if (icon.clickable) {
+          iconElement.addEventListener('click', gameController.handleIconClick);
+          iconElement.setAttribute('alt', icon.name + ' button');
+        } else {
+          iconElement.setAttribute('alt', icon.name + ' icon');
+        }
+        iconElement.classList.add('icon-position');
+        if (icon.name === 'sun-position') {
+          iconElement.style.opacity = '50%';
+        }
+        // append icon to parent
+        parentElement.appendChild(iconElement);
+      }
     }
 
     // assemble tiles
@@ -311,19 +340,10 @@ const gameViewer = {
 
   setBoardPiecesPosition: function (sunPosition, numberOfPlayers) {
     const boardElement = document.getElementById(this.boardPiece.id);
-    const boardWidth = boardElement.clientWidth;
-    const boardLeftOffset = boardElement.offsetLeft;
+    let boardWidth = boardElement.clientWidth;
+    let boardLeftOffset = boardElement.offsetLeft;
     // flip transition time
     document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.flipTimeMS}ms`);
-    // sun piece position
-    const sunLength = boardWidth * this.sunPiece.length;
-    document.documentElement.style.setProperty('--piece-sun-length', `${sunLength}px`);
-    document.documentElement.style.setProperty('--piece-sun-fromtop',
-      `${boardWidth * this.sunPositions.centers[sunPosition][0] - sunLength / 2}px`);
-    document.documentElement.style.setProperty('--piece-sun-fromleft',
-      `${boardLeftOffset + boardWidth * this.sunPositions.centers[sunPosition][1] - sunLength / 2}px`);
-    document.documentElement.style.setProperty('--piece-sun-rotate',
-      `${sunPosition * 130}deg`);
     // igloo3x3 on board position
     const iglooLength = boardWidth * this.boardPiece.iglooLength;
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
@@ -344,10 +364,28 @@ const gameViewer = {
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
         `${boardLeftOffset + boardWidth * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
     }
-    // icon position
+    // icon positions
+    let element = null;
+    let leftTopCorner = null;
+    let leftTopCorners = null;
     for (let icon of this.icons) {
-      document.documentElement.style.setProperty(`--${icon.id}-fromtop`, `${boardWidth * icon.topLeftCorner[0]}px`);
-      document.documentElement.style.setProperty(`--${icon.id}-fromleft`, `${boardLeftOffset + boardWidth * icon.topLeftCorner[1]}px`);
+      // learnt about getBoundingClientRect() here: https://stackoverflow.com/questions/294250/how-do-i-retrieve-an-html-elements-actual-width-and-height
+      let parentRect = document.getElementById(icon.parentId).getBoundingClientRect()
+      if (icon.name === 'sun-position') {
+        icon.leftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.height, icon.count);
+        leftTopCorners = icon.leftTopCorners;
+      } else if (icon.name == 'piece-sun') {
+        document.documentElement.style.setProperty('--piece-sun-rotate', `${sunPosition * 130}deg`);
+      }
+      for (let i = 0; i < icon.count; i++) {
+        element = document.getElementById(`${icon.id}${i}`);
+        if (icon.name == 'piece-sun') {
+          leftTopCorner = leftTopCorners[sunPosition];
+        } else { leftTopCorner = icon.leftTopCorners[i]; }
+        element.style.height = `${parentRect.width * icon.height}px`;
+        element.style.left = `${parentRect.width * leftTopCorner[0]}px`;
+        element.style.top = `${parentRect.width * leftTopCorner[1]}px`;
+      }
     }
   },
 };
@@ -558,7 +596,7 @@ const gameController = {
       return;
     }
     // if clicked on the CollecTiles icon
-    if (event.currentTarget.id === gameViewer.icons[0].id
+    if (event.currentTarget.id === gameViewer.icons[0].id + '0'
       // and it is the Human player's move
       && gameController.whosMove === gameController.human) {
       let evaluationResult = gameController.evaluateTilesOnTablePhase1(null, true);
@@ -609,7 +647,7 @@ const gameController = {
 
     // Phase_1 ends if
     // last tile is a reindeer AND the sun reached the last place
-    if (evaluation.isSunToBeMoved && this.sunPosition === gameViewer.sunPositions.centers.length - 2) {
+    if (evaluation.isSunToBeMoved && this.sunPosition === gameViewer.numberOfSunPositions - 2) {
       evaluation.isEndOfPhase1 = true;
     }
     // move ends if
@@ -628,7 +666,7 @@ const gameController = {
 
   actOnEvaluation: function (evaluation) {
     if (evaluation.isSunToBeMoved
-      && this.sunPosition < gameViewer.sunPositions.centers.length - 1) {
+      && this.sunPosition < gameViewer.numberOfSunPositions - 1) {
       this.sunPosition++;
       gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
     }

@@ -7,26 +7,25 @@
     --tile-normal-side: 6rem;
     --header-height: 10vh;
 }
-header {
+body {
+  background: url("") center top / cover;
+}
+#header {
+  position: relative;
+  width: 100%;
   max-width: 1200px;
   height: var(--header-height);
   margin: 0 auto;
 }
-#sun-positions {
-  position: relative;
-  height: var(--header-height);
-  background: url("../img/enuk-sun-positions.png") center / contain no-repeat;
-  top: calc(-1 * var(--header-height));
-  opacity: 50%;
-}
-body {
-  background: url("") center top / cover;
-  text-align: center;
-}
 #title {
-  width:100%;
   height: 10vh;
   background: url("../img/enuk-title.png") center / contain no-repeat;
+}
+.icon-position{
+  position: absolute;
+}
+main {
+  text-align: center;
 }
 #board {
   position: relative;
@@ -36,11 +35,8 @@ body {
   width: 100%;
   max-width: 1200px;
 }
-#piece-sun {
+#icon-piece-sun0 {
   position: absolute;
-  width: var(--piece-sun-length);
-  top: var(--piece-sun-fromtop);
-  left: var(--piece-sun-fromleft);
   transform: rotate(var(--piece-sun-rotate));
   transition: top 2s linear, left 2s linear, transform 2s linear;
 }
