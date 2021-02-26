@@ -4,20 +4,20 @@ const gameViewer = {
   imagePath: './assets/img/',
 
   tileFaces: [
-    { name: Tile.NAME_REINDEER(), filename: 'tileface-reindeer.jpg', count: gameController.PARAMETERS.numberOfSunPositions },
-    { name: Tile.NAME_POLARBEAR(), filename: 'tileface-polarbear.jpg', count: 14 },
-    { name: Tile.NAME_SEAL(), filename: 'tileface-seal.jpg', count: 14 },
-    { name: Tile.NAME_SALMON(), filename: 'tileface-salmon.jpg', count: 14 },
-    { name: Tile.NAME_HERRING(), filename: 'tileface-herring.jpg', count: 14 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo00.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo01.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo02.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo10.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo11.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo12.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo20.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo21.jpg', count: 1 },
-    { name: Tile.NAME_IGLOO(), filename: 'tileface-igloo22.jpg', count: 1 }
+    { name: gameController.TILES.reindeer.name, filename: 'tileface-reindeer.jpg'},
+    { name: gameController.TILES.polarbear.name, filename: 'tileface-polarbear.jpg' },
+    { name: gameController.TILES.seal.name, filename: 'tileface-seal.jpg' },
+    { name: gameController.TILES.salmon.name, filename: 'tileface-salmon.jpg' },
+    { name: gameController.TILES.herring.name, filename: 'tileface-herring.jpg' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo00.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo01.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo02.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo10.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo11.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo12.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo20.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo21.jpg'},
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo22.jpg'}
   ],
 
   tileEdges: [
@@ -105,7 +105,7 @@ const gameViewer = {
   createIgloo3x3HTML: function (tiles) {
     let imgHTML = `<div id="tiles-onigloo" class="layer-onigloo">`;
     for (let tile of tiles) {
-      if (tile.name === Tile.NAME_IGLOO()) {
+      if (tile.name === gameController.TILES.igloo.name) {
         imgHTML += `<img id="${tile.idOnIgloo}" class="tile-onigloo" 
                          src="${this.imagePath}${tile.filename}"
                          style="visibility: hidden;"
@@ -118,7 +118,7 @@ const gameViewer = {
   createMeeple3x3HTML: function (tiles) {
     let imgHTML = `<div id="meeples-onigloo" class="layer-onigloo">`;
     for (let tile of tiles) {
-      if (tile.name === Tile.NAME_IGLOO()) {
+      if (tile.name === gameController.TILES.igloo.name) {
         imgHTML += `<div class="tile-onigloo"><img 
                        id="${tile.idMeepleOnIgloo}"
                        class="meeple-onigloo"
@@ -171,7 +171,7 @@ const gameViewer = {
     return tileElement;
   },
 
-  generateGameBoard: function (tiles, tilesOnTable, players, isTest) {
+  generateGameBoard: function (tilesOnTable, players, isTest) {
     let bodyElement = document.getElementsByTagName('body')[0];
     bodyElement.innerHTML = this.createBodyHTML();
     // put game board in place
@@ -180,10 +180,10 @@ const gameViewer = {
     boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
 
     // add hidden IGLOO TILES to the middle of the board
-    boardPiecesHTML += this.createIgloo3x3HTML(tiles);
+    boardPiecesHTML += this.createIgloo3x3HTML(tilesOnTable);
 
     // add hidden MEEPLES on top of igloo tiles - without src
-    boardPiecesHTML += this.createMeeple3x3HTML(tiles);
+    boardPiecesHTML += this.createMeeple3x3HTML(tilesOnTable);
 
     // add TILE STACKS and MEEPLES for all players on the board
     boardPiecesHTML += this.createTileStacksHTML(players);
@@ -216,14 +216,11 @@ const gameViewer = {
 
     // assemble tiles
     const tilesElement = document.getElementById('tiles');
-    let tileElement;
-    for (let tile of tiles){
+    for (let tile of tilesOnTable){
       tile.isFaceUp = false;
-      tilesOnTable.push(tile);
-      tileElement = this.placeTileOnTable(tile, isTest);
+      let tileElement = this.placeTileOnTable(tile, isTest);
       tilesElement.appendChild(tileElement);
     }
-    tiles = [];
   },
 
   setVisibilityOfElement: function (elementID, isVisible) {
@@ -236,6 +233,7 @@ const gameViewer = {
   },
 
   setBoardPiecesPosition: function (sunPosition, numberOfPlayers) {
+    // learnt about getBoundingClientRect() here: https://stackoverflow.com/questions/294250/how-do-i-retrieve-an-html-elements-actual-width-and-height
     let parentRect = document.getElementById(this.boardPiece.id).getBoundingClientRect();
     // flip transition time
     document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.flipTimeMS}ms`);
@@ -264,7 +262,6 @@ const gameViewer = {
     let leftTopCorner = null;
     let leftTopCorners = null;
     for (let icon of this.icons) {
-      // learnt about getBoundingClientRect() here: https://stackoverflow.com/questions/294250/how-do-i-retrieve-an-html-elements-actual-width-and-height
       parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
       if (icon.name === 'sun-position') {
         icon.leftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.height, icon.count);

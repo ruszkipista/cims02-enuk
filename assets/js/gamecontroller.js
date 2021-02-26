@@ -1,6 +1,22 @@
 // object GAMECONTROLLER
 //======================
 const gameController = {
+
+  PARAMETERS: {
+    numberOfSunPositions: 9,
+    numberOfPlayers: 4,
+    isTest: true,
+  },
+
+  TILES: {
+    reindeer: { name: 'reindeer', rank: 5, count: 9 },
+    polarbear: { name: 'polarbear', rank: 4, count: 14 },
+    seal: { name: 'seal', rank: 3, count: 14 },
+    salmon: { name: 'salmon', rank: 2, count: 14 },
+    herring: { name: 'herring', rank: 1, count: 14 },
+    igloo: { name: 'igloo', rank: null, count: 1 },
+  },
+
   // game states
   STATE: {
     BeforePhase1: 'A',
@@ -23,12 +39,6 @@ const gameController = {
     toFlipRight: '1',
     toCollect: '2',
     toDeclare: '3',
-  },
-
-  PARAMETERS: {
-    numberOfSunPositions: 9,
-    numberOfPlayers: 4,
-    isTest: true,
   },
 
   gameState: null,
@@ -62,9 +72,12 @@ const gameController = {
           this.sunPosition = 0;
           this.round = 0;
           this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
-          this.setupTiles();
+          this.tilesOnIgloo = [];
+          this.TILES.reindeer.count = this.PARAMETERS.numberOfSunPositions;
+          this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces);
+          if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
           // fill webpage with elements
-          gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
+          gameViewer.generateGameBoard(this.tilesOnTable, this.players, this.PARAMETERS.isTest);
           // set moving parts' position relative to their containing element
           gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
           // whos move first?
@@ -106,7 +119,7 @@ const gameController = {
             // flip the tile face-up
             this.clickedTile.flipOnTable(request === this.REQUEST.toFlipLeft);
             // handle: reindeer -> sun advances
-            if (this.clickedTile.name === Tile.NAME_REINDEER()
+            if (this.clickedTile.name === this.TILES.reindeer.name
               && this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
               this.sunPosition++;
               gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
@@ -130,7 +143,7 @@ const gameController = {
             this.isEndOfPhase2 = true;
             // Phase_1 ends if clicked tile is a reindeer AND the sun is in the last position
           } else if (this.clickedTile
-            && this.clickedTile.name === Tile.NAME_REINDEER()
+            && this.clickedTile.name === this.TILES.reindeer.name
             && this.sunPosition === this.PARAMETERS.numberOfSunPositions - 1) {
             this.isEndOfPhase1 = true;
           }
@@ -140,7 +153,7 @@ const gameController = {
           // - at least one animal hid (tile to be turned down)
           if (this.isEndOfPhase1
             || request === this.REQUEST.toCollect
-            || (this.clickedTile && this.clickedTile.name === Tile.NAME_IGLOO())
+            || (this.clickedTile && this.clickedTile.name === this.TILES.igloo.name)
             || this.toBeTurnedDown.size > 0) {
             this.isEndOfMove = true;
           }
@@ -244,22 +257,32 @@ const gameController = {
     }
   },
 
-  setupTiles: function () {
-    this.tilesOnIgloo = [];
-    this.tilesOnTable = [];
-    this.tiles = [];
+  setupTiles: function (tileCounts, tileFaces) {
+    let tilesOnTable = [];
     let counter = 0;
-    for (let tileFace of gameViewer.tileFaces) {
-      for (let i = 0; i < tileFace.count; i++) {
-        // generate ID for each Tile
-        this.tiles.push(new Tile(`tile-${counter}`, tileFace.name, tileFace.filename));
-        counter++;
+    for (const [key, tileCount] of Object.entries(tileCounts)) {
+      for (let tileFace of tileFaces) {
+        if (tileFace.name !== tileCount.name) { continue; }
+        for (let i = 0; i < tileCount.count; i++) {
+          // generate ID for each Tile
+          let tileId = `tile-${counter}`;
+          let isIgloo = tileCount.name === tileCounts.igloo.name;
+          let tile = new Tile(tileId,
+            tileCount.name,
+            tileFace.filename,
+            tileCount.rank,
+            `${tileId}-ontable`,
+            (isIgloo) ? `${tileId}-onigloo` : '',
+            (isIgloo) ? `meeple-on-${tileId}` : '')
+          tilesOnTable.push(tile);
+          counter++;
+        }
       }
     }
-    if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tiles); }
+    return tilesOnTable;
   },
 
-  passMoveToNextPlayer: function() {
+  passMoveToNextPlayer: function () {
     this.whosMove = (this.PARAMETERS.isTest) ? this.human : (++this.whosMove % this.PARAMETERS.numberOfPlayers);
   },
 
@@ -323,8 +346,8 @@ const gameController = {
         if (this.tilesOnTable[i].isFaceUp === false) { isAllFaceUp = false; }
         continue;
       }
-      if (this.tilesOnTable[i].rank < 0) {
-        if (this.tilesOnTable[i].name === Tile.NAME_IGLOO()) {
+      if (!this.tilesOnTable[i].rank) {
+        if (this.tilesOnTable[i].name === this.TILES.igloo.name) {
           toBeMovedToIgloo.push(i);
         }
       } else {

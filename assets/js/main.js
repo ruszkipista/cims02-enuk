@@ -10,25 +10,16 @@ window.addEventListener('resize', function () {
 // class TILE
 //============
 class Tile {
-  static NAME_REINDEER() { return 'reindeer'; }
-  static NAME_POLARBEAR() { return 'polarbear'; }
-  static NAME_SEAL() { return 'seal'; }
-  static NAME_SALMON() { return 'salmon'; }
-  static NAME_HERRING() { return 'herring'; }
-  static NAME_IGLOO() { return 'igloo'; }  // igloo is not ranked!
-  static RANKING() {
-    return [Tile.NAME_HERRING(), Tile.NAME_SALMON(), Tile.NAME_SEAL(), Tile.NAME_POLARBEAR(), Tile.NAME_REINDEER()];
-  }
 
-  constructor(id, name, filename) {
+  constructor(id, name, filename, rank, idOnTable, idOnIgloo, idMeepleOnIgloo) {
     this.id = id;
     this.isFaceUp = null;
-    this.idOnTable = `${id}-ontable`;
-    this.idOnIgloo = `${(name === Tile.NAME_IGLOO()) ? id + '-onigloo' : ''}`;
+    this.idOnTable = idOnTable;
+    this.idOnIgloo = idOnIgloo;
     this.name = name;
     this.filename = filename;
-    this.rank = Tile.RANKING().indexOf(name);
-    this.idMeepleOnIgloo = `${(name === Tile.NAME_IGLOO()) ? 'meeple-on-' + id : ''}`;
+    this.rank = rank;
+    this.idMeepleOnIgloo = idMeepleOnIgloo;
   }
 
   flipOnTable(isClickedOnLeft) {
