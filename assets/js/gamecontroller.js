@@ -9,12 +9,18 @@ const gameController = {
   },
 
   TILES: {
-    reindeer: { name: 'reindeer', rank: 5, count: 9 },
-    polarbear: { name: 'polarbear', rank: 4, count: 14 },
-    seal: { name: 'seal', rank: 3, count: 14 },
-    salmon: { name: 'salmon', rank: 2, count: 14 },
-    herring: { name: 'herring', rank: 1, count: 14 },
-    igloo: { name: 'igloo', rank: null, count: 1 },
+    reindeer: { name: 'reindeer', rank: 5, userInput: true, visible: true, count: 9 },
+    polarbear: { name: 'polarbear', rank: 4, userInput: true, visible: true, count: 14 },
+    seal: { name: 'seal', rank: 3, userInput: true, visible: true, count: 14 },
+    salmon: { name: 'salmon', rank: 2, userInput: true, visible: true, count: 14 },
+    herring: { name: 'herring', rank: 1, userInput: true, visible: true, count: 14 },
+    igloo: { name: 'igloo', rank: null, userInput: true, visible: true, count: 1 },
+  },
+
+  ICONS: {
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, visible: true },
+    sunPositions: { name: 'sun-position', count: 9, request: null, visible: true },
+    sunPiece: { name: 'piece-sun', count: 1, request: null, visible: true },    
   },
 
   // game states
@@ -42,6 +48,7 @@ const gameController = {
   },
 
   gameState: null,
+  iconsOnTable: [],
   tilesOnTable: [],
   tilesOnIgloo: [],
   sunPosition: null,
@@ -68,16 +75,20 @@ const gameController = {
 
       switch (this.gameState) {
 
+        // BeforePhase1
         case this.STATE.BeforePhase1:
+          this.TILES.reindeer.count = this.PARAMETERS.numberOfSunPositions;
+          this.ICONS.sunPositions.count = this.PARAMETERS.numberOfSunPositions;
           this.sunPosition = 0;
           this.round = 0;
-          this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
           this.tilesOnIgloo = [];
-          this.TILES.reindeer.count = this.PARAMETERS.numberOfSunPositions;
+          this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
+          this.ICONS.collectTiles.request = gameController.REQUEST.toCollect;
+          this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
           this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces);
           if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
           // fill webpage with elements
-          gameViewer.generateGameBoard(this.tilesOnTable, this.players, this.PARAMETERS.isTest);
+          gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
           // set moving parts' position relative to their containing element
           gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
           // whos move first?
@@ -86,51 +97,47 @@ const gameController = {
           this.gameState = this.STATE.InPhase1BeforeMove;
           break;
 
+        // InPhase1-BeforeMove
         case this.STATE.InPhase1BeforeMove:
           // instruct ActualPlayer to move (flip or collect)
           gameViewer.setBackground(this.players[this.whosMove].background);
-          this.isListenToClick = true;
           this.request = null;
           this.clicked = null;
           // next state will be InPhase1ProcessMove 
           this.gameState = this.STATE.InPhase1ProcessMove;
           // wait for request
+          this.isListenToClick = true;
           break infiniteLoop;
 
+        // InPhase1-ProcessMove
         case this.STATE.InPhase1ProcessMove:
+          // stop listening to clicks (for a while)
           this.clickedTile = null;
-          //  If Request is RequestToFlip to flip a face-down tile up, then
-          //    -> set flag RequestToFlip
-          //    -> flip the tile face-up
-          //    If ClickedTile is reindeer 
-          //        -> move the sun piece to the next position. 
-          //           if there is no next position (already on the final), then do not move sun
-          // If Request is CollectTiles to collect face-up tiles from table -> set flag RequestToCollect
-          // If Request is something else -> continue to state InPhase1-BeforeMove
-          // continue to state InPhase1-Evaluation
           if (this.whosMove !== this.human) {
-            return;
-
-          } else if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
+            break infiniteLoop;
+          }
+          if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
             this.clickedTile = gameController.findTileOnTable(elementId);
             if (!this.clickedTile || this.clickedTile.isFaceUp) {
-              return;
+              break infiniteLoop;
             }
             // flip the tile face-up
             this.clickedTile.flipOnTable(request === this.REQUEST.toFlipLeft);
-            // handle: reindeer -> sun advances
+            // handle: reindeer -> advance sun
             if (this.clickedTile.name === this.TILES.reindeer.name
               && this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
               this.sunPosition++;
               gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
             }
           } else if (request !== this.REQUEST.toCollect) {
-            return;
+            break infiniteLoop;
           }
           this.gameState = this.STATE.InPhase1Evaluation;
           break;
 
+        // InPhase1-Evaluation
         case this.STATE.InPhase1Evaluation:
+          gameController.isListenToClick = false;
           this.isEndOfPhase2 = false;
           this.isEndOfPhase1 = false;
           this.isEndOfMove = false;
@@ -148,25 +155,23 @@ const gameController = {
             this.isEndOfPhase1 = true;
           }
           // move ends if
-          // - player decided to collect the turned up tiles, or
-          // - last tile is an igloo, or
-          // - at least one animal hid (tile to be turned down)
           if (this.isEndOfPhase1
+            // player decided to collect the turned up tiles, or
             || request === this.REQUEST.toCollect
+            // latest clicked tile is an igloo, or
             || (this.clickedTile && this.clickedTile.name === this.TILES.igloo.name)
+            // at least one animal hid (there is a tile to be turned down)
             || this.toBeTurnedDown.size > 0) {
             this.isEndOfMove = true;
           }
           if (this.isEndOfMove) {
-            // play dead
-            gameController.isListenToClick = false;
             setTimeout(function () {
-              // back in the game
+              // back in the game after Timeout
               gameController.isListenToClick = true;
               gameController.gameState = gameController.STATE.InPhase1Execution;
               gameController.play();
             }, gameViewer.tileBack.flipTimeMS * 2);
-            // wait for Timeout
+            // wait for Timeout to complete
             break infiniteLoop;
           } else {
             // continue to execution
@@ -174,56 +179,116 @@ const gameController = {
             break;
           }
 
+        // InPhase1-Execution
         case this.STATE.InPhase1Execution:
+          // handle End Of Move
           if (this.isEndOfMove) {
-            for (let tileIndex of this.toBeMovedToStack) {
-              this.removeTileFromTableToStack(this.tilesOnTable[tileIndex]);
-            }
             for (let tileIndex of this.toBeTurnedDown) {
               this.tilesOnTable[tileIndex].flipOnTable();
+            }
+            for (let tileIndex of this.toBeMovedToStack) {
+              this.removeTileFromTableToStack(this.tilesOnTable[tileIndex]);
             }
             for (let tileIndex of this.toBeMovedToIgloo) {
               this.removeTileFromTableToIgloo(this.tilesOnTable[tileIndex]);
               this.removeMeepleFromBoardToIgloo(this.tilesOnTable[tileIndex]);
             }
           }
+          // handle End of Phase 2
           if (this.isEndOfPhase2) {
             this.gameState = gameController.STATE.EndOfGame;
           } else {
+            // handle End Of Move
             if (this.isEndOfMove) {
               // set up next player
               this.passMoveToNextPlayer();
             }
+            // handle End Of Phase 1
             if (this.isEndOfPhase1) { this.gameState = gameController.STATE.BeforePhase2; }
             else { this.gameState = gameController.STATE.InPhase1BeforeMove; }
           }
           break;
 
+        // BeforePhase2
         case this.STATE.BeforePhase2:
+          // set invisible the CollectTiles icon on board
+          // set visible the icons for each tile type on the board for getting tile type declaration from players:
+          //     (herring, salmon, seal, polarbear, reindeer, igloo)
+          // continue to state InPhase2-CollectOneIgloo
           break;
 
+        // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
+          // If ActualPlayer hasn’t got meeple on igloo -> continue to state InPhase2-Evaluation
+          // remove ActualPlayer’s one meeple from igloo
+          // remove tile underneath the removed meeple and move it to the tile stack of the ActualPlayer
+          // continue to state InPhase2-BeforeDeclaration
           break;
 
+        // InPhase2-BeforeDeclaration
         case this.STATE.InPhase2BeforeDeclaration:
+          // instruct ActualPlayer to declare its next flip, choose one of the following:
+          //         (herring, salmon, seal, polarbear, reindeer, igloo)
+          // wait for request
           break;
 
+        // InPhase2-ProcessMove
         case this.STATE.InPhase2BeforeMove:
+          // instruct ActualPlayer to flip one tile
+          // wait for request
           break;
 
+        // InPhase2-ProcessMove
         case this.STATE.InPhase2ProcessMove:
+          // receive move from player: (ClickedElement(Tile or Icon), Request)
+          // If Request is DeclareNextTileType AND ClickedElement is valid:
+          //   -> set Declaration
+          //   -> mark Declaration on board
+          //   -> continue to state InPhase2 - BeforeMove
+          // If Request is to flip a face - down tile up AND Declaration is set
+          //   -> flag RequestToFlip
+          //   -> flip the clicked tile face - up
+          //   -> continue to state InPhase2 - Evaluation
+          // If Declaration is set -> continue to state InPhase2 - BeforeMove
+          // Else -> continue to state InPhase2 - BeforeDeclaration
           break;
 
+        // InPhase2-Evaluation
         case this.STATE.InPhase2Evaluation:
+          // clear evaluation flags
+          // If all tiles on table are face-up 
+          //     OR ClickedElement tile is the last reindeer
+          //     OR there is no more meeple on the igloo
+          //     -> set flag EndOfPhase2
+          // If NOT ClickedElement tile -> set flag EndOfMove
+          // Else If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
+          // Else -> set flag EndOfMove
+          // continue to state InPhase2-Execution          
           break;
 
+        //  InPhase2-Execution
         case this.STATE.InPhase2Execution:
+          // If ClickedElement tile -> wait some time that each player can memorize the last tile flip
+          // If flag CorrectDeclaration -> move tile ClickedElement to player’s stack
+          // wait some time that each player can memorize the actions (if there was)
+          // If flag EndOfPhase2 -> continue to state EndOfGame
+          // Else If flag EndOfMove -> set ActualPlayer to the next player
+          // continue to state InPhase2-CollectOneIgloo          
           break;
 
+        // EndOfGame
         case this.STATE.EndOfGame:
+          // Announce winner (most collected tiles)
+          // Allow free tile flipping on tiles remaining on the table
+          // Offer to restart the game
+          // wait for request
           break;
 
+        // EndOfGameProcessMove
         case this.STATE.EndOfGameProcessMove:
+          // receive move from player: (ClickedElement, Request)
+          // If Request is RequestToRestart -> continue to state BeforePhase1
+          // If Request is RequestToFlip -> flip ClickedElement          
           break;
       }
 
@@ -255,6 +320,28 @@ const gameController = {
           (i === this.human) ? gameViewer.meeplePieces[i].filenameHuman : gameViewer.meeplePieces[i].filenameMachine);
       }
     }
+  },
+
+  setupIcons: function (iconCounts, tileCounts, iconFaces) {
+    let iconsOnTable = [];
+    for (const [key, iconCount] of Object.entries(iconCounts)) {
+      for (let iconFace of iconFaces) {
+        if (iconFace.name !== iconCount.name) { continue; }
+        for (let i = 0; i < iconCount.count; i++) {
+          iconsOnTable.push({
+            id: `icon-${iconCount.name}${(iconCount.count===1)?'':i}`,
+            name: iconCount.name,
+            parentId: 'title',
+            filename: iconFace.filename,
+            request: iconCount.request, 
+            isVisible: iconCount.isVisible,
+            height: iconFace.height, 
+            leftTopCorner: iconFace.leftTopCorner,
+          });                    
+        }
+      }
+    }
+    return iconsOnTable;
   },
 
   setupTiles: function (tileCounts, tileFaces) {
