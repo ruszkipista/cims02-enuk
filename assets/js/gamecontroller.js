@@ -9,18 +9,24 @@ const gameController = {
   },
 
   TILES: {
-    reindeer: { name: 'reindeer', rank: 5, userInput: true, visible: true, count: 9 },
-    polarbear: { name: 'polarbear', rank: 4, userInput: true, visible: true, count: 14 },
-    seal: { name: 'seal', rank: 3, userInput: true, visible: true, count: 14 },
-    salmon: { name: 'salmon', rank: 2, userInput: true, visible: true, count: 14 },
-    herring: { name: 'herring', rank: 1, userInput: true, visible: true, count: 14 },
-    igloo: { name: 'igloo', rank: null, userInput: true, visible: true, count: 1 },
+    reindeer: { name: 'reindeer', rank: 5, count: 9 },
+    polarbear: { name: 'polarbear', rank: 4, count: 14 },
+    seal: { name: 'seal', rank: 3, count: 14 },
+    salmon: { name: 'salmon', rank: 2, count: 14 },
+    herring: { name: 'herring', rank: 1, count: 14 },
+    igloo: { name: 'igloo', rank: null, count: 1 },
   },
 
   ICONS: {
-    collectTiles: { name: 'collect-tiles', count: 1, request: null, visible: true },
-    sunPositions: { name: 'sun-position', count: 9, request: null, visible: true },
-    sunPiece: { name: 'piece-sun', count: 1, request: null, visible: true },    
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: true },
+    sunPositions: { name: 'sun-position', count: 9, request: null, isVisible: true },
+    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: true },
+    declareReindeer: { name: 'reindeer', count: 1, request: null, isVisible: true },
+    declarePolarbear: { name: 'polarbear', count: 1, request: null, isVisible: true },
+    declareSeal: { name: 'seal', count: 1, request: null, isVisible: true },
+    declaresSlmon: { name: 'salmon', count: 1, request: null, isVisible: true },
+    declareHerring: { name: 'herring', count: 1, request: null, isVisible: true },
+    declareIgloo: { name: 'igloo', count: 1, request: null, isVisible: true },
   },
 
   // game states
@@ -329,15 +335,15 @@ const gameController = {
         if (iconFace.name !== iconCount.name) { continue; }
         for (let i = 0; i < iconCount.count; i++) {
           iconsOnTable.push({
-            id: `icon-${iconCount.name}${(iconCount.count===1)?'':i}`,
+            id: `icon-${iconCount.name}${(iconCount.count === 1) ? '' : i}`,
             name: iconCount.name,
-            parentId: 'title',
+            parentId: iconFace.parentId,
             filename: iconFace.filename,
-            request: iconCount.request, 
+            request: iconCount.request,
             isVisible: iconCount.isVisible,
-            height: iconFace.height, 
+            height: iconFace.height,
             leftTopCorner: iconFace.leftTopCorner,
-          });                    
+          });
         }
       }
     }
