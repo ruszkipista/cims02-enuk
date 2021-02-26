@@ -27,9 +27,10 @@ const gameController = {
 
   PARAMETERS: {
     numberOfSunPositions: 9,
+    numberOfPlayers: 4,
+    isTest: true,
   },
 
-  isTest: false,
   gameState: null,
   tilesOnTable: [],
   tilesOnIgloo: [],
@@ -38,7 +39,6 @@ const gameController = {
   whosMove: null,
   human: null,
   players: null,
-  numberOfPlayers: null,
   isListenToClick: false,
   clickedTile: null,
   toBeMovedToStack: null,
@@ -59,18 +59,16 @@ const gameController = {
       switch (this.gameState) {
 
         case this.STATE.BeforePhase1:
-          this.isTest = true;
-          this.numberOfPlayers = 4;
           this.sunPosition = 0;
           this.round = 0;
-          this.setupPlayers();
+          this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
           this.setupTiles();
           // fill webpage with elements
-          gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.isTest);
+          gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
           // set moving parts' position relative to their containing element
-          gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
-          // set ActualPlayer to the first player
-          this.whosMove = (this.isTest) ? this.human : 0;
+          gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
+          // whos move first?
+          this.passMoveToNextPlayer();
           // continue to state InPhase1-BeforeMove
           this.gameState = this.STATE.InPhase1BeforeMove;
           break;
@@ -97,7 +95,7 @@ const gameController = {
           // If Request is CollectTiles to collect face-up tiles from table -> set flag RequestToCollect
           // If Request is something else -> continue to state InPhase1-BeforeMove
           // continue to state InPhase1-Evaluation
-          if (gameController.whosMove !== gameController.human) {
+          if (this.whosMove !== this.human) {
             return;
 
           } else if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
@@ -111,7 +109,7 @@ const gameController = {
             if (this.clickedTile.name === Tile.NAME_REINDEER()
               && this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
               this.sunPosition++;
-              gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
+              gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
             }
           } else if (request !== this.REQUEST.toCollect) {
             return;
@@ -143,7 +141,7 @@ const gameController = {
           if (this.isEndOfPhase1
             || request === this.REQUEST.toCollect
             || (this.clickedTile && this.clickedTile.name === Tile.NAME_IGLOO())
-            || this.toBeTurnedDown.length > 0) {
+            || this.toBeTurnedDown.size > 0) {
             this.isEndOfMove = true;
           }
           if (this.isEndOfMove) {
@@ -181,10 +179,10 @@ const gameController = {
           } else {
             if (this.isEndOfMove) {
               // set up next player
-              this.whosMove = ++this.whosMove % this.numberOfPlayers;
+              this.passMoveToNextPlayer();
             }
             if (this.isEndOfPhase1) { this.gameState = gameController.STATE.BeforePhase2; }
-            else {this.gameState = gameController.STATE.InPhase1BeforeMove;}
+            else { this.gameState = gameController.STATE.InPhase1BeforeMove; }
           }
           break;
 
@@ -220,11 +218,15 @@ const gameController = {
 
   },
 
-  setupPlayers: function () {
-    this.human = getRandomInt(this.numberOfPlayers);
+  setupPlayers: function (numberOfPlayers, isTest) {
+    if (isTest) {
+      this.human = 0;
+    } else {
+      shuffleArrayInplace(gameViewer.meeplePieces);
+      this.human = getRandomInt(numberOfPlayers);
+    }
     this.players = [];
-    shuffleArrayInplace(gameViewer.meeplePieces);
-    for (let i = 0; i < this.numberOfPlayers; i++) {
+    for (let i = 0; i < numberOfPlayers; i++) {
       this.players[i] = {
         name: gameViewer.meeplePieces[i].name,
         meeples: [],
@@ -254,7 +256,11 @@ const gameController = {
         counter++;
       }
     }
-    if (!this.isTest) { shuffleArrayInplace(this.tiles); }
+    if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tiles); }
+  },
+
+  passMoveToNextPlayer: function() {
+    this.whosMove = (this.PARAMETERS.isTest) ? this.human : (++this.whosMove % this.PARAMETERS.numberOfPlayers);
   },
 
   findTileOnTable: function (idOnTable) {

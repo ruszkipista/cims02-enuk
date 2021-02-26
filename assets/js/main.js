@@ -4,7 +4,7 @@ window.addEventListener('load', function () {
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () {
-  gameViewer.setBoardPiecesPosition(gameController.sunPosition, gameController.numberOfPlayers);
+  gameViewer.setBoardPiecesPosition(gameController.sunPosition, gameController.PARAMETERS.numberOfPlayers);
 });
 
 // class TILE
@@ -29,35 +29,6 @@ class Tile {
     this.filename = filename;
     this.rank = Tile.RANKING().indexOf(name);
     this.idMeepleOnIgloo = `${(name === Tile.NAME_IGLOO()) ? 'meeple-on-' + id : ''}`;
-  }
-
-  placeOnTable(isFaceUp, isTest) {
-    this.isFaceUp = isFaceUp;
-    const tileElement = document.createElement('div');
-    tileElement.classList.add('tile');
-    tileElement.setAttribute('id', this.idOnTable);
-    tileElement.innerHTML = `
-        <div class="tile-inner">
-          <div class="tile-front">
-            <img src="${gameViewer.imagePath}${gameViewer.tileBack.filename}" alt="game tile back">
-          </div>
-          <div class="tile-front">
-            ${(isTest) ? this.name : ""}
-          </div>
-          <div class="tile-back">
-            <img src="${gameViewer.imagePath}${this.filename}" alt="game tile ${this.name}">
-          </div>
-        </div>
-        `;
-    tileElement.addEventListener('click', gameViewer.handleTileClick);
-    return tileElement;
-  }
-
-  placeOnIgloo() {
-    return `<img id="${this.idOnIgloo}" class="tile-onigloo" 
-              src="${gameViewer.imagePath}${this.filename}"
-              style="visibility: hidden;"
-              alt="game tile ${this.name}">`;
   }
 
   flipOnTable(isClickedOnLeft) {
@@ -96,12 +67,6 @@ class Meeple {
     this.idOnIgloo = null;
     this.name = name;
     this.filename = filename;
-  }
-
-  placeOnBoard() {
-    return `<img id="${this.idOnBoard}" class="meeple-on-board" 
-                 src="${gameViewer.imagePath}${this.filename}"
-                 alt="game meeple ${this.name}">`;
   }
 
   removeFromBoardToIgloo(idOnIgloo) {

@@ -93,56 +93,102 @@ const gameViewer = {
     return sunPositions;
   },
 
+  createBodyHTML: function () {
+    return `<header id="header">
+               <div id="title"></div>
+             </header>
+             <main>
+               <div id="tiles"></div>
+               <div id="board"></div>
+             </main>`
+  },
+  createIgloo3x3HTML: function (tiles) {
+    let imgHTML = `<div id="tiles-onigloo" class="layer-onigloo">`;
+    for (let tile of tiles) {
+      if (tile.name === Tile.NAME_IGLOO()) {
+        imgHTML += `<img id="${tile.idOnIgloo}" class="tile-onigloo" 
+                         src="${this.imagePath}${tile.filename}"
+                         style="visibility: hidden;"
+                         alt="game tile ${tile.name}">`;
+      }
+    }
+    return imgHTML + '</div>';
+  },
+
+  createMeeple3x3HTML: function (tiles) {
+    let imgHTML = `<div id="meeples-onigloo" class="layer-onigloo">`;
+    for (let tile of tiles) {
+      if (tile.name === Tile.NAME_IGLOO()) {
+        imgHTML += `<div class="tile-onigloo"><img 
+                       id="${tile.idMeepleOnIgloo}"
+                       class="meeple-onigloo"
+                       style="visibility: hidden;" src="" 
+                       alt="game meeple"></div>`;
+      }
+    }
+    return imgHTML + '</div>';
+  },
+
+  createMeepleOnBoard: function(meeple) {
+    return `<img id="${meeple.idOnBoard}" class="meeple-on-board" 
+                 src="${this.imagePath}${meeple.filename}"
+                 alt="game meeple ${meeple.name}">`;
+  },
+
+  createTileStacksHTML: function(players){
+    let stacksHTML = '';
+    for (let i = 0; i < players.length; i++) {
+      stacksHTML += `<div id="${players[i].tileStackID}" class="tiles-stack tiles-stack-player${i}"></div>`;
+      stacksHTML += `<div id="meeples-player${i}" 
+                               class="meeples-group tiles-stack-player${i}" 
+                               style="border-top-color:${players[i].name}">`;
+      for (let meeple of players[i].meeples) {
+        stacksHTML += this.createMeepleOnBoard(meeple);
+      }
+      stacksHTML += `</div>`;
+    }
+    return stacksHTML;
+  },
+
+  placeTileOnTable: function(tile, isTest) {
+    const tileElement = document.createElement('div');
+    tileElement.classList.add('tile');
+    tileElement.setAttribute('id', tile.idOnTable);
+    tileElement.innerHTML = `
+        <div class="tile-inner">
+          <div class="tile-front">
+            <img src="${this.imagePath}${this.tileBack.filename}" alt="game tile back">
+          </div>
+          <div class="tile-front">
+            ${(isTest) ? tile.name : ""}
+          </div>
+          <div class="tile-back">
+            <img src="${this.imagePath}${tile.filename}" alt="game tile ${tile.name}">
+          </div>
+        </div>
+        `;
+    tileElement.addEventListener('click', this.handleTileClick);
+    return tileElement;
+  },
+
   generateGameBoard: function (tiles, tilesOnTable, players, isTest) {
     let bodyElement = document.getElementsByTagName('body')[0];
-    bodyElement.innerHTML = `
-      <header id="header">
-        <div id="title"></div>
-      </header>
-      <main>
-        <div id="tiles"></div>
-        <div id="board"></div>
-      </main>`;
+    bodyElement.innerHTML = this.createBodyHTML();
     // put game board in place
-    let boardPiecesHTML = "";
+    let boardPiecesHTML = '';
     // add BOARD to game space
     boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
 
     // add hidden IGLOO TILES to the middle of the board
-    boardPiecesHTML += `<div id="tiles-onigloo" class="layer-onigloo">`;
-    for (let tile of tiles) {
-      if (tile.name === Tile.NAME_IGLOO()) {
-        boardPiecesHTML += tile.placeOnIgloo();
-      }
-    }
-    boardPiecesHTML += `</div>`;
+    boardPiecesHTML += this.createIgloo3x3HTML(tiles);
 
-    // add hidden MEEPLES on top of igloo tiles - without src and alt
-    boardPiecesHTML += `<div id="meeples-onigloo" class="layer-onigloo">`;
-    for (let tile of tiles) {
-      if (tile.name === Tile.NAME_IGLOO()) {
-        boardPiecesHTML += `<div class="tile-onigloo"><img 
-                                id="${tile.idMeepleOnIgloo}"
-                                class="meeple-onigloo"
-                                style="visibility: hidden;" src="" alt="game meeple"></div>`;
-      }
-    }
-    boardPiecesHTML += `</div>`;
+    // add hidden MEEPLES on top of igloo tiles - without src
+    boardPiecesHTML += this.createMeeple3x3HTML(tiles);
 
     // add TILE STACKS and MEEPLES for all players on the board
-    for (let i = 0; i < players.length; i++) {
-      boardPiecesHTML += `<div id="${players[i].tileStackID}" class="tiles-stack tiles-stack-player${i}"></div>`;
-      boardPiecesHTML += `<div id="meeples-player${i}" 
-                               class="meeples-group tiles-stack-player${i}" 
-                               style="border-top-color:${players[i].name}">`;
-      for (let meeple of players[i].meeples) {
-        boardPiecesHTML += meeple.placeOnBoard();
-      }
-      boardPiecesHTML += `</div>`;
-    }
+    boardPiecesHTML += this.createTileStacksHTML(players);
 
-    const boardElement = document.getElementById('board');
-    boardElement.innerHTML = boardPiecesHTML;
+    document.getElementById('board').innerHTML = boardPiecesHTML;
 
     // add icons
     for (let icon of this.icons) {
@@ -171,14 +217,13 @@ const gameViewer = {
     // assemble tiles
     const tilesElement = document.getElementById('tiles');
     let tileElement;
-    while (true) {
-      let tile = tiles.shift();
-      if (tile === undefined) { break; }
+    for (let tile of tiles){
+      tile.isFaceUp = false;
       tilesOnTable.push(tile);
-      tileElement = tile.placeOnTable(false, isTest);
+      tileElement = this.placeTileOnTable(tile, isTest);
       tilesElement.appendChild(tileElement);
     }
-
+    tiles = [];
   },
 
   setVisibilityOfElement: function (elementID, isVisible) {
@@ -191,30 +236,28 @@ const gameViewer = {
   },
 
   setBoardPiecesPosition: function (sunPosition, numberOfPlayers) {
-    const boardElement = document.getElementById(this.boardPiece.id);
-    let boardWidth = boardElement.clientWidth;
-    let boardLeftOffset = boardElement.offsetLeft;
+    let parentRect = document.getElementById(this.boardPiece.id).getBoundingClientRect();
     // flip transition time
     document.documentElement.style.setProperty('--flip-transition-time', `${gameViewer.tileBack.flipTimeMS}ms`);
     // igloo3x3 on board position
-    const iglooLength = boardWidth * this.boardPiece.iglooLength;
+    const iglooLength = parentRect.width * this.boardPiece.iglooLength;
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
-    document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 4) * 3 + 2}px`);
+    document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 4) * 3}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromtop',
-      `${boardWidth * this.boardPiece.igloo3x3TopLeftCorner[0]}px`);
+      `${parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[0]}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromleft',
-      `${boardLeftOffset + boardWidth * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
+      `${parentRect.left + parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
     // meeple pieces position
-    const meepleWidth = boardWidth * this.boardPiece.meepleOnBoardWidth;
+    const meepleWidth = parentRect.width * this.boardPiece.meepleOnBoardWidth;
     document.documentElement.style.setProperty('--meeple-onboard-width', `${meepleWidth}px`);
     document.documentElement.style.setProperty('--meeple-onigloo-width', `${meepleWidth * 2}px`);
     document.documentElement.style.setProperty('--tile-edge-width', `${meepleWidth * this.meeplePieces[0].count}px`);
-    document.documentElement.style.setProperty('--tiles-stack-height', `${boardWidth * this.boardPiece.meeplesOnBoardFromTop}px`);
+    document.documentElement.style.setProperty('--tiles-stack-height', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
     for (let i = 0; i < numberOfPlayers; i++) {
       document.documentElement.style.setProperty('--board-meeples-fromtop',
-        `${boardWidth * this.boardPiece.meeplesOnBoardFromTop}px`);
+        `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`,
-        `${boardLeftOffset + boardWidth * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
+        `${parentRect.left + parentRect.width * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
     }
     // icon positions
     let element = null;
@@ -222,7 +265,7 @@ const gameViewer = {
     let leftTopCorners = null;
     for (let icon of this.icons) {
       // learnt about getBoundingClientRect() here: https://stackoverflow.com/questions/294250/how-do-i-retrieve-an-html-elements-actual-width-and-height
-      let parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
+      parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
       if (icon.name === 'sun-position') {
         icon.leftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.height, icon.count);
         leftTopCorners = icon.leftTopCorners;

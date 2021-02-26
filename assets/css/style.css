@@ -1,4 +1,4 @@
- div, body, header, main {
+ div, body, header, main, img {
      margin: 0;
      padding: 0;
  }
@@ -53,12 +53,12 @@ main {
   height: var(--piece-igloo-length);
   display: inline-block;
   text-align: center;
-  margin:2px;
+  margin:0 2px;
 }
 .meeple-onigloo {
   width: var(--meeple-onigloo-width);
   vertical-align: top;
-  margin-top: 2vw;
+  padding-top: 2vw;
 }
 .tiles-stack {
   position: absolute;
