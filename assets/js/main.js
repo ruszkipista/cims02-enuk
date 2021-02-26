@@ -49,7 +49,7 @@ class Tile {
           </div>
         </div>
         `;
-    tileElement.addEventListener('click', gameController.handleTileClick);
+    tileElement.addEventListener('click', gameViewer.handleTileClick);
     return tileElement;
   }
 
@@ -122,19 +122,5 @@ class Meeple {
       gameViewer.setVisibilityOfElement(this.idOnIgloo, false);
       gameViewer.setVisibilityOfElement(this.idOnBoard, true);
     }
-  }
-}
-
-// class EVALUATION
-//==================
-class Evaluation {
-  constructor() {
-    this.toBeMovedToStack = [];
-    this.toBeTurnedDown = [];
-    this.toBeMovedToIgloo = [];
-    this.isSunToBeMoved = false;
-    this.isEndOfMove = false;
-    this.isEndOfPhase1 = false;
-    this.isEndOfPhase2 = false;
   }
 }

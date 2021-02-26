@@ -3,10 +3,8 @@
 const gameViewer = {
   imagePath: './assets/img/',
 
-  numberOfSunPositions: 9,
-
   tileFaces: [
-    { name: Tile.NAME_REINDEER(), filename: 'tileface-reindeer.jpg', count: 9 },
+    { name: Tile.NAME_REINDEER(), filename: 'tileface-reindeer.jpg', count: gameController.PARAMETERS.numberOfSunPositions },
     { name: Tile.NAME_POLARBEAR(), filename: 'tileface-polarbear.jpg', count: 14 },
     { name: Tile.NAME_SEAL(), filename: 'tileface-seal.jpg', count: 14 },
     { name: Tile.NAME_SALMON(), filename: 'tileface-salmon.jpg', count: 14 },
@@ -29,7 +27,7 @@ const gameViewer = {
 
   icons: [
     { name: 'collect-tiles', count: 1, filename: 'icon-collect-tiles.png', clickable: true, parentId: 'title', height: 0.08, leftTopCorners: [[0.885, 0]] },
-    { name: 'sun-position', count: 9, filename: 'icon-sun-position.png', clickable: false, parentId: 'title', height: 0.05, leftTopCorners: [] },
+    { name: 'sun-position', count: gameController.PARAMETERS.numberOfSunPositions, filename: 'icon-sun-position.png', clickable: false, parentId: 'title', height: 0.05, leftTopCorners: [] },
     { name: 'piece-sun', count: 1, filename: 'piece-sun.png', clickable: false, parentId: 'title', height: 0.05, leftTopCorners: [] },
   ],
 
@@ -156,7 +154,7 @@ const gameViewer = {
         iconElement.setAttribute('id', `${icon.id}${i}`);
         iconElement.setAttribute('src', this.imagePath + icon.filename);
         if (icon.clickable) {
-          iconElement.addEventListener('click', gameController.handleIconClick);
+          iconElement.addEventListener('click', gameViewer.handleIconClick);
           iconElement.setAttribute('alt', icon.name + ' button');
         } else {
           iconElement.setAttribute('alt', icon.name + ' icon');
@@ -242,4 +240,23 @@ const gameViewer = {
     // set how many degrees the sun needs to turn in current position relative to the first position
     document.documentElement.style.setProperty('--piece-sun-rotate', `${sunPosition * 130}deg`);
   },
+
+  handleTileClick: function (event) {
+    if (gameController.isListenToClick) {
+      const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
+      const request = isClickedOnLeft ? gameController.REQUEST.toFlipLeft : gameController.REQUEST.toFlipRight;
+      const clickedElement = event.currentTarget.id
+      gameController.play(request, clickedElement);
+    }
+  },
+
+  handleIconClick: function (event) {
+    if (gameController.isListenToClick) {
+      // clicked on the CollecTiles icon
+      if (event.currentTarget.id === gameViewer.icons[0].id + '0') {
+        gameController.play(gameController.REQUEST.toCollect, event.currentTarget.id);
+      }
+    }
+  },
+
 };

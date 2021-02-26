@@ -1,66 +1,93 @@
 // object GAMECONTROLLER
 //======================
 const gameController = {
-  // statuses
-  statusBeforePhase1: 'A',
-  statusInPhase1BeforeMove: 'B',
-  statusInPhase1ProcessMove: 'C',
-  statusInPhase1Evaluation: 'D',
-  statusInPhase1Execution: 'E',
-  statusBeforePhase2: 'F',
-  statusInPhase2CollectOneIgloo: 'G',
-  statusInPhase2BeforeDeclaration: 'H',
-  statusInPhase2BeforeMove: 'I',
-  statusInPhase2ProcessMove: 'J',
-  statusInPhase2Evaluation: 'K',
-  statusInPhase2Execution: 'L',
-  statusEndOfGame: 'M',
-  statusEndOfGameProcessMove: 'N',
+  // game states
+  STATE: {
+    BeforePhase1: 'A',
+    InPhase1BeforeMove: 'B',
+    InPhase1ProcessMove: 'C',
+    InPhase1Evaluation: 'D',
+    InPhase1Execution: 'E',
+    BeforePhase2: 'F',
+    InPhase2CollectOneIgloo: 'G',
+    InPhase2BeforeDeclaration: 'H',
+    InPhase2BeforeMove: 'I',
+    InPhase2ProcessMove: 'J',
+    InPhase2Evaluation: 'K',
+    InPhase2Execution: 'L',
+    EndOfGame: 'M',
+    EndOfGameProcessMove: 'N',
+  },
+  REQUEST: {
+    toFlipLeft: '0',
+    toFlipRight: '1',
+    toCollect: '2',
+    toDeclare: '3',
+  },
 
-  isTest: null,
-  status: null,
-  tilesOnTable: null,
-  tilesOnIgloo: null,
+  PARAMETERS: {
+    numberOfSunPositions: 9,
+  },
+
+  isTest: false,
+  gameState: null,
+  tilesOnTable: [],
+  tilesOnIgloo: [],
   sunPosition: null,
   round: null,
   whosMove: null,
   human: null,
   players: null,
   numberOfPlayers: null,
+  isListenToClick: false,
+  clickedTile: null,
+  toBeMovedToStack: null,
+  toBeTurnedDown: null,
+  toBeMovedToIgloo: null,
+  isAllFaceUp: false,
+  isEndOfMove: false,
+  isEndOfPhase1: false,
+  isEndOfPhase2: false,
 
-  listenToClick: false,
-
-  play: function (event) {
-    if (typeof this.status === 'undefined' || this.status === null) { this.status = this.statusBeforePhase1; }
-    if (event) { }
+  play: function (request, elementId) {
+    if (typeof this.gameState === 'undefined' || this.gameState === null) {
+      this.gameState = this.STATE.BeforePhase1;
+    }
 
     infiniteLoop: while (true) {
 
-      switch (this.status) {
-        case this.statusBeforePhase1:
+      switch (this.gameState) {
+
+        case this.STATE.BeforePhase1:
           this.isTest = true;
           this.numberOfPlayers = 4;
           this.sunPosition = 0;
           this.round = 0;
           this.setupPlayers();
           this.setupTiles();
+          // fill webpage with elements
           gameViewer.generateGameBoard(this.tiles, this.tilesOnTable, this.players, this.isTest);
+          // set moving parts' position relative to their containing element
           gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
           // set ActualPlayer to the first player
           this.whosMove = (this.isTest) ? this.human : 0;
-          // continue to status InPhase1-BeforeMove
-          this.status = this.statusInPhase1BeforeMove;
-          this.listenToClick = true;
+          // continue to state InPhase1-BeforeMove
+          this.gameState = this.STATE.InPhase1BeforeMove;
           break;
 
-        case this.statusInPhase1BeforeMove:
+        case this.STATE.InPhase1BeforeMove:
           // instruct ActualPlayer to move (flip or collect)
           gameViewer.setBackground(this.players[this.whosMove].background);
-          this.listenToClick = true;
+          this.isListenToClick = true;
+          this.request = null;
+          this.clicked = null;
+          // next state will be InPhase1ProcessMove 
+          this.gameState = this.STATE.InPhase1ProcessMove;
           // wait for request
           break infiniteLoop;
 
-        case this.statusInPhase1ProcessMove:
+        case this.STATE.InPhase1ProcessMove:
+          this.clickedTile = null;
           //  If Request is RequestToFlip to flip a face-down tile up, then
           //    -> set flag RequestToFlip
           //    -> flip the tile face-up
@@ -68,60 +95,124 @@ const gameController = {
           //        -> move the sun piece to the next position. 
           //           if there is no next position (already on the final), then do not move sun
           // If Request is CollectTiles to collect face-up tiles from table -> set flag RequestToCollect
-          // If Request is something else -> continue to status InPhase1-BeforeMove
-          // continue to status InPhase1-Evaluation
-          if (gameController.whosMove !== gameController.human || !gameController.listenToClick) {
+          // If Request is something else -> continue to state InPhase1-BeforeMove
+          // continue to state InPhase1-Evaluation
+          if (gameController.whosMove !== gameController.human) {
+            return;
+
+          } else if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
+            this.clickedTile = gameController.findTileOnTable(elementId);
+            if (!this.clickedTile || this.clickedTile.isFaceUp) {
+              return;
+            }
+            // flip the tile face-up
+            this.clickedTile.flipOnTable(request === this.REQUEST.toFlipLeft);
+            // handle: reindeer -> sun advances
+            if (this.clickedTile.name === Tile.NAME_REINDEER()
+              && this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
+              this.sunPosition++;
+              gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
+            }
+          } else if (request !== this.REQUEST.toCollect) {
             return;
           }
-          const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
-          const tile = gameController.findTileOnTable(event.currentTarget.id);
-          if (tile.isFaceUp === false) {
-            tile.flipOnTable(isClickedOnLeft);
-            let evaluationResult = gameController.evaluateTilesOnTablePhase1(tile, false);
-            if (evaluationResult.isEndOfMove) {
-              gameController.listenToClick = false;
-              setTimeout(function () {
-                gameController.listenToClick = true;
-                gameController.actOnEvaluation(evaluationResult);
-              }, gameViewer.tileBack.flipTimeMS * 2);
-            } else {
-              gameController.actOnEvaluation(evaluationResult);
+          this.gameState = this.STATE.InPhase1Evaluation;
+          break;
+
+        case this.STATE.InPhase1Evaluation:
+          this.isEndOfPhase2 = false;
+          this.isEndOfPhase1 = false;
+          this.isEndOfMove = false;
+          // check which tile to be turned down, moved to the igloo or to be collected to player's stack
+          [this.toBeTurnedDown, this.toBeMovedToStack, this.toBeMovedToIgloo, this.isAllFaceUp] = this.evaluateTilesOnTablePhase1();
+
+          // Phase_2 ends if no animal fled AND all tiles are face-up
+          if (this.isAllFaceUp && this.toBeTurnedDown.length === 0) {
+            this.isEndOfPhase1 = true;
+            this.isEndOfPhase2 = true;
+            // Phase_1 ends if clicked tile is a reindeer AND the sun is in the last position
+          } else if (this.clickedTile
+            && this.clickedTile.name === Tile.NAME_REINDEER()
+            && this.sunPosition === this.PARAMETERS.numberOfSunPositions - 1) {
+            this.isEndOfPhase1 = true;
+          }
+          // move ends if
+          // - player decided to collect the turned up tiles, or
+          // - last tile is an igloo, or
+          // - at least one animal hid (tile to be turned down)
+          if (this.isEndOfPhase1
+            || request === this.REQUEST.toCollect
+            || (this.clickedTile && this.clickedTile.name === Tile.NAME_IGLOO())
+            || this.toBeTurnedDown.length > 0) {
+            this.isEndOfMove = true;
+          }
+          if (this.isEndOfMove) {
+            // play dead
+            gameController.isListenToClick = false;
+            setTimeout(function () {
+              // back in the game
+              gameController.isListenToClick = true;
+              gameController.gameState = gameController.STATE.InPhase1Execution;
+              gameController.play();
+            }, gameViewer.tileBack.flipTimeMS * 2);
+            // wait for Timeout
+            break infiniteLoop;
+          } else {
+            // continue to execution
+            this.gameState = gameController.STATE.InPhase1Execution;
+            break;
+          }
+
+        case this.STATE.InPhase1Execution:
+          if (this.isEndOfMove) {
+            for (let tileIndex of this.toBeMovedToStack) {
+              this.removeTileFromTableToStack(this.tilesOnTable[tileIndex]);
+            }
+            for (let tileIndex of this.toBeTurnedDown) {
+              this.tilesOnTable[tileIndex].flipOnTable();
+            }
+            for (let tileIndex of this.toBeMovedToIgloo) {
+              this.removeTileFromTableToIgloo(this.tilesOnTable[tileIndex]);
+              this.removeMeepleFromBoardToIgloo(this.tilesOnTable[tileIndex]);
             }
           }
-          this.status = this.statusInPhase1Evaluation;
+          if (this.isEndOfPhase2) {
+            this.gameState = gameController.STATE.EndOfGame;
+          } else {
+            if (this.isEndOfMove) {
+              // set up next player
+              this.whosMove = ++this.whosMove % this.numberOfPlayers;
+            }
+            if (this.isEndOfPhase1) { this.gameState = gameController.STATE.BeforePhase2; }
+            else {this.gameState = gameController.STATE.InPhase1BeforeMove;}
+          }
           break;
 
-        case this.statusInPhase1Evaluation:
+        case this.STATE.BeforePhase2:
           break;
 
-        case this.statusInPhase1Execution:
+        case this.STATE.InPhase2CollectOneIgloo:
           break;
 
-        case this.statusBeforePhase2:
+        case this.STATE.InPhase2BeforeDeclaration:
           break;
 
-        case this.statusInPhase2CollectOneIgloo:
+        case this.STATE.InPhase2BeforeMove:
           break;
 
-        case this.statusInPhase2BeforeDeclaration:
+        case this.STATE.InPhase2ProcessMove:
           break;
 
-        case this.statusInPhase2BeforeMove:
+        case this.STATE.InPhase2Evaluation:
           break;
 
-        case this.statusInPhase2ProcessMove:
+        case this.STATE.InPhase2Execution:
           break;
 
-        case this.statusInPhase2Evaluation:
+        case this.STATE.EndOfGame:
           break;
 
-        case this.statusInPhase2Execution:
-          break;
-
-        case this.statusEndOfGame:
-          break;
-
-        case this.statusEndOfGameProcessMove:
+        case this.STATE.EndOfGameProcessMove:
           break;
       }
 
@@ -214,118 +305,43 @@ const gameController = {
     }
   },
 
-  handleTileClick: function (event) {
-    if (gameController.whosMove !== gameController.human || !gameController.listenToClick) {
-      return;
-    }
-    const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
-    const tile = gameController.findTileOnTable(event.currentTarget.id);
-    if (tile.isFaceUp === false) {
-      tile.flipOnTable(isClickedOnLeft);
-      let evaluationResult = gameController.evaluateTilesOnTablePhase1(tile, false);
-      if (evaluationResult.isEndOfMove) {
-        gameController.listenToClick = false;
-        setTimeout(function () {
-          gameController.listenToClick = true;
-          gameController.actOnEvaluation(evaluationResult);
-        }, gameViewer.tileBack.flipTimeMS * 2);
-      } else {
-        gameController.actOnEvaluation(evaluationResult);
-      }
-    }
-  },
-
-  handleIconClick: function (event) {
-    if (gameController.whosMove !== gameController.human) {
-      return;
-    }
-    // if clicked on the CollecTiles icon
-    if (event.currentTarget.id === gameViewer.icons[0].id + '0'
-      // and it is the Human player's move
-      && gameController.whosMove === gameController.human) {
-      let evaluationResult = gameController.evaluateTilesOnTablePhase1(null, true);
-      gameController.actOnEvaluation(evaluationResult);
-    }
-  },
-
-  evaluateTilesOnTablePhase1: function (clickedTile, isPlayerWantToCollect) {
-    let evaluation = new Evaluation();
-    let toBeMovedToStack = new Set();
+  evaluateTilesOnTablePhase1: function () {
     let toBeTurnedDown = new Set();
-
-    if (clickedTile !== null && clickedTile.name === Tile.NAME_REINDEER()) {
-      evaluation.isSunToBeMoved = true;
-    }
+    let toBeMovedToStack = new Set();
+    let toBeMovedToIgloo = [];
+    let isAllFaceUp = true;
 
     for (let i = 0; i < this.tilesOnTable.length; i++) {
-      if (this.tilesOnTable[i].isFaceUp) {
-        if (this.tilesOnTable[i].rank < 0) {
-          if (this.tilesOnTable[i].name === Tile.NAME_IGLOO()) {
-            evaluation.toBeMovedToIgloo.push(i);
-          }
-        } else {
-          // assume, that the current tile can be removed from the table
-          // that means, there is not one tile to hide from
-          toBeMovedToStack.add(i);
-          for (let j = i + 1; j < this.tilesOnTable.length; j++) {
-            if (this.tilesOnTable[j].isFaceUp && this.tilesOnTable[j].rank >= 0) {
-              if (this.tilesOnTable[i].rank === this.tilesOnTable[j].rank + 1) {
-                // j hides from i
-                toBeTurnedDown.add(j);
-              } else if (this.tilesOnTable[i].rank + 1 === this.tilesOnTable[j].rank) {
-                // i hides from j
-                toBeTurnedDown.add(i);
-              }
+      // isFaceUp can be ( true, false, null )
+      if (!this.tilesOnTable[i].isFaceUp) {
+        if (this.tilesOnTable[i].isFaceUp === false) { isAllFaceUp = false; }
+        continue;
+      }
+      if (this.tilesOnTable[i].rank < 0) {
+        if (this.tilesOnTable[i].name === Tile.NAME_IGLOO()) {
+          toBeMovedToIgloo.push(i);
+        }
+      } else {
+        // assume, that the current tile can be removed from the table
+        // that means, there is not one tile to hide from
+        toBeMovedToStack.add(i);
+        for (let j = i + 1; j < this.tilesOnTable.length; j++) {
+          if (this.tilesOnTable[j].isFaceUp && this.tilesOnTable[j].rank >= 0) {
+            if (this.tilesOnTable[i].rank === this.tilesOnTable[j].rank + 1) {
+              // j hides from i
+              toBeTurnedDown.add(j);
+            } else if (this.tilesOnTable[i].rank + 1 === this.tilesOnTable[j].rank) {
+              // i hides from j
+              toBeTurnedDown.add(i);
             }
           }
         }
       }
     }
     // remove those tiles which to be turned down, they can not be collected
-    for (let k of toBeTurnedDown) {
-      toBeMovedToStack.delete(k);
-    }
-    // convert the 2 Sets into Arrays
-    evaluation.toBeMovedToStack = Array.from(toBeMovedToStack);
-    evaluation.toBeTurnedDown = Array.from(toBeTurnedDown);
+    for (let k of toBeTurnedDown) { toBeMovedToStack.delete(k); }
 
-    // Phase_1 ends if
-    // last tile is a reindeer AND the sun reached the last place
-    if (evaluation.isSunToBeMoved && this.sunPosition === gameViewer.numberOfSunPositions - 2) {
-      evaluation.isEndOfPhase1 = true;
-    }
-    // move ends if
-    // - player decided to collect the turned up tiles, or
-    // - last tile is an igloo, or
-    // - at least one animal hid (tile to be turned down)
-    if (evaluation.isEndOfPhase1
-      || isPlayerWantToCollect
-      || (clickedTile && clickedTile.name === Tile.NAME_IGLOO())
-      || evaluation.toBeTurnedDown.length > 0) {
-      evaluation.isEndOfMove = true;
-    }
-
-    return evaluation;
+    return [toBeTurnedDown, toBeMovedToStack, toBeMovedToIgloo, isAllFaceUp];
   },
 
-  actOnEvaluation: function (evaluation) {
-    if (evaluation.isSunToBeMoved
-      && this.sunPosition < gameViewer.numberOfSunPositions - 1) {
-      this.sunPosition++;
-      gameViewer.setBoardPiecesPosition(this.sunPosition, this.numberOfPlayers);
-    }
-
-    if (evaluation.isEndOfMove) {
-      for (let tileIndex of evaluation.toBeMovedToStack) {
-        this.removeTileFromTableToStack(this.tilesOnTable[tileIndex]);
-      }
-      for (let tileIndex of evaluation.toBeTurnedDown) {
-        this.tilesOnTable[tileIndex].flipOnTable();
-      }
-      for (let tileIndex of evaluation.toBeMovedToIgloo) {
-        this.removeTileFromTableToIgloo(this.tilesOnTable[tileIndex]);
-        this.removeMeepleFromBoardToIgloo(this.tilesOnTable[tileIndex]);
-      }
-    }
-  },
 };
