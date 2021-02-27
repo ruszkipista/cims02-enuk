@@ -131,7 +131,7 @@ const gameController = {
               break infiniteLoop;
             }
             // flip the tile face-up
-            this.clickedTile.flipOnTable(request === this.REQUEST.toFlipLeft);
+            gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
             // handle: reindeer -> advance sun
             if (this.clickedTile.name === this.TILES.reindeer.name
               && this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
@@ -189,7 +189,7 @@ const gameController = {
           // handle End Of Move
           if (this.isEndOfMove) {
             for (let tileIndex of this.toBeTurnedDown) {
-              this.tilesOnTable[tileIndex].flipOnTable();
+              gameViewer.flipTileOnTable(this.tilesOnTable[tileIndex], null);
             }
             for (let tileIndex of this.toBeMovedToStack) {
               this.removeTileFromTableToStack(this.tilesOnTable[tileIndex]);
@@ -366,13 +366,16 @@ const gameController = {
           // generate ID for each Tile
           let tileId = `tile-${counter}`;
           let isIgloo = tileCount.name === tileCounts.igloo.name;
-          let tile = new Tile(tileId,
-            tileCount.name,
-            tileFace.filename,
-            tileCount.rank,
-            `${tileId}-ontable`,
-            (isIgloo) ? `${tileId}-onigloo` : '',
-            (isIgloo) ? `meeple-on-${tileId}` : '')
+          let tile = {
+            id: tileId,
+            name: tileCount.name,
+            filename: tileFace.filename,
+            rank: tileCount.rank,
+            idOnTable: `${tileId}-ontable`,
+            idOnIgloo: (isIgloo) ? `${tileId}-onigloo` : '',
+            idMeepleOnIgloo: (isIgloo) ? `meeple-on-${tileId}` : '',
+            isFaceUp: null,
+          };
           tilesOnTable.push(tile);
           counter++;
         }
@@ -407,7 +410,7 @@ const gameController = {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
       this.players[this.whosMove].tilesInStack.push(tile);
-      tile.addToStack(this.players[this.whosMove]);
+      gameViewer.addTileToStack(this.players[this.whosMove]);
       gameViewer.setVisibilityOfElement(tile.idOnTable, false);
     }
   },

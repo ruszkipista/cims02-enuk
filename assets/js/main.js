@@ -7,42 +7,15 @@ window.addEventListener('resize', function () {
   gameViewer.setBoardPiecesPosition();
 });
 
-// class TILE
-//============
-class Tile {
-
-  constructor(id, name, filename, rank, idOnTable, idOnIgloo, idMeepleOnIgloo) {
-    this.id = id;
-    this.isFaceUp = null;
-    this.idOnTable = idOnTable;
-    this.idOnIgloo = idOnIgloo;
-    this.name = name;
-    this.filename = filename;
-    this.rank = rank;
-    this.idMeepleOnIgloo = idMeepleOnIgloo;
-  }
-
-  flipOnTable(isClickedOnLeft) {
-    this.isFaceUp = !this.isFaceUp;
-    let tileInnerElement = document.getElementById(this.idOnTable).children[0];
-    if (this.isFaceUp) {
-      if (isClickedOnLeft) { tileInnerElement.classList.add('tile-flip-left'); }
-      else { tileInnerElement.classList.add('tile-flip-right'); }
-
-    } else {
-      tileInnerElement.classList.remove('tile-flip-up', 'tile-flip-down', 'tile-flip-left', 'tile-flip-right');
-    }
-  }
-
-  addToStack(player) {
-    let stackElement = document.getElementById(player.tileStackID);
-    if (player.tilesInStack.length > 0) {
-      stackElement.innerHTML =
-        `<img class="tile-edge" 
-              src="${gameViewer.imagePath}${gameViewer.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
-              style="margin-left: ${getRandomInt(5) - 2}px"
-              alt="tile edge for score keeping">`
-        + stackElement.innerHTML;
-    }
+// UTILITIES
+function getRandomInt(max) {
+  return Math.floor(Math.random() * Math.floor(max));
+}
+// learnt random shuffling from here https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
+function shuffleArrayInplace(arr) {
+  let j;
+  for (let i = arr.length - 1; i > 0; i--) {
+    j = getRandomInt(i + 1);
+    [arr[i], arr[j]] = [arr[j], arr[i]];
   }
 }

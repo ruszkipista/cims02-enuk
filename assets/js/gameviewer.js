@@ -171,6 +171,30 @@ const gameViewer = {
     return tileElement;
   },
 
+  flipTileOnTable: function(tile, isClickedOnLeft) {
+    tile.isFaceUp = !tile.isFaceUp;
+    let tileInnerElement = document.getElementById(tile.idOnTable).children[0];
+    if (tile.isFaceUp) {
+      if (isClickedOnLeft) { tileInnerElement.classList.add('tile-flip-left'); }
+      else { tileInnerElement.classList.add('tile-flip-right'); }
+
+    } else {
+      tileInnerElement.classList.remove('tile-flip-left', 'tile-flip-right');
+    }
+  },
+
+  addTileToStack: function(player) {
+    let stackElement = document.getElementById(player.tileStackID);
+    if (player.tilesInStack.length > 0) {
+      stackElement.innerHTML =
+        `<img class="tile-edge" 
+              src="${this.imagePath}${this.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
+              style="margin-left: ${getRandomInt(5) - 2}px"
+              alt="tile edge for score keeping">`
+        + stackElement.innerHTML;
+    }
+  },
+
   createIcons: function (icons) {
     for (let icon of icons) {
       // grab parent
