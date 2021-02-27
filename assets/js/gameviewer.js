@@ -222,7 +222,7 @@ const gameViewer = {
       if (icon.name === gameController.ICONS.sunPositions.name) {
         iconElement.style.opacity = '50%';
       }
-      if (!icon.isVisible) {
+      if (!icon.isVisibleInPhase1) {
         iconElement.style.visibility = 'hidden';
       }
       // append icon to parent
@@ -267,6 +267,12 @@ const gameViewer = {
       element.style.visibility = 'visible';
     } else {
       element.style.visibility = 'hidden';
+    }
+  },
+
+  setVisibilityOfIcons: function (icons, phase) {
+    for (let icon of icons) {
+      this.setVisibilityOfElement(icon.id, icon.isVisible[phase]);
     }
   },
 

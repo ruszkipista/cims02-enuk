@@ -5,8 +5,13 @@ const gameController = {
   PARAMETERS: {
     numberOfSunPositions: 9,
     numberOfPlayers: 4,
-    isSoundsOn: true,
+    isSoundsOn: false,
     isTest: true,
+  },
+
+  PHASES: {
+    one: 0,
+    two: 1,
   },
 
   TILES: {
@@ -19,15 +24,15 @@ const gameController = {
   },
 
   ICONS: {
-    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: true },
-    sunPositions: { name: 'sun-position', count: 9, request: null, isVisible: true },
-    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: true },
-    declareReindeer: { name: 'reindeer', count: 1, request: null, isVisible: true },
-    declarePolarbear: { name: 'polarbear', count: 1, request: null, isVisible: true },
-    declareSeal: { name: 'seal', count: 1, request: null, isVisible: true },
-    declaresSlmon: { name: 'salmon', count: 1, request: null, isVisible: true },
-    declareHerring: { name: 'herring', count: 1, request: null, isVisible: true },
-    declareIgloo: { name: 'igloo', count: 1, request: null, isVisible: true },
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true,false] },
+    sunPositions: { name: 'sun-position', count: 9, request: null, isVisible: [true,false] },
+    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true,false] },
+    declareReindeer: { name: 'reindeer', count: 1, request: null, isVisible: [false,true] },
+    declarePolarbear: { name: 'polarbear', count: 1, request: null, isVisible: [false,true] },
+    declareSeal: { name: 'seal', count: 1, request: null, isVisible: [false,true] },
+    declaresSlmon: { name: 'salmon', count: 1, request: null, isVisible: [false,true] },
+    declareHerring: { name: 'herring', count: 1, request: null, isVisible: [false,true] },
+    declareIgloo: { name: 'igloo', count: 1, request: null, isVisible: [false,true] },
   },
 
   // game states
@@ -98,6 +103,7 @@ const gameController = {
           gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
           // set moving parts' position relative to their containing element
           gameViewer.setBoardPiecesPosition();
+          gameViewer.setVisibilityOfIcons(this.iconsOnTable,this.PHASES.one);
           // whos move first?
           this.passMoveToNextPlayer();
           // continue to state InPhase1-BeforeMove
@@ -219,6 +225,7 @@ const gameController = {
         // BeforePhase2
         case this.STATE.BeforePhase2:
           // set invisible the CollectTiles icon on board
+          gameViewer.setVisibilityOfIcons(this.iconsOnTable,this.PHASES.two);
           // set visible the icons for each tile type on the board for getting tile type declaration from players:
           //     (herring, salmon, seal, polarbear, reindeer, igloo)
           // continue to state InPhase2-CollectOneIgloo
