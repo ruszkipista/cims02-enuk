@@ -12,15 +12,15 @@ const gameViewer = {
     { name: gameController.TILES.seal.name, filename: 'tileface-seal.jpg', sound: 'seal-pips.mp3' },
     { name: gameController.TILES.salmon.name, filename: 'tileface-salmon.jpg', sound: 'salmon-pips.mp3' },
     { name: gameController.TILES.herring.name, filename: 'tileface-herring.jpg', sound: 'herring-fart.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo00.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo01.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo02.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo10.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo11.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo12.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo20.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo21.jpg' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo22.jpg' }
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo00.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo01.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo02.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo10.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo11.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo12.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo20.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo21.jpg', sound: 'ice-crack.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo22.jpg', sound: 'ice-crack.mp3' }
   ],
 
   iconFaces: [

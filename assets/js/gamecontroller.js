@@ -455,6 +455,7 @@ const gameController = {
       this.tilesOnIgloo.push(tile);
       gameViewer.setVisibilityOfElement(tile.idOnTable, false);
       gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
+      gameViewer.playSound(tile.sound);
     }
   },
 
