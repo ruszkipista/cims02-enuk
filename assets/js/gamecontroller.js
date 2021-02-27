@@ -5,7 +5,8 @@ const gameController = {
   PARAMETERS: {
     numberOfSunPositions: 9,
     numberOfPlayers: 4,
-    isSoundsOn: false,
+    numberOfAnimalTiles: 4, //14
+    isSoundsOn: true,
     isTest: true,
   },
 
@@ -15,24 +16,24 @@ const gameController = {
   },
 
   TILES: {
-    reindeer: { name: 'reindeer', rank: 5, count: 9 },
-    polarbear: { name: 'polarbear', rank: 4, count: 14 },
-    seal: { name: 'seal', rank: 3, count: 14 },
-    salmon: { name: 'salmon', rank: 2, count: 14 },
-    herring: { name: 'herring', rank: 1, count: 14 },
+    reindeer: { name: 'reindeer', rank: 5, count: null },
+    polarbear: { name: 'polarbear', rank: 4, count: null },
+    seal: { name: 'seal', rank: 3, count: null },
+    salmon: { name: 'salmon', rank: 2, count: null },
+    herring: { name: 'herring', rank: 1, count: null },
     igloo: { name: 'igloo', rank: null, count: 1 },
   },
-
+  // wherewer you se null, that is going to be updated during setup
   ICONS: {
-    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true,false] },
-    sunPositions: { name: 'sun-position', count: 9, request: null, isVisible: [true,false] },
-    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true,false] },
-    declareReindeer: { name: 'reindeer', count: 1, request: null, isVisible: [false,true] },
-    declarePolarbear: { name: 'polarbear', count: 1, request: null, isVisible: [false,true] },
-    declareSeal: { name: 'seal', count: 1, request: null, isVisible: [false,true] },
-    declaresSlmon: { name: 'salmon', count: 1, request: null, isVisible: [false,true] },
-    declareHerring: { name: 'herring', count: 1, request: null, isVisible: [false,true] },
-    declareIgloo: { name: 'igloo', count: 1, request: null, isVisible: [false,true] },
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true, false] },
+    sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [true, false] },
+    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true, false] },
+    declareReindeer: { name: null, count: 1, request: null, isVisible: [false, true] },
+    declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, true] },
+    declareSeal: { name: null, count: 1, request: null, isVisible: [false, true] },
+    declaresSalmon: { name: null, count: 1, request: null, isVisible: [false, true] },
+    declareHerring: { name: null, count: 1, request: null, isVisible: [false, true] },
+    declareIgloo: { name: null, count: 1, request: null, isVisible: [false, true] },
   },
 
   // game states
@@ -89,23 +90,7 @@ const gameController = {
 
         // BeforePhase1
         case this.STATE.BeforePhase1:
-          this.TILES.reindeer.count = this.PARAMETERS.numberOfSunPositions;
-          this.ICONS.sunPositions.count = this.PARAMETERS.numberOfSunPositions;
-          this.sunPosition = 0;
-          this.round = 0;
-          this.tilesOnIgloo = [];
-          this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
-          this.ICONS.collectTiles.request = this.REQUEST.toCollect;
-          this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
-          this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces);
-          if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
-          // fill webpage with elements
-          gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
-          // set moving parts' position relative to their containing element
-          gameViewer.setBoardPiecesPosition();
-          gameViewer.setVisibilityOfIcons(this.iconsOnTable,this.PHASES.one);
-          // whos move first?
-          this.passMoveToNextPlayer();
+          this.setupGameBeforePhase1();
           // continue to state InPhase1-BeforeMove
           this.gameState = this.STATE.InPhase1BeforeMove;
           break;
@@ -224,12 +209,11 @@ const gameController = {
 
         // BeforePhase2
         case this.STATE.BeforePhase2:
-          // set invisible the CollectTiles icon on board
-          gameViewer.setVisibilityOfIcons(this.iconsOnTable,this.PHASES.two);
-          // set visible the icons for each tile type on the board for getting tile type declaration from players:
-          //     (herring, salmon, seal, polarbear, reindeer, igloo)
+          // set visibility/invisibility of icons
+          gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.two);
           // continue to state InPhase2-CollectOneIgloo
-          break infiniteLoop;
+          this.gameState = this.STATE.InPhase2CollectOneIgloo;
+          break;
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
@@ -237,7 +221,7 @@ const gameController = {
           // remove ActualPlayer’s one meeple from igloo
           // remove tile underneath the removed meeple and move it to the tile stack of the ActualPlayer
           // continue to state InPhase2-BeforeDeclaration
-          break;
+          break infiniteLoop;
 
         // InPhase2-BeforeDeclaration
         case this.STATE.InPhase2BeforeDeclaration:
@@ -310,6 +294,25 @@ const gameController = {
 
   },
 
+  setupGameBeforePhase1: function () {
+    this.round = 0;
+    this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
+    this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
+    this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces, 
+                                        this.PARAMETERS.numberOfSunPositions, 
+                                        this.PARAMETERS.numberOfAnimalTiles);
+    if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
+    // fill webpage with elements
+    gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
+    // set moving parts' position relative to their containing element
+    this.sunPosition = 0;
+    gameViewer.setBoardPiecesPosition();
+    // set visibility/invisibility of icons
+    gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.one);
+    // determine whos move first?
+    this.passMoveToNextPlayer();
+  },
+
   setupPlayers: function (numberOfPlayers, isTest) {
     if (isTest) {
       this.human = 0;
@@ -319,22 +322,22 @@ const gameController = {
     }
     this.players = [];
     for (let i = 0; i < numberOfPlayers; i++) {
+      const meeple = gameViewer.meeplePieces[i];
       this.players[i] = {
-        name: gameViewer.meeplePieces[i].name,
+        name: meeple.name,
         meeples: [],
         // generate ID for each Tile Stack (score) - one stack per player
         tileStackID: `tiles-stack-player${i}`,
         tilesInStack: [],
       };
-      this.players[i].background = gameViewer.meeplePieces[i].background;
-      const meepleFilename = (i === this.human) ? gameViewer.meeplePieces[i].filenameHuman : gameViewer.meeplePieces[i].filenameMachine;
+      this.players[i].background = meeple.background;
       // generate 4 meeples
-      for (let j = 0; j < gameViewer.meeplePieces[i].count; j++) {
+      for (let j = 0; j < meeple.count; j++) {
         let meepleId = `player${i}-meeple${j}`;
         this.players[i].meeples[j] = {
           id: meepleId,
           name: `meeple-${this.players[i].name}`,
-          filename: meepleFilename,
+          filename: (i === this.human) ? meeple.filenameHuman : meeple.filenameMachine,
           isOnBoard: true,
           idOnBoard: meepleId + '-onboard',
           idOnIgloo: null,
@@ -344,6 +347,21 @@ const gameController = {
   },
 
   setupIcons: function (iconCounts, tileCounts, iconFaces) {
+    iconCounts.sunPositions.count = this.PARAMETERS.numberOfSunPositions;
+    iconCounts.collectTiles.request = this.REQUEST.toCollect;
+    iconCounts.declareReindeer.name = tileCounts.reindeer.name;
+    iconCounts.declareReindeer.request = this.REQUEST.toDeclare;
+    iconCounts.declarePolarbear.name = tileCounts.polarbear.name;
+    iconCounts.declarePolarbear.request = this.REQUEST.toCollect;
+    iconCounts.declareSeal.name = tileCounts.seal.name;
+    iconCounts.declareSeal.request = this.REQUEST.toCollect;
+    iconCounts.declaresSalmon.name = tileCounts.salmon.name;
+    iconCounts.declaresSalmon.request = this.REQUEST.toCollect;
+    iconCounts.declareHerring.name = tileCounts.herring.name;
+    iconCounts.declareHerring.request = this.REQUEST.toCollect;
+    iconCounts.declareIgloo.name = tileCounts.igloo.name;
+    iconCounts.declareIgloo.request = this.REQUEST.toCollect;
+
     let iconsOnTable = [];
     for (const [key, iconCount] of Object.entries(iconCounts)) {
       for (let iconFace of iconFaces) {
@@ -365,7 +383,12 @@ const gameController = {
     return iconsOnTable;
   },
 
-  setupTiles: function (tileCounts, tileFaces) {
+  setupTiles: function (tileCounts, tileFaces, numberOfSunPositions, numberOfAnimalTiles) {
+    tileCounts.reindeer.count = numberOfSunPositions;
+    tileCounts.polarbear.count = numberOfAnimalTiles;
+    tileCounts.seal.count = numberOfAnimalTiles;
+    tileCounts.salmon.count = numberOfAnimalTiles;
+    tileCounts.herring.count = numberOfAnimalTiles;
     let tilesOnTable = [];
     let counter = 0;
     for (const [key, tileCount] of Object.entries(tileCounts)) {
@@ -396,6 +419,7 @@ const gameController = {
 
   passMoveToNextPlayer: function () {
     this.whosMove = (this.PARAMETERS.isTest) ? this.human : (++this.whosMove % this.PARAMETERS.numberOfPlayers);
+    if (this.whosMove === 0) { ++this.round; }
   },
 
   findTileOnTable: function (idOnTable) {
