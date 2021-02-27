@@ -8,10 +8,10 @@ const gameViewer = {
 
   tileFaces: [
     { name: gameController.TILES.reindeer.name, filename: 'tileface-reindeer.jpg' },
-    { name: gameController.TILES.polarbear.name, filename: 'tileface-polarbear.jpg' },
-    { name: gameController.TILES.seal.name, filename: 'tileface-seal.jpg' },
-    { name: gameController.TILES.salmon.name, filename: 'tileface-salmon.jpg' },
-    { name: gameController.TILES.herring.name, filename: 'tileface-herring.jpg' },
+    { name: gameController.TILES.polarbear.name, filename: 'tileface-polarbear.jpg', sound: 'polarbear-roar.mp3' },
+    { name: gameController.TILES.seal.name, filename: 'tileface-seal.jpg', sound: 'seal-pips.mp3' },
+    { name: gameController.TILES.salmon.name, filename: 'tileface-salmon.jpg', sound: 'salmon-pips.mp3' },
+    { name: gameController.TILES.herring.name, filename: 'tileface-herring.jpg', sound: 'herring-fart.mp3' },
     { name: gameController.TILES.igloo.name, filename: 'tileface-igloo00.jpg' },
     { name: gameController.TILES.igloo.name, filename: 'tileface-igloo01.jpg' },
     { name: gameController.TILES.igloo.name, filename: 'tileface-igloo02.jpg' },
@@ -34,6 +34,12 @@ const gameViewer = {
     { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.5, 0] },
     { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.6, 0] },
   ],
+
+  sounds: {
+    flip: { filename: 'tile-flip.mp3' },
+    stack: { filename: 'tile-stack.mp3' },
+    click: { filename: 'button-click.mp3' },
+  },
 
   boardPiece: {
     id: 'piece-board',
@@ -174,11 +180,7 @@ const gameViewer = {
 
   flipTileOnTable: function (tile, isClickedOnLeft) {
     tile.isFaceUp = !tile.isFaceUp;
-    if (gameController.PARAMETERS.isSoundsOn) {
-      const audio = document.createElement("audio");
-      audio.src = `${this.audioPath}tile-flip.mp3`;
-      audio.play();
-    }
+    this.playSound(this.sounds.flip.filename);
     let tileInnerElement = document.getElementById(tile.idOnTable).children[0];
     if (tile.isFaceUp) {
       if (isClickedOnLeft) { tileInnerElement.classList.add('tile-flip-left'); }
@@ -193,6 +195,7 @@ const gameViewer = {
   addTileToStack: function (player) {
     let stackElement = document.getElementById(player.tileStackID);
     if (player.tilesInStack.length > 0) {
+      this.playSound(this.sounds.stack.filename);
       stackElement.innerHTML =
         `<img class="tile-edge" 
               src="${this.imagePath}${this.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
@@ -324,22 +327,29 @@ const gameViewer = {
   },
 
   handleTileClick: function (event) {
-    if (gameController.isListenToClick) {
-      const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
-      const request = isClickedOnLeft ? gameController.REQUEST.toFlipLeft : gameController.REQUEST.toFlipRight;
-      const clickedElement = event.currentTarget.id
-      gameController.play(request, clickedElement);
-    }
+    if (!gameController.isListenToClick) { return; }
+    const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
+    const request = isClickedOnLeft ? gameController.REQUEST.toFlipLeft : gameController.REQUEST.toFlipRight;
+    const clickedElement = event.currentTarget.id
+    gameController.play(request, clickedElement);
   },
 
   handleIconClick: function (event) {
-    if (gameController.isListenToClick) {
-      // clicked on the CollecTiles icon
-      for (let icon of gameController.iconsOnTable) {
-        if (event.currentTarget.id === icon.id) {
-          gameController.play(icon.request, event.currentTarget.id);
-        }
-      }
+    if (!gameController.isListenToClick) { return; }
+    // clicked on the CollecTiles icon
+    for (let icon of gameController.iconsOnTable) {
+      if (event.currentTarget.id !== icon.id) { continue; }
+      gameController.play(icon.request, event.currentTarget.id);
+      gameViewer.playSound(gameViewer.sounds.click.filename);
+    }
+  },
+
+  playSound: function (filename) {
+    if (gameController.PARAMETERS.isSoundsOn) {
+      // learnt about handling audio here: https://developer.mozilla.org/en-US/docs/Games/Techniques/Audio_for_Web_Games
+      const audio = document.createElement("audio");
+      audio.src = `${gameViewer.audioPath}${filename}`;
+      audio.play();
     }
   },
 

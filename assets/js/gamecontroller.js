@@ -190,6 +190,7 @@ const gameController = {
           // handle End Of Move
           if (this.isEndOfMove) {
             for (let tileIndex of this.toBeTurnedDown) {
+              gameViewer.playSound(this.tilesOnTable[tileIndex].sound);
               gameViewer.flipTileOnTable(this.tilesOnTable[tileIndex], null);
             }
             for (let tileIndex of this.toBeMovedToStack) {
@@ -376,6 +377,7 @@ const gameController = {
             idOnIgloo: (isIgloo) ? `${tileId}-onigloo` : '',
             idMeepleOnIgloo: (isIgloo) ? `meeple-on-${tileId}` : '',
             isFaceUp: null,
+            sound: tileFace.sound,
           };
           tilesOnTable.push(tile);
           counter++;
