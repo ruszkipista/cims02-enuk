@@ -236,7 +236,7 @@ const gameViewer = {
     }
   },
 
-  setBoardPiecesPosition: function (sunPosition, numberOfPlayers) {
+  setBoardPiecesPosition: function () {
     // learnt about getBoundingClientRect() here: https://stackoverflow.com/questions/294250/how-do-i-retrieve-an-html-elements-actual-width-and-height
     let parentRect = document.getElementById(this.boardPiece.id).getBoundingClientRect();
 
@@ -256,13 +256,16 @@ const gameViewer = {
     document.documentElement.style.setProperty('--meeple-onigloo-width', `${meepleWidth * 2}px`);
     document.documentElement.style.setProperty('--tile-edge-width', `${meepleWidth * this.meeplePieces[0].count}px`);
     document.documentElement.style.setProperty('--tiles-stack-height', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
-    for (let i = 0; i < numberOfPlayers; i++) {
+    for (let i = 0; i < gameController.PARAMETERS.numberOfPlayers; i++) {
       document.documentElement.style.setProperty('--board-meeples-fromtop', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
       document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`, `${parentRect.left + parentRect.width * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
     }
 
-    // sun positions
-    let icon = this.iconFaces[1];
+    // set sun positions
+    let icon = this.iconFaces.find(function (element, index) {
+      if (element.name === gameController.ICONS.sunPositions.name)
+        return true;
+    });
     parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
     let sunLeftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.height, gameController.PARAMETERS.numberOfSunPositions);
     let sunCounter = 0;
@@ -271,12 +274,12 @@ const gameViewer = {
         icon.leftTopCorner = sunLeftTopCorners[sunCounter];
         sunCounter++;
       } else if (icon.name === gameController.ICONS.sunPiece.name) {
-        icon.leftTopCorner = sunLeftTopCorners[sunPosition];
+        icon.leftTopCorner = sunLeftTopCorners[gameController.sunPosition];
       }
     }
 
     // set how many degrees the sun needs to turn in current position relative to the first position
-    document.documentElement.style.setProperty('--piece-sun-rotate', `${sunPosition * 130}deg`);
+    document.documentElement.style.setProperty('--piece-sun-rotate', `${gameController.sunPosition * 130}deg`);
 
     // icon positions
     let element = null;

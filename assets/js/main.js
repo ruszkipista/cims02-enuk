@@ -4,7 +4,7 @@ window.addEventListener('load', function () {
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () {
-  gameViewer.setBoardPiecesPosition(gameController.sunPosition, gameController.PARAMETERS.numberOfPlayers);
+  gameViewer.setBoardPiecesPosition();
 });
 
 // class TILE
@@ -43,40 +43,6 @@ class Tile {
               style="margin-left: ${getRandomInt(5) - 2}px"
               alt="tile edge for score keeping">`
         + stackElement.innerHTML;
-    }
-  }
-}
-
-// class MEEPLE
-//============
-class Meeple {
-
-  constructor(id, name, filename) {
-    this.id = id;
-    this.isOnBoard = true;
-    this.idOnBoard = id + '-onboard';
-    this.idOnIgloo = null;
-    this.name = name;
-    this.filename = filename;
-  }
-
-  removeFromBoardToIgloo(idOnIgloo) {
-    if (this.isOnBoard) {
-      this.isOnBoard = false;
-      this.idOnIgloo = idOnIgloo;
-      const meepleOnIglooElement = document.getElementById(idOnIgloo);
-      meepleOnIglooElement.setAttribute('src', gameViewer.imagePath + this.filename);
-    }
-  }
-
-  removeFromIglooToBoard() {
-    if (!this.isOnBoard) {
-      this.isOnBoard = true;
-      const meepleOnIglooElement = document.getElementById(this.idOnIgloo);
-      meepleOnIglooElement.setAttribute('src', "");
-      this.idOnIgloo = null;
-      gameViewer.setVisibilityOfElement(this.idOnIgloo, false);
-      gameViewer.setVisibilityOfElement(this.idOnBoard, true);
     }
   }
 }

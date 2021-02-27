@@ -89,14 +89,14 @@ const gameController = {
           this.round = 0;
           this.tilesOnIgloo = [];
           this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
-          this.ICONS.collectTiles.request = gameController.REQUEST.toCollect;
+          this.ICONS.collectTiles.request = this.REQUEST.toCollect;
           this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
           this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces);
           if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
           // fill webpage with elements
           gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
           // set moving parts' position relative to their containing element
-          gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
+          gameViewer.setBoardPiecesPosition();
           // whos move first?
           this.passMoveToNextPlayer();
           // continue to state InPhase1-BeforeMove
@@ -118,12 +118,15 @@ const gameController = {
         // InPhase1-ProcessMove
         case this.STATE.InPhase1ProcessMove:
           // stop listening to clicks (for a while)
+          this.isListenToClick = false;
           this.clickedTile = null;
+          // fall back state - if something unexpected
+          this.gameState = this.STATE.InPhase1BeforeMove;
           if (this.whosMove !== this.human) {
             break infiniteLoop;
           }
           if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
-            this.clickedTile = gameController.findTileOnTable(elementId);
+            this.clickedTile = this.findTileOnTable(elementId);
             if (!this.clickedTile || this.clickedTile.isFaceUp) {
               break infiniteLoop;
             }
@@ -143,7 +146,6 @@ const gameController = {
 
         // InPhase1-Evaluation
         case this.STATE.InPhase1Evaluation:
-          gameController.isListenToClick = false;
           this.isEndOfPhase2 = false;
           this.isEndOfPhase1 = false;
           this.isEndOfMove = false;
@@ -170,18 +172,15 @@ const gameController = {
             || this.toBeTurnedDown.size > 0) {
             this.isEndOfMove = true;
           }
+          // set next state
+          this.gameState = this.STATE.InPhase1Execution;
           if (this.isEndOfMove) {
-            setTimeout(function () {
-              // back in the game after Timeout
-              gameController.isListenToClick = true;
-              gameController.gameState = gameController.STATE.InPhase1Execution;
-              gameController.play();
-            }, gameViewer.tileBack.flipTimeMS * 2);
-            // wait for Timeout to complete
+            // back in the game after Timeout
+            setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
+            // wait for Timeout to complete outside of the loop
             break infiniteLoop;
           } else {
             // continue to execution
-            this.gameState = gameController.STATE.InPhase1Execution;
             break;
           }
 
@@ -202,7 +201,7 @@ const gameController = {
           }
           // handle End of Phase 2
           if (this.isEndOfPhase2) {
-            this.gameState = gameController.STATE.EndOfGame;
+            this.gameState = this.STATE.EndOfGame;
           } else {
             // handle End Of Move
             if (this.isEndOfMove) {
@@ -210,8 +209,8 @@ const gameController = {
               this.passMoveToNextPlayer();
             }
             // handle End Of Phase 1
-            if (this.isEndOfPhase1) { this.gameState = gameController.STATE.BeforePhase2; }
-            else { this.gameState = gameController.STATE.InPhase1BeforeMove; }
+            if (this.isEndOfPhase1) { this.gameState = this.STATE.BeforePhase2; }
+            else { this.gameState = this.STATE.InPhase1BeforeMove; }
           }
           break;
 
@@ -221,7 +220,7 @@ const gameController = {
           // set visible the icons for each tile type on the board for getting tile type declaration from players:
           //     (herring, salmon, seal, polarbear, reindeer, igloo)
           // continue to state InPhase2-CollectOneIgloo
-          break;
+          break infiniteLoop;
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
@@ -319,11 +318,18 @@ const gameController = {
         tilesInStack: [],
       };
       this.players[i].background = gameViewer.meeplePieces[i].background;
-      // generate Meeples
+      const meepleFilename = (i === this.human) ? gameViewer.meeplePieces[i].filenameHuman : gameViewer.meeplePieces[i].filenameMachine;
+      // generate 4 meeples
       for (let j = 0; j < gameViewer.meeplePieces[i].count; j++) {
-        this.players[i].meeples[j] = new Meeple(`player${i}-meeple${j}`,
-          `meeple-${this.players[i].name}`,
-          (i === this.human) ? gameViewer.meeplePieces[i].filenameHuman : gameViewer.meeplePieces[i].filenameMachine);
+        let meepleId = `player${i}-meeple${j}`;
+        this.players[i].meeples[j] = {
+          id: meepleId,
+          name: `meeple-${this.players[i].name}`,
+          filename: meepleFilename,
+          isOnBoard: true,
+          idOnBoard: meepleId + '-onboard',
+          idOnIgloo: null,
+        }
       }
     }
   },
@@ -419,9 +425,27 @@ const gameController = {
     for (let i = this.players[this.whosMove].meeples.length - 1; i >= 0; i--) {
       let meeple = this.players[this.whosMove].meeples[i];
       if (meeple.isOnBoard) {
-        meeple.removeFromBoardToIgloo(tile.idMeepleOnIgloo);
+        meeple.isOnBoard = false;
+        meeple.idOnIgloo = tile.idMeepleOnIgloo;
+        const meepleOnIglooElement = document.getElementById(tile.idMeepleOnIgloo);
+        meepleOnIglooElement.setAttribute('src', gameViewer.imagePath + meeple.filename);
         gameViewer.setVisibilityOfElement(meeple.idOnBoard, false);
         gameViewer.setVisibilityOfElement(meeple.idOnIgloo, true);
+        break;
+      }
+    }
+  },
+
+  removeMeepleFromIglooToBoard(tile) {
+    for (let i = 0; i < this.players[this.whosMove].meeples.length - 1; i++) {
+      let meeple = this.players[this.whosMove].meeples[i];
+      if (!meeple.isOnBoard) {
+        meeple.isOnBoard = true;
+        meeple.idOnIgloo = null;
+        const meepleOnIglooElement = document.getElementById(tile.idMeepleOnIgloo);
+        meepleOnIglooElement.setAttribute('src', '');
+        gameViewer.setVisibilityOfElement(meeple.idOnBoard, true);
+        gameViewer.setVisibilityOfElement(meeple.idOnIgloo, false);
         break;
       }
     }
