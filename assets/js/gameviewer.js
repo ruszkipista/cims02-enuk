@@ -2,6 +2,7 @@
 //===================
 const gameViewer = {
   imagePath: './assets/img/',
+  audioPath: './assets/audio/',
   tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
   tileEdges: [{ filename: 'tileedge-mid.png' }, { filename: 'tileedge-top.png' }],
 
@@ -171,8 +172,13 @@ const gameViewer = {
     return tileElement;
   },
 
-  flipTileOnTable: function(tile, isClickedOnLeft) {
+  flipTileOnTable: function (tile, isClickedOnLeft) {
     tile.isFaceUp = !tile.isFaceUp;
+    if (gameController.PARAMETERS.isSoundsOn) {
+      const audio = document.createElement("audio");
+      audio.src = `${this.audioPath}tile-flip.mp3`;
+      audio.play();
+    }
     let tileInnerElement = document.getElementById(tile.idOnTable).children[0];
     if (tile.isFaceUp) {
       if (isClickedOnLeft) { tileInnerElement.classList.add('tile-flip-left'); }
@@ -181,9 +187,10 @@ const gameViewer = {
     } else {
       tileInnerElement.classList.remove('tile-flip-left', 'tile-flip-right');
     }
+
   },
 
-  addTileToStack: function(player) {
+  addTileToStack: function (player) {
     let stackElement = document.getElementById(player.tileStackID);
     if (player.tilesInStack.length > 0) {
       stackElement.innerHTML =

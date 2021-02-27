@@ -5,6 +5,7 @@ const gameController = {
   PARAMETERS: {
     numberOfSunPositions: 9,
     numberOfPlayers: 4,
+    isSoundsOn: true,
     isTest: true,
   },
 
