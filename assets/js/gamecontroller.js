@@ -3,7 +3,7 @@
 const gameController = {
 
   PARAMETERS: {
-    numberOfSunPositions: 9,
+    numberOfSunPositions: 3,
     numberOfPlayers: 4,
     numberOfAnimalTiles: 4, //14
     isSoundsOn: true,
@@ -23,7 +23,7 @@ const gameController = {
     herring: { name: 'herring', rank: 1, count: null },
     igloo: { name: 'igloo', rank: null, count: 1 },
   },
-  // wherewer you se null, that is going to be updated during setup
+  // wherewer you see null, that is going to be updated during setup
   ICONS: {
     collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true, false] },
     sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [true, false] },
@@ -53,6 +53,7 @@ const gameController = {
     EndOfGame: 'M',
     EndOfGameProcessMove: 'N',
   },
+
   REQUEST: {
     toFlipLeft: '0',
     toFlipRight: '1',
@@ -64,8 +65,8 @@ const gameController = {
   iconsOnTable: [],
   tilesOnTable: [],
   tilesOnIgloo: [],
-  sunPosition: null,
-  round: null,
+  sunPosition: 0,
+  round: 0,
   whosMove: null,
   human: null,
   players: null,
@@ -99,8 +100,6 @@ const gameController = {
         case this.STATE.InPhase1BeforeMove:
           // instruct ActualPlayer to move (flip or collect)
           gameViewer.setBackground(this.players[this.whosMove].background);
-          this.request = null;
-          this.clicked = null;
           // next state will be InPhase1ProcessMove 
           this.gameState = this.STATE.InPhase1ProcessMove;
           // wait for request
@@ -115,12 +114,12 @@ const gameController = {
           // fall back state - if something unexpected
           this.gameState = this.STATE.InPhase1BeforeMove;
           if (this.whosMove !== this.human) {
-            break infiniteLoop;
+            break;
           }
           if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
             this.clickedTile = this.findTileOnTable(elementId);
             if (!this.clickedTile || this.clickedTile.isFaceUp) {
-              break infiniteLoop;
+              break;
             }
             // flip the tile face-up
             gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
@@ -130,8 +129,10 @@ const gameController = {
               this.sunPosition++;
               gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
             }
-          } else if (request !== this.REQUEST.toCollect) {
-            break infiniteLoop;
+          } else if (request === this.REQUEST.toCollect) {
+            gameViewer.playSound(gameViewer.sounds.click.filename);
+          } else {
+            break;
           }
           this.gameState = this.STATE.InPhase1Evaluation;
           break;
@@ -295,17 +296,15 @@ const gameController = {
   },
 
   setupGameBeforePhase1: function () {
-    this.round = 0;
     this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
     this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
-    this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces, 
-                                        this.PARAMETERS.numberOfSunPositions, 
-                                        this.PARAMETERS.numberOfAnimalTiles);
+    this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces,
+      this.PARAMETERS.numberOfSunPositions,
+      this.PARAMETERS.numberOfAnimalTiles);
     if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
     // fill webpage with elements
     gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
     // set moving parts' position relative to their containing element
-    this.sunPosition = 0;
     gameViewer.setBoardPiecesPosition();
     // set visibility/invisibility of icons
     gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.one);
@@ -352,15 +351,15 @@ const gameController = {
     iconCounts.declareReindeer.name = tileCounts.reindeer.name;
     iconCounts.declareReindeer.request = this.REQUEST.toDeclare;
     iconCounts.declarePolarbear.name = tileCounts.polarbear.name;
-    iconCounts.declarePolarbear.request = this.REQUEST.toCollect;
+    iconCounts.declarePolarbear.request = this.REQUEST.toDeclare;
     iconCounts.declareSeal.name = tileCounts.seal.name;
-    iconCounts.declareSeal.request = this.REQUEST.toCollect;
+    iconCounts.declareSeal.request = this.REQUEST.toDeclare;
     iconCounts.declaresSalmon.name = tileCounts.salmon.name;
-    iconCounts.declaresSalmon.request = this.REQUEST.toCollect;
+    iconCounts.declaresSalmon.request = this.REQUEST.toDeclare;
     iconCounts.declareHerring.name = tileCounts.herring.name;
-    iconCounts.declareHerring.request = this.REQUEST.toCollect;
+    iconCounts.declareHerring.request = this.REQUEST.toDeclare;
     iconCounts.declareIgloo.name = tileCounts.igloo.name;
-    iconCounts.declareIgloo.request = this.REQUEST.toCollect;
+    iconCounts.declareIgloo.request = this.REQUEST.toDeclare;
 
     let iconsOnTable = [];
     for (const [key, iconCount] of Object.entries(iconCounts)) {
@@ -444,6 +443,7 @@ const gameController = {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
       this.players[this.whosMove].tilesInStack.push(tile);
+      gameViewer.playSound(gameViewer.sounds.stack.filename);
       gameViewer.addTileToStack(this.players[this.whosMove]);
       gameViewer.setVisibilityOfElement(tile.idOnTable, false);
     }

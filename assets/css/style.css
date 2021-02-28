@@ -11,18 +11,44 @@ body {
   background: url("") center top / cover;
 }
 #header {
-  position: relative;
   width: 100%;
   max-width: 1200px;
   height: var(--header-height);
   margin: 0 auto;
 }
 #title {
+  position: relative;
   height: 10vh;
   background: url("../img/enuk-title.png") center / contain no-repeat;
 }
 .icon-position{
   position: absolute;
+}
+.icon-position > input {
+  opacity: 0;
+}
+.icon-position > label {
+  position: absolute;
+  display: inline-block;
+  height: inherit;
+  width: inherit;
+  left: 0;
+  border-left: solid 1px #bbb;
+  border-bottom: solid 4px #999;
+  border-radius: 0.8rem;
+  margin-top: 0;
+  padding: 5px;
+  background-color: #FFFAE6;
+}
+.icon-position > label > img {
+  height: inherit;
+  width: inherit; 
+}
+.icon-position :checked + label {
+  margin-top: 6px;
+  margin-left: 3px;
+  padding: 2px;
+  border-bottom: solid 1px #bbb;
 }
 main {
   text-align: center;
