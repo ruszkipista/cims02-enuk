@@ -6,13 +6,16 @@
 :root { 
     --tile-normal-side: 6rem;
     --header-height: 10vh;
+    --icon-base: #FFFAE6;
 }
 body {
   background: url("") center top / cover;
+  max-width: 1200px;
+  margin: 0 auto;
 }
 #header {
   width: 100%;
-  max-width: 1200px;
+  
   height: var(--header-height);
   margin: 0 auto;
 }
@@ -38,7 +41,7 @@ body {
   border-radius: 0.8rem;
   margin-top: 0;
   padding: 5px;
-  background-color: #FFFAE6;
+  background-color: var(--icon-base);
 }
 .icon-position > label > img {
   height: inherit;

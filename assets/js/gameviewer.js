@@ -293,7 +293,7 @@ const gameViewer = {
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 4) * 3}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromtop', `${parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[0]}px`);
-    document.documentElement.style.setProperty('--piece-igloo3x3-fromleft', `${parentRect.left + parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
+    document.documentElement.style.setProperty('--piece-igloo3x3-fromleft', `${parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
 
     // meeple pieces position
     const meepleWidth = parentRect.width * this.boardPiece.meepleOnBoardWidth;
@@ -303,7 +303,7 @@ const gameViewer = {
     document.documentElement.style.setProperty('--tiles-stack-height', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
     for (let i = 0; i < gameController.PARAMETERS.numberOfPlayers; i++) {
       document.documentElement.style.setProperty('--board-meeples-fromtop', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
-      document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`, `${parentRect.left + parentRect.width * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
+      document.documentElement.style.setProperty(`--tiles-stack-fromleft${i}`, `${parentRect.width * this.boardPiece.meeplesOnBoardFromLeft[i]}px`);
     }
 
     // set sun positions
@@ -326,7 +326,7 @@ const gameViewer = {
     // set how many degrees the sun needs to turn in current position relative to the first position
     document.documentElement.style.setProperty('--piece-sun-rotate', `${gameController.sunPosition * 130}deg`);
 
-    // icon positions
+    // set icon positions
     let element = null;
     for (let icon of gameController.iconsOnTable) {
       parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
@@ -348,7 +348,6 @@ const gameViewer = {
 
   handleIconClick: function (event) {
     if (!gameController.isListenToClick) { return; }
-    // clicked on the CollecTiles icon
     for (let icon of gameController.iconsOnTable) {
       if (event.currentTarget.id !== icon.id) { continue; }
       gameController.play(icon.request, event.currentTarget.id);
