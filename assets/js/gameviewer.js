@@ -236,6 +236,28 @@ const gameViewer = {
     }
   },
 
+  initDeclareIcons: function (icons) {
+    for (let icon of icons) {
+      if (icon.request === gameController.REQUEST.toDeclare) {
+        // grab input element
+        const inputElement = document.getElementById(icon.id).firstChild;
+        inputElement.checked = "";
+      }
+    }
+  },
+
+  getTileDeclarationFromIcons: function (icons) {
+    for (let icon of icons) {
+      if (icon.request === gameController.REQUEST.toDeclare) {
+        // grab input element
+        const inputElement = document.getElementById(icon.id).firstChild;
+        if (inputElement.checked){
+          return icon.name;
+        }
+      }
+    }
+  },
+
   generateGameBoard: function (iconsOnTable, tilesOnTable, players, isTest) {
     let bodyElement = document.getElementsByTagName('body')[0];
     bodyElement.innerHTML = this.createBodyHTML();
@@ -291,7 +313,7 @@ const gameViewer = {
         titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center / contain no-repeat`;
         break;
       case gameController.PHASES.two:
-        titleElement.style.background = `url("${this.imagePath}${this.title.filename}") left 2vw top 2vh / 15vw no-repeat`;      
+        titleElement.style.background = `url("${this.imagePath}${this.title.filename}") left 2vw top 2vh / 15vw no-repeat`;
         break;
     }
   },

@@ -220,35 +220,58 @@ const gameController = {
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
+          // initialize the radio buttons of tile deceleration icons
+          gameViewer.initDeclareIcons(this.iconsOnTable);
           // remove ActualPlayer’s one meeple from igloo
           const tileId = this.removeMeepleFromIglooToBoard(this.players[this.whosMove]);
-          if (!tileId) { 
-          // If ActualPlayer hasn’t got meeple on igloo -> continue to state InPhase2-Evaluation
-          this.gameState = this.STATE.InPhase2Evaluation;
+          if (!tileId) {
+            // If ActualPlayer hasn’t got meeple on any igloo -> continue to state InPhase2-Evaluation
+            this.gameState = this.STATE.InPhase2Evaluation;
             break;
           }
           // remove tile from under the removed meeple and move it to the tile stack of the ActualPlayer
           this.removeTileFromIglooToStack(tileId);
-          // continue to state InPhase2-BeforeDeclaration
-          this.gameState = this.STATE.InPhase2Evaluation;
+          // continue to next state
+          this.gameState = this.STATE.InPhase2BeforeDeclaration;
           break;
 
         // InPhase2-BeforeDeclaration
         case this.STATE.InPhase2BeforeDeclaration:
           // instruct ActualPlayer to declare its next flip, choose one of the following:
           //         (herring, salmon, seal, polarbear, reindeer, igloo)
-          // wait for request
           this.isListenToClick = true;
+          // continue to next state
+          this.gameState = this.STATE.InPhase2BeforeMove;
+          // wait for request
           break infiniteLoop;
 
-        // InPhase2-ProcessMove
+        // InPhase2-BeforeMove
         case this.STATE.InPhase2BeforeMove:
+          if (request !== this.REQUEST.toDeclare) {
+            // wait for request
+            break infiniteLoop;
+          }
           // instruct ActualPlayer to flip one tile
-          // wait for request
+          // continue to next state
+          this.gameState = this.STATE.InPhase2ProcessMove;
           break infiniteLoop;
 
         // InPhase2-ProcessMove
         case this.STATE.InPhase2ProcessMove:
+          // check if there is one Declaration icon selected
+          const declaration = gameViewer.getTileDeclarationFromIcons(this.iconsOnTable);
+          if (!declaration) {
+            // wait for request
+            break infiniteLoop;
+          }
+          if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
+            this.clickedTile = this.findTileOnTable(elementId);
+            if (!this.clickedTile || this.clickedTile.isFaceUp) {
+              break;
+            }
+            // flip the tile face-up
+            gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
+          }
           // receive move from player: (ClickedElement(Tile or Icon), Request)
           // If Request is DeclareNextTileType AND ClickedElement is valid:
           //   -> set Declaration
