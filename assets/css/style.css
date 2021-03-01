@@ -7,7 +7,8 @@
     --tile-normal-side: 6rem;
     --header-height: 10vh;
     --icon-base: #FFFAE6;
-}
+    --icon-border: #88888850;
+  }
 body {
   background: url("") center top / cover;
   max-width: 1200px;
@@ -36,22 +37,24 @@ body {
   height: inherit;
   width: inherit;
   left: 0;
-  border-left: solid 1px #bbb;
-  border-bottom: solid 4px #999;
-  border-radius: 0.8rem;
-  margin-top: 0;
-  padding: 5px;
   background-color: var(--icon-base);
+  border-left: solid 1px var(--icon-border);
+  border-radius: 0.8rem;
+  margin-top: 6px;
+  margin-left: 2px;
+  padding: 2px;
+  border-bottom: solid 1px var(--icon-border);
 }
 .icon-position > label > img {
   height: inherit;
   width: inherit; 
 }
 .icon-position :checked + label {
-  margin-top: 6px;
-  margin-left: 3px;
-  padding: 2px;
-  border-bottom: solid 1px #bbb;
+  margin-top: 0;
+  margin-left: 0;
+  padding: 5px;
+  border-left: solid 2px var(--icon-border);
+  border-bottom: solid 4px var(--icon-border);
 }
 main {
   text-align: center;

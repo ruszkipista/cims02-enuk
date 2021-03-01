@@ -229,7 +229,8 @@ const gameController = {
           // instruct ActualPlayer to declare its next flip, choose one of the following:
           //         (herring, salmon, seal, polarbear, reindeer, igloo)
           // wait for request
-          break;
+          this.isListenToClick = true;
+          break infiniteLoop;
 
         // InPhase2-ProcessMove
         case this.STATE.InPhase2BeforeMove:
