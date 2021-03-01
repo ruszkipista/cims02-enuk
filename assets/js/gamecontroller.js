@@ -210,6 +210,8 @@ const gameController = {
 
         // BeforePhase2
         case this.STATE.BeforePhase2:
+          // re-set title's size and position
+          gameViewer.setTitle(this.PHASES.two);
           // set visibility/invisibility of icons
           gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.two);
           // continue to state InPhase2-CollectOneIgloo

@@ -3,6 +3,7 @@
 const gameViewer = {
   imagePath: './assets/img/',
   audioPath: './assets/audio/',
+  title: { filename: 'enuk-title.png' },
   tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
   tileEdges: [{ filename: 'tileedge-mid.png' }, { filename: 'tileedge-top.png' }],
 
@@ -238,6 +239,8 @@ const gameViewer = {
   generateGameBoard: function (iconsOnTable, tilesOnTable, players, isTest) {
     let bodyElement = document.getElementsByTagName('body')[0];
     bodyElement.innerHTML = this.createBodyHTML();
+    // set title as background
+    this.setTitle(gameController.PHASES.one);
     // put game board in place
     let boardPiecesHTML = '';
     // add BOARD to game space
@@ -278,6 +281,18 @@ const gameViewer = {
   setVisibilityOfIcons: function (icons, phase) {
     for (let icon of icons) {
       this.setVisibilityOfElement(icon.id, icon.isVisible[phase]);
+    }
+  },
+
+  setTitle: function (phase) {
+    const titleElement = document.getElementById('title');
+    switch (phase) {
+      case gameController.PHASES.one:
+        titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center / contain no-repeat`;
+        break;
+      case gameController.PHASES.two:
+        titleElement.style.background = `url("${this.imagePath}${this.title.filename}") left 2vw top 2vh / 15vw no-repeat`;      
+        break;
     }
   },
 

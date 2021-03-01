@@ -16,14 +16,12 @@ body {
 }
 #header {
   width: 100%;
-  
   height: var(--header-height);
   margin: 0 auto;
 }
 #title {
   position: relative;
   height: 10vh;
-  background: url("../img/enuk-title.png") center / contain no-repeat;
 }
 .icon-position{
   position: absolute;
