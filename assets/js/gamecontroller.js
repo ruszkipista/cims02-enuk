@@ -220,11 +220,18 @@ const gameController = {
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
-          // If ActualPlayer hasn’t got meeple on igloo -> continue to state InPhase2-Evaluation
           // remove ActualPlayer’s one meeple from igloo
-          // remove tile underneath the removed meeple and move it to the tile stack of the ActualPlayer
+          const tileId = this.removeMeepleFromIglooToBoard(this.players[this.whosMove]);
+          if (!tileId) { 
+          // If ActualPlayer hasn’t got meeple on igloo -> continue to state InPhase2-Evaluation
+          this.gameState = this.STATE.InPhase2Evaluation;
+            break;
+          }
+          // remove tile from under the removed meeple and move it to the tile stack of the ActualPlayer
+          this.removeTileFromIglooToStack(tileId);
           // continue to state InPhase2-BeforeDeclaration
-          break infiniteLoop;
+          this.gameState = this.STATE.InPhase2Evaluation;
+          break;
 
         // InPhase2-BeforeDeclaration
         case this.STATE.InPhase2BeforeDeclaration:
@@ -238,7 +245,7 @@ const gameController = {
         case this.STATE.InPhase2BeforeMove:
           // instruct ActualPlayer to flip one tile
           // wait for request
-          break;
+          break infiniteLoop;
 
         // InPhase2-ProcessMove
         case this.STATE.InPhase2ProcessMove:
@@ -253,7 +260,7 @@ const gameController = {
           //   -> continue to state InPhase2 - Evaluation
           // If Declaration is set -> continue to state InPhase2 - BeforeMove
           // Else -> continue to state InPhase2 - BeforeDeclaration
-          break;
+          break infiniteLoop;
 
         // InPhase2-Evaluation
         case this.STATE.InPhase2Evaluation:
@@ -266,7 +273,7 @@ const gameController = {
           // Else If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
           // Else -> set flag EndOfMove
           // continue to state InPhase2-Execution          
-          break;
+          break infiniteLoop;
 
         //  InPhase2-Execution
         case this.STATE.InPhase2Execution:
@@ -276,7 +283,7 @@ const gameController = {
           // If flag EndOfPhase2 -> continue to state EndOfGame
           // Else If flag EndOfMove -> set ActualPlayer to the next player
           // continue to state InPhase2-CollectOneIgloo          
-          break;
+          break infiniteLoop;
 
         // EndOfGame
         case this.STATE.EndOfGame:
@@ -284,14 +291,14 @@ const gameController = {
           // Allow free tile flipping on tiles remaining on the table
           // Offer to restart the game
           // wait for request
-          break;
+          break infiniteLoop;
 
         // EndOfGameProcessMove
         case this.STATE.EndOfGameProcessMove:
           // receive move from player: (ClickedElement, Request)
           // If Request is RequestToRestart -> continue to state BeforePhase1
           // If Request is RequestToFlip -> flip ClickedElement          
-          break;
+          break infiniteLoop;
       }
 
     };
@@ -343,6 +350,7 @@ const gameController = {
           isOnBoard: true,
           idOnBoard: meepleId + '-onboard',
           idOnIgloo: null,
+          tileIdonIgloo: null,
         }
       }
     }
@@ -426,11 +434,21 @@ const gameController = {
 
   findTileOnTable: function (idOnTable) {
     // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
-    let tile = this.tilesOnTable.find(function (element, index) {
-      if (element.idOnTable === idOnTable)
+    const tile = this.tilesOnTable.find(function (element, index) {
+      if (element.idOnTable === idOnTable) {
         return true;
+      }
     });
     return tile;
+  },
+
+  findTileIndexOnIgloo: function (tileId) {
+    const tileIndex = this.tilesOnIgloo.findIndex(function (element, index) {
+      if (element.id === tileId) {
+        return true;
+      }
+    });
+    return tileIndex;
   },
 
   removeTileFromTable: function (tile) {
@@ -442,16 +460,25 @@ const gameController = {
     return tile;
   },
 
-  removeTileFromTableToStack(tile) {
-    if (tile.isFaceUp) {
-      this.removeTileFromTable(tile);
-      this.players[this.whosMove].tilesInStack.push(tile);
-      gameViewer.playSound(gameViewer.sounds.stack.filename);
-      gameViewer.addTileToStack(this.players[this.whosMove]);
-      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
+  removeTileFromIgloo: function (tileId) {
+    const tileIndex = this.findTileIndexOnIgloo(tileId);
+    if (tileIndex >= 0) {
+      return tile = this.tilesOnIgloo.splice(tileIndex, 1)[0];
     }
   },
 
+  // Tile: Table -> Stack
+  removeTileFromTableToStack(tile) {
+    if (tile.isFaceUp) {
+      this.removeTileFromTable(tile);
+      gameViewer.setVisibilityOfElement(tile.idOnTable, false);
+      this.players[this.whosMove].tilesInStack.push(tile);
+      gameViewer.playSound(gameViewer.sounds.stack.filename);
+      gameViewer.addOneTileEdgeToStack(this.players[this.whosMove]);
+    }
+  },
+
+  // Tile: Table -> Igloo
   removeTileFromTableToIgloo(tile) {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
@@ -462,10 +489,21 @@ const gameController = {
     }
   },
 
+  // Tile: Igloo -> Stack
+  removeTileFromIglooToStack(tileId) {
+    const tile = this.removeTileFromIgloo(tileId);
+    gameViewer.setVisibilityOfElement(tile.idOnIgloo, false);
+    this.players[this.whosMove].tilesInStack.push(tile);
+    gameViewer.playSound(gameViewer.sounds.stack.filename);
+    gameViewer.addOneTileEdgeToStack(this.players[this.whosMove]);
+  },
+
+  // Meeple: Board -> Igloo
   removeMeepleFromBoardToIgloo(tile) {
     for (let i = this.players[this.whosMove].meeples.length - 1; i >= 0; i--) {
       let meeple = this.players[this.whosMove].meeples[i];
       if (meeple.isOnBoard) {
+        meeple.tileIdonIgloo = tile.id;
         meeple.isOnBoard = false;
         meeple.idOnIgloo = tile.idMeepleOnIgloo;
         const meepleOnIglooElement = document.getElementById(tile.idMeepleOnIgloo);
@@ -477,17 +515,20 @@ const gameController = {
     }
   },
 
-  removeMeepleFromIglooToBoard(tile) {
-    for (let i = 0; i < this.players[this.whosMove].meeples.length - 1; i++) {
-      let meeple = this.players[this.whosMove].meeples[i];
+  // Meeple: Igloo -> Board
+  removeMeepleFromIglooToBoard(player) {
+    for (let i = 0; i < player.meeples.length; i++) {
+      let meeple = player.meeples[i];
       if (!meeple.isOnBoard) {
         meeple.isOnBoard = true;
-        meeple.idOnIgloo = null;
-        const meepleOnIglooElement = document.getElementById(tile.idMeepleOnIgloo);
+        const meepleOnIglooElement = document.getElementById(meeple.idOnIgloo);
         meepleOnIglooElement.setAttribute('src', '');
         gameViewer.setVisibilityOfElement(meeple.idOnBoard, true);
         gameViewer.setVisibilityOfElement(meeple.idOnIgloo, false);
-        break;
+        meeple.idOnIgloo = null;
+        const tileIdOnIgloo = meeple.tileIdonIgloo;
+        meeple.tileIdonIgloo = null;
+        return tileIdOnIgloo;
       }
     }
   },

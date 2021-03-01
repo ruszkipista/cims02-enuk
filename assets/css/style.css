@@ -29,6 +29,7 @@ body {
 .icon-position > input {
   opacity: 0;
 }
+/* learnt about 3D radio button input here https://codepen.io/andreasnylin/pen/agiDp */
 .icon-position > label {
   position: absolute;
   display: inline-block;
@@ -128,7 +129,7 @@ main {
     width:  var(--tile-normal-side);
     height: var(--tile-normal-side);
 }
-/* Flipping learned from here: https://www.w3schools.com/howto/howto_css_flip_card.asp */
+/* learnt flipping from here: https://www.w3schools.com/howto/howto_css_flip_card.asp */
 .tile {
     display: inline-block;
     width: var(--tile-normal-side);

@@ -193,7 +193,7 @@ const gameViewer = {
 
   },
 
-  addTileToStack: function (player) {
+  addOneTileEdgeToStack: function (player) {
     let stackElement = document.getElementById(player.tileStackID);
     if (player.tilesInStack.length > 0) {
       stackElement.innerHTML =
