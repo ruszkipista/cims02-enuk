@@ -389,6 +389,7 @@ const gameController = {
             gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
             // If Request is RequestToRestart -> continue to state BeforePhase1            
           } else if (request === this.REQUEST.toRestart) {
+            gameViewer.playSound(gameViewer.sounds.click.filename);
             // continue to state BeforePhase1
             this.gameState = this.STATE.BeforePhase1;
             break;
