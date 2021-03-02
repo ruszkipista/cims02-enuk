@@ -2,12 +2,23 @@
 //======================
 const gameController = {
 
+  initialize: function (numberOfSunPositions, numberOfPlayers, numberOfMeeples, numberOfAnimalTiles, isSoundsOn, isTest) {
+    this.PARAMETERS.numberOfSunPositions = numberOfSunPositions;
+    this.PARAMETERS.numberOfPlayers = numberOfPlayers;
+    this.PARAMETERS.numberOfMeeples = numberOfMeeples;
+    this.PARAMETERS.numberOfAnimalTiles = numberOfAnimalTiles;
+    this.PARAMETERS.isSoundsOn = isSoundsOn;
+    this.PARAMETERS.isTest = isTest;
+    this.play();
+  },
+
   PARAMETERS: {
-    numberOfSunPositions: 3,
-    numberOfPlayers: 4,
-    numberOfAnimalTiles: 4, //14
-    isSoundsOn: true,
-    isTest: true,
+    numberOfSunPositions: null,
+    numberOfPlayers: null,
+    numberOfMeeples: null,
+    numberOfAnimalTiles: null,
+    isSoundsOn: null,
+    isTest: null,
   },
 
   PHASES: {
@@ -72,10 +83,10 @@ const gameController = {
   players: null,
   isListenToClick: false,
   clickedTile: null,
+  declaredTileName: null,
   toBeMovedToStack: null,
   toBeTurnedDown: null,
   toBeMovedToIgloo: null,
-  isAllFaceUp: false,
   isEndOfMove: false,
   isEndOfPhase1: false,
   isEndOfPhase2: false,
@@ -134,6 +145,7 @@ const gameController = {
           } else {
             break;
           }
+          // continue to next state
           this.gameState = this.STATE.InPhase1Evaluation;
           break;
 
@@ -142,11 +154,12 @@ const gameController = {
           this.isEndOfPhase2 = false;
           this.isEndOfPhase1 = false;
           this.isEndOfMove = false;
+          let isAllTilesFaceUp = false;
           // check which tile to be turned down, moved to the igloo or to be collected to player's stack
-          [this.toBeTurnedDown, this.toBeMovedToStack, this.toBeMovedToIgloo, this.isAllFaceUp] = this.evaluateTilesOnTablePhase1();
+          [this.toBeTurnedDown, this.toBeMovedToStack, this.toBeMovedToIgloo, isAllTilesFaceUp] = this.evaluateTilesOnTablePhase1(this.tilesOnTable);
 
           // Phase_2 ends if no animal fled AND all tiles are face-up
-          if (this.isAllFaceUp && this.toBeTurnedDown.length === 0) {
+          if (isAllTilesFaceUp && this.toBeTurnedDown.length === 0) {
             this.isEndOfPhase1 = true;
             this.isEndOfPhase2 = true;
             // Phase_1 ends if clicked tile is a reindeer AND the sun is in the last position
@@ -220,6 +233,8 @@ const gameController = {
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
+          this.clickedTile = null;
+          this.declaredTileName = null;
           // initialize the radio buttons of tile deceleration icons
           gameViewer.initDeclareIcons(this.iconsOnTable);
           // remove ActualPlayer’s one meeple from igloo
@@ -237,8 +252,8 @@ const gameController = {
 
         // InPhase2-BeforeDeclaration
         case this.STATE.InPhase2BeforeDeclaration:
-          // instruct ActualPlayer to declare its next flip, choose one of the following:
-          //         (herring, salmon, seal, polarbear, reindeer, igloo)
+          // instruct ActualPlayer to declare what its next flip going to be, 
+          // ask to choose one of the following: (herring, salmon, seal, polarbear, reindeer, igloo)
           this.isListenToClick = true;
           // continue to next state
           this.gameState = this.STATE.InPhase2BeforeMove;
@@ -247,10 +262,14 @@ const gameController = {
 
         // InPhase2-BeforeMove
         case this.STATE.InPhase2BeforeMove:
+          // receive move from player: (Request, ClickedElement[Tile or Icon])
           if (request !== this.REQUEST.toDeclare) {
             // wait for request
             break infiniteLoop;
           }
+          // If Request is DeclareNextTileType AND ClickedElement is valid:
+          //   -> set Declaration
+          //   -> mark Declaration on board
           // instruct ActualPlayer to flip one tile
           // continue to next state
           this.gameState = this.STATE.InPhase2ProcessMove;
@@ -259,44 +278,57 @@ const gameController = {
         // InPhase2-ProcessMove
         case this.STATE.InPhase2ProcessMove:
           // check if there is one Declaration icon selected
-          const declaration = gameViewer.getTileDeclarationFromIcons(this.iconsOnTable);
-          if (!declaration) {
+          this.declaredTileName = gameViewer.getTileDeclarationFromIcons(this.iconsOnTable);
+          if (!this.declaredTileName) {
             // wait for request
             break infiniteLoop;
           }
-          if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
-            this.clickedTile = this.findTileOnTable(elementId);
-            if (!this.clickedTile || this.clickedTile.isFaceUp) {
-              break;
-            }
-            // flip the tile face-up
-            gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
+          // there is a declaration - now accept click on a face-down tile
+          if (request !== this.REQUEST.toFlipLeft && request !== this.REQUEST.toFlipRight) {
+            // wait for request
+            break infiniteLoop;
           }
-          // receive move from player: (ClickedElement(Tile or Icon), Request)
-          // If Request is DeclareNextTileType AND ClickedElement is valid:
-          //   -> set Declaration
-          //   -> mark Declaration on board
-          //   -> continue to state InPhase2 - BeforeMove
-          // If Request is to flip a face - down tile up AND Declaration is set
+          // get clicked on tile
+          this.clickedTile = this.findTileOnTable(elementId);
+          if (!this.clickedTile || this.clickedTile.isFaceUp) {
+            // wait for request
+            break infiniteLoop;
+          }
+          // mute further clicks
+          this.isListenToClick = true;
+          // If Declaration is set AND Request was to flip a face-down tile up
           //   -> flag RequestToFlip
-          //   -> flip the clicked tile face - up
+          //   -> flip the clicked tile face-up
           //   -> continue to state InPhase2 - Evaluation
-          // If Declaration is set -> continue to state InPhase2 - BeforeMove
-          // Else -> continue to state InPhase2 - BeforeDeclaration
-          break infiniteLoop;
+          gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
+          // continue to next state
+          this.gameState = this.STATE.InPhase2Evaluation;
+          break;
 
         // InPhase2-Evaluation
         case this.STATE.InPhase2Evaluation:
           // clear evaluation flags
-          // If all tiles on table are face-up 
-          //     OR ClickedElement tile is the last reindeer
-          //     OR there is no more meeple on the igloo
-          //     -> set flag EndOfPhase2
+          this.isEndOfMove = false;
           // If NOT ClickedElement tile -> set flag EndOfMove
-          // Else If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
-          // Else -> set flag EndOfMove
-          // continue to state InPhase2-Execution          
-          break infiniteLoop;
+          if (!this.clickedTile) {
+            this.isEndOfMove = true;
+          // If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
+          } else if (this.clickedTile.name === this.declaredTileName) {
+            this.isDeclarationCorrect = true;
+          }
+          // If ClickedElement tile is the last reindeer
+          if ((this.clickedTile && this.clickedTile.name === this.TILES.reindeer.name)
+            //     OR there is no more meeple on the igloo
+            || this.evaluateMeeplesAtPlayers(this.players)
+            //     OR all tiles on table are face-up
+            || this.evaluateTilesOnTablePhase2(this.tilesOnTable)) {
+            //   -> set flag EndOfPhase2
+            this.isEndOfPhase2 = true;
+            this.isEndOfMove = true;
+          }
+          // continue to next state
+          this.gameState = this.STATE.InPhase2Execution;
+          break;
 
         //  InPhase2-Execution
         case this.STATE.InPhase2Execution:
@@ -363,8 +395,8 @@ const gameController = {
         tilesInStack: [],
       };
       this.players[i].background = meeple.background;
-      // generate 4 meeples
-      for (let j = 0; j < meeple.count; j++) {
+      // generate meeples
+      for (let j = 0; j < this.PARAMETERS.numberOfMeeples; j++) {
         let meepleId = `player${i}-meeple${j}`;
         this.players[i].meeples[j] = {
           id: meepleId,
@@ -556,32 +588,33 @@ const gameController = {
     }
   },
 
-  evaluateTilesOnTablePhase1: function () {
+  // Evaluate Tiles on Table - Phase 1
+  evaluateTilesOnTablePhase1: function (tiles) {
     let toBeTurnedDown = new Set();
     let toBeMovedToStack = new Set();
     let toBeMovedToIgloo = [];
-    let isAllFaceUp = true;
+    let isAllTilesFaceUp = true;
 
-    for (let i = 0; i < this.tilesOnTable.length; i++) {
+    for (let i = 0; i < tiles.length; i++) {
       // isFaceUp can be ( true, false, null )
-      if (!this.tilesOnTable[i].isFaceUp) {
-        if (this.tilesOnTable[i].isFaceUp === false) { isAllFaceUp = false; }
+      if (!tiles[i].isFaceUp) {
+        if (tiles[i].isFaceUp === false) { isAllTilesFaceUp = false; }
         continue;
       }
-      if (!this.tilesOnTable[i].rank) {
-        if (this.tilesOnTable[i].name === this.TILES.igloo.name) {
+      if (!tiles[i].rank) {
+        if (tiles[i].name === this.TILES.igloo.name) {
           toBeMovedToIgloo.push(i);
         }
       } else {
         // assume, that the current tile can be removed from the table
         // that means, there is not one tile to hide from
         toBeMovedToStack.add(i);
-        for (let j = i + 1; j < this.tilesOnTable.length; j++) {
-          if (this.tilesOnTable[j].isFaceUp && this.tilesOnTable[j].rank >= 0) {
-            if (this.tilesOnTable[i].rank === this.tilesOnTable[j].rank + 1) {
+        for (let j = i + 1; j < tiles.length; j++) {
+          if (tiles[j].isFaceUp && tiles[j].rank >= 0) {
+            if (tiles[i].rank === tiles[j].rank + 1) {
               // j hides from i
               toBeTurnedDown.add(j);
-            } else if (this.tilesOnTable[i].rank + 1 === this.tilesOnTable[j].rank) {
+            } else if (tiles[i].rank + 1 === tiles[j].rank) {
               // i hides from j
               toBeTurnedDown.add(i);
             }
@@ -592,7 +625,32 @@ const gameController = {
     // remove those tiles which to be turned down, they can not be collected
     for (let k of toBeTurnedDown) { toBeMovedToStack.delete(k); }
 
-    return [toBeTurnedDown, toBeMovedToStack, toBeMovedToIgloo, isAllFaceUp];
+    return [toBeTurnedDown, toBeMovedToStack, toBeMovedToIgloo, isAllTilesFaceUp];
+  },
+
+  // Evaluate Tiles on Table - Phase 2
+  evaluateTilesOnTablePhase2: function (tiles) {
+    let isAllTilesFaceUp = true;
+    for (let tile of tiles) {
+      // isFaceUp can be ( true, false, null )
+      if (tile.isFaceUp === false) {
+        isAllTilesFaceUp = false;
+        break;
+      }
+    }
+    return isAllTilesFaceUp;
+  },
+
+  // Evaluate Meeples on Board - Phase 2
+  evaluateMeeplesAtPlayers: function (players) {
+    let isMeeplesAtPlayers = true;
+    for (let player of players) {
+      if (player.meeples.length !== this.PARAMETERS.numberOfMeeples) {
+        isMeeplesAtPlayers = false;
+        break;
+      }
+    }
+    return isMeeplesAtPlayers;
   },
 
 };

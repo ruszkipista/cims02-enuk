@@ -1,6 +1,6 @@
 // initialize game space
 window.addEventListener('load', function () {
-  gameController.play();
+  gameController.initialize(3, 1, 4, 4, true, true);
 });
 // reposition the sun piece after window resize or change between landscape and portrait
 window.addEventListener('resize', function () {

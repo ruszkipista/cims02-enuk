@@ -53,11 +53,11 @@ const gameViewer = {
   },
 
   meeplePieces: [
-    { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', background: 'enuk-background-blue.jpg', count: 4 },
-    { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', background: 'enuk-background-green.jpg', count: 4 },
-    { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', background: 'enuk-background-orange.jpg', count: 4 },
-    { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', background: 'enuk-background-purple.jpg', count: 4 },
-    { name: 'red', filenameHuman: 'piece-meeple-red.png', filenameMachine: 'piece-laptop-red.png', background: 'enuk-background-red.jpg', count: 4 },
+    { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', background: 'enuk-background-blue.jpg' },
+    { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', background: 'enuk-background-green.jpg' },
+    { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', background: 'enuk-background-orange.jpg' },
+    { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', background: 'enuk-background-purple.jpg' },
+    { name: 'red', filenameHuman: 'piece-meeple-red.png', filenameMachine: 'piece-laptop-red.png', background: 'enuk-background-red.jpg' },
   ],
 
   setBackground: function (backgroundFile) {
@@ -251,7 +251,7 @@ const gameViewer = {
       if (icon.request === gameController.REQUEST.toDeclare) {
         // grab input element
         const inputElement = document.getElementById(icon.id).firstChild;
-        if (inputElement.checked){
+        if (inputElement.checked) {
           return icon.name;
         }
       }
@@ -336,7 +336,7 @@ const gameViewer = {
     const meepleWidth = parentRect.width * this.boardPiece.meepleOnBoardWidth;
     document.documentElement.style.setProperty('--meeple-onboard-width', `${meepleWidth}px`);
     document.documentElement.style.setProperty('--meeple-onigloo-width', `${meepleWidth * 2}px`);
-    document.documentElement.style.setProperty('--tile-edge-width', `${meepleWidth * this.meeplePieces[0].count}px`);
+    document.documentElement.style.setProperty('--tile-edge-width', `${meepleWidth * gameController.PARAMETERS.numberOfMeeples}px`);
     document.documentElement.style.setProperty('--tiles-stack-height', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
     for (let i = 0; i < gameController.PARAMETERS.numberOfPlayers; i++) {
       document.documentElement.style.setProperty('--board-meeples-fromtop', `${parentRect.width * this.boardPiece.meeplesOnBoardFromTop}px`);
@@ -386,8 +386,10 @@ const gameViewer = {
   handleIconClick: function (event) {
     if (!gameController.isListenToClick) { return; }
     for (let icon of gameController.iconsOnTable) {
-      if (event.currentTarget.id !== icon.id) { continue; }
-      gameController.play(icon.request, event.currentTarget.id);
+      if (event.currentTarget.id === icon.id) {
+        gameController.play(icon.request, event.currentTarget.id);
+        break;
+      }
     }
   },
 
