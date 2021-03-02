@@ -432,8 +432,9 @@ const gameController = {
       for (let iconFace of iconFaces) {
         if (iconFace.name !== iconCount.name) { continue; }
         for (let i = 0; i < iconCount.count; i++) {
+          const iconId = `icon-${iconCount.name}${(iconCount.count === 1) ? '' : i}`;
           iconsOnTable.push({
-            id: `icon-${iconCount.name}${(iconCount.count === 1) ? '' : i}`,
+            id: iconId,
             name: iconCount.name,
             parentId: iconFace.parentId,
             filename: iconFace.filename,

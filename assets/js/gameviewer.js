@@ -212,18 +212,21 @@ const gameViewer = {
       let iconElement = null;
       if (icon.request === gameController.REQUEST.toDeclare) {
         iconElement = document.createElement('div');
-        iconElement.innerHTML = `<input type="radio" id="${icon.id}-input" name="${icon.request}" />
-                                 <label for="${icon.id}-input">
+        icon.clickId = `${iconId}-click`,
+        iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
+                                 <label for="${icon.clickId}">
                                    <img src="${this.imagePath}${icon.filename}" alt="${icon.name} button">
                                  </label>
                                 `;
+        iconElement.firstChild.addEventListener('click', gameViewer.handleIconClick);
       } else {
         iconElement = document.createElement('img');
         iconElement.setAttribute('src', this.imagePath + icon.filename);
         iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
-      }
-      if (icon.request) {
-        iconElement.addEventListener('click', gameViewer.handleIconClick);
+        if (icon.request) {
+          icon.clickid = icon.id;
+          iconElement.addEventListener('click', gameViewer.handleIconClick);
+        }
       }
       iconElement.setAttribute('id', icon.id);
       iconElement.classList.add('icon-position');
@@ -386,7 +389,7 @@ const gameViewer = {
   handleIconClick: function (event) {
     if (!gameController.isListenToClick) { return; }
     for (let icon of gameController.iconsOnTable) {
-      if (event.currentTarget.id === icon.id) {
+      if (event.currentTarget.id === icon.clickId) {
         gameController.play(icon.request, event.currentTarget.id);
         break;
       }
