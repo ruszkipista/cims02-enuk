@@ -28,7 +28,8 @@ const gameViewer = {
     { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.08, leftTopCorner: [0.885, 0] },
     { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', height: 0.05, leftTopCorner: null },
     { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', height: 0.05, leftTopCorner: null },
-    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.08, leftTopCorner: [0.1, 0.015] },
+    // re-engineered image from here: https://www.iconfinder.com/icons/1547535/arrow_recycle_refresh_reload_reset_restart_icon
+    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.07, leftTopCorner: [0.07, 0] },
     { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.2, 0.015] },
     { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.3, 0.015] },
     { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.4, 0.015] },
@@ -54,6 +55,7 @@ const gameViewer = {
   },
 
   meeplePieces: [
+    // the laptop image was reengineered from here: https://www.pngkey.com/maxpic/u2e6w7r5a9u2y3w7/
     { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', background: 'enuk-background-blue.jpg' },
     { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', background: 'enuk-background-green.jpg' },
     { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', background: 'enuk-background-orange.jpg' },
@@ -225,7 +227,7 @@ const gameViewer = {
         iconElement.setAttribute('src', this.imagePath + icon.filename);
         iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
         if (icon.request) {
-          icon.clickid = icon.id;
+          icon.clickId = icon.id;
           iconElement.addEventListener('click', gameViewer.handleIconClick);
         }
       }

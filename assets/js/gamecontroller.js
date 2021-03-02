@@ -40,7 +40,7 @@ const gameController = {
     collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true, false, false] },
     sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [true, false, false] },
     sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true, false, false] },
-    restart: { name: null, count: 1, request: null, isVisible: [false, false, true] },
+    restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, true] },
     declareReindeer: { name: null, count: 1, request: null, isVisible: [false, true, false] },
     declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, true, false] },
     declareSeal: { name: null, count: 1, request: null, isVisible: [false, true, false] },
@@ -353,9 +353,11 @@ const gameController = {
           if (this.isEndOfPhase2) {
             // continue to next state
             this.gameState = this.STATE.EndOfGame;
-          } else if (this.isEndOfMove) {
-            // set up next player
-            this.passMoveToNextPlayer();
+          } else {
+            if (this.isEndOfMove) {
+              // set up next player
+              this.passMoveToNextPlayer();
+            }
             // continue to state InPhase2-CollectOneIgloo
             this.gameState = this.STATE.InPhase2CollectOneIgloo;
           }
@@ -380,13 +382,17 @@ const gameController = {
 
         // EndOfGameProcessMove
         case this.STATE.EndOfGameProcessMove:
+          // receive move from player: (ClickedElement, Request)
+          // If Request is RequestToFlip -> flip ClickedElement          
           if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
             this.clickedTile = this.findTileOnTable(elementId);
             gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
+            // If Request is RequestToRestart -> continue to state BeforePhase1            
+          } else if (request === this.REQUEST.toRestart) {
+            // continue to state BeforePhase1
+            this.gameState = this.STATE.BeforePhase1;
+            break;
           }
-          // receive move from player: (ClickedElement, Request)
-          // If Request is RequestToRestart -> continue to state BeforePhase1
-          // If Request is RequestToFlip -> flip ClickedElement          
           break infiniteLoop;
       }
 
@@ -396,6 +402,8 @@ const gameController = {
 
   // ================================================================================
   setupGameBeforePhase1: function () {
+    this.sunPosition = 0;
+    this.round = 0;
     this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
     this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
     this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces,
@@ -623,6 +631,7 @@ const gameController = {
         return tileIdOnIgloo;
       }
     }
+    return null;
   },
 
   // Evaluate Tiles on Table - Phase 1
@@ -682,9 +691,11 @@ const gameController = {
   evaluateMeeplesAtPlayers: function (players) {
     let isMeeplesAtPlayers = true;
     for (let player of players) {
-      if (player.meeples.length !== this.PARAMETERS.numberOfMeeples) {
-        isMeeplesAtPlayers = false;
-        break;
+      for (let meeple of player.meeples) {
+        if (!meeple.isOnBoard) {
+          isMeeplesAtPlayers = false;
+          break;
+        }
       }
     }
     return isMeeplesAtPlayers;
