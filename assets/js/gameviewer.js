@@ -28,6 +28,7 @@ const gameViewer = {
     { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.08, leftTopCorner: [0.885, 0] },
     { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', height: 0.05, leftTopCorner: null },
     { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', height: 0.05, leftTopCorner: null },
+    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.08, leftTopCorner: [0.1, 0.015] },
     { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.2, 0.015] },
     { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.3, 0.015] },
     { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.4, 0.015] },
@@ -212,8 +213,8 @@ const gameViewer = {
       let iconElement = null;
       if (icon.request === gameController.REQUEST.toDeclare) {
         iconElement = document.createElement('div');
-        icon.clickId = `${iconId}-click`,
-        iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
+        icon.clickId = `${icon.id}-click`,
+          iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
                                  <label for="${icon.clickId}">
                                    <img src="${this.imagePath}${icon.filename}" alt="${icon.name} button">
                                  </label>
@@ -313,6 +314,7 @@ const gameViewer = {
     const titleElement = document.getElementById('title');
     switch (phase) {
       case gameController.PHASES.one:
+      case gameController.PHASES.end:
         titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center / contain no-repeat`;
         break;
       case gameController.PHASES.two:

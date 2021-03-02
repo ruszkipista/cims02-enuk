@@ -24,6 +24,7 @@ const gameController = {
   PHASES: {
     one: 0,
     two: 1,
+    end: 2,
   },
 
   TILES: {
@@ -36,15 +37,16 @@ const gameController = {
   },
   // wherewer you see null, that is going to be updated during setup
   ICONS: {
-    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true, false] },
-    sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [true, false] },
-    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true, false] },
-    declareReindeer: { name: null, count: 1, request: null, isVisible: [false, true] },
-    declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, true] },
-    declareSeal: { name: null, count: 1, request: null, isVisible: [false, true] },
-    declaresSalmon: { name: null, count: 1, request: null, isVisible: [false, true] },
-    declareHerring: { name: null, count: 1, request: null, isVisible: [false, true] },
-    declareIgloo: { name: null, count: 1, request: null, isVisible: [false, true] },
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true, false, false] },
+    sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [true, false, false] },
+    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true, false, false] },
+    restart: { name: null, count: 1, request: null, isVisible: [false, false, true] },
+    declareReindeer: { name: null, count: 1, request: null, isVisible: [false, true, false] },
+    declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, true, false] },
+    declareSeal: { name: null, count: 1, request: null, isVisible: [false, true, false] },
+    declaresSalmon: { name: null, count: 1, request: null, isVisible: [false, true, false] },
+    declareHerring: { name: null, count: 1, request: null, isVisible: [false, true, false] },
+    declareIgloo: { name: null, count: 1, request: null, isVisible: [false, true, false] },
   },
 
   // game states
@@ -70,6 +72,7 @@ const gameController = {
     toFlipRight: '1',
     toCollect: '2',
     toDeclare: '3',
+    toRestart: '4',
   },
 
   gameState: null,
@@ -89,6 +92,7 @@ const gameController = {
   toBeMovedToIgloo: null,
   isEndOfMove: false,
   isEndOfPhase1: false,
+  isDeclarationCorrect: false,
   isEndOfPhase2: false,
 
   play: function (request, elementId) {
@@ -183,7 +187,7 @@ const gameController = {
           if (this.isEndOfMove) {
             // back in the game after Timeout
             setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
-            // wait for Timeout to complete outside of the loop
+            // wait outside the loop for Timeout to complete
             break infiniteLoop;
           } else {
             // continue to execution
@@ -303,16 +307,20 @@ const gameController = {
           gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
           // continue to next state
           this.gameState = this.STATE.InPhase2Evaluation;
-          break;
+          // back in the game after Timeout
+          setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
+          // wait for Timeout to complete outside of the loop
+          break infiniteLoop;
 
         // InPhase2-Evaluation
         case this.STATE.InPhase2Evaluation:
           // clear evaluation flags
           this.isEndOfMove = false;
+          this.isDeclarationCorrect = false;
           // If NOT ClickedElement tile -> set flag EndOfMove
           if (!this.clickedTile) {
             this.isEndOfMove = true;
-          // If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
+            // If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
           } else if (this.clickedTile.name === this.declaredTileName) {
             this.isDeclarationCorrect = true;
           }
@@ -332,24 +340,50 @@ const gameController = {
 
         //  InPhase2-Execution
         case this.STATE.InPhase2Execution:
-          // If ClickedElement tile -> wait some time that each player can memorize the last tile flip
           // If flag CorrectDeclaration -> move tile ClickedElement to player’s stack
-          // wait some time that each player can memorize the actions (if there was)
-          // If flag EndOfPhase2 -> continue to state EndOfGame
-          // Else If flag EndOfMove -> set ActualPlayer to the next player
-          // continue to state InPhase2-CollectOneIgloo          
-          break infiniteLoop;
+          if (this.isDeclarationCorrect) {
+            this.removeTileFromTableToStack(this.clickedTile);
+            // prevent repeated run of the previous tile removal and following wait
+            this.isDeclarationCorrect = false;
+            // back in the game after Timeout
+            setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
+            // wait outside the loop for Timeout to complete
+            break infiniteLoop;
+          }
+          if (this.isEndOfPhase2) {
+            // continue to next state
+            this.gameState = this.STATE.EndOfGame;
+          } else if (this.isEndOfMove) {
+            // set up next player
+            this.passMoveToNextPlayer();
+            // continue to state InPhase2-CollectOneIgloo
+            this.gameState = this.STATE.InPhase2CollectOneIgloo;
+          }
+          break;
 
         // EndOfGame
         case this.STATE.EndOfGame:
+          // re-set title's size and position
+          gameViewer.setTitle(this.PHASES.end);
+          // set visibility/invisibility of icons
+          gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.end);
           // Announce winner (most collected tiles)
-          // Allow free tile flipping on tiles remaining on the table
+
           // Offer to restart the game
+
+          // Allow free tile flipping on tiles remaining on the table
+          this.isListenToClick = true;
+          // continue to state EndOfGame-ProcessMove
+          this.gameState = this.STATE.EndOfGameProcessMove;
           // wait for request
           break infiniteLoop;
 
         // EndOfGameProcessMove
         case this.STATE.EndOfGameProcessMove:
+          if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
+            this.clickedTile = this.findTileOnTable(elementId);
+            gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
+          }
           // receive move from player: (ClickedElement, Request)
           // If Request is RequestToRestart -> continue to state BeforePhase1
           // If Request is RequestToFlip -> flip ClickedElement          
@@ -360,6 +394,7 @@ const gameController = {
 
   },
 
+  // ================================================================================
   setupGameBeforePhase1: function () {
     this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
     this.iconsOnTable = this.setupIcons(this.ICONS, this.TILES, gameViewer.iconFaces);
@@ -426,6 +461,7 @@ const gameController = {
     iconCounts.declareHerring.request = this.REQUEST.toDeclare;
     iconCounts.declareIgloo.name = tileCounts.igloo.name;
     iconCounts.declareIgloo.request = this.REQUEST.toDeclare;
+    iconCounts.restart.request = this.REQUEST.toRestart;
 
     let iconsOnTable = [];
     for (const [key, iconCount] of Object.entries(iconCounts)) {
