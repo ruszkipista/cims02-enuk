@@ -48,7 +48,7 @@ const gameViewer = {
     id: 'piece-board',
     name: 'enuk-board-front.jpg',
     iglooLength: 0.1355,
-    igloo3x3TopLeftCorner: [0.232, 0.297],
+    igloo3x3LeftTopCorner: [0.3, 0.232],
     meepleOnBoardWidth: 0.025,
     meeplesOnBoardFromTop: 0.65,
     meeplesOnBoardFromLeft: [0.02, 0.16, 0.73, 0.86],
@@ -335,10 +335,10 @@ const gameViewer = {
     // igloo3x3 on board position
     const iglooLength = parentRect.width * this.boardPiece.iglooLength;
     document.documentElement.style.setProperty('--piece-igloo-length', `${iglooLength}px`);
-    document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 4) * 3}px`);
-    document.documentElement.style.setProperty('--piece-igloo3x3-fromtop', `${parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[0]}px`);
-    document.documentElement.style.setProperty('--piece-igloo3x3-fromleft', `${parentRect.width * this.boardPiece.igloo3x3TopLeftCorner[1]}px`);
-
+    document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 6) * 3}px`);
+    document.documentElement.style.setProperty('--piece-igloo3x3-fromleft', `${parentRect.width * this.boardPiece.igloo3x3LeftTopCorner[0]}px`);
+    document.documentElement.style.setProperty('--piece-igloo3x3-fromtop', `${parentRect.width * this.boardPiece.igloo3x3LeftTopCorner[1]}px`);
+    
     // meeple pieces position
     const meepleWidth = parentRect.width * this.boardPiece.meepleOnBoardWidth;
     document.documentElement.style.setProperty('--meeple-onboard-width', `${meepleWidth}px`);

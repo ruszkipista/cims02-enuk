@@ -78,13 +78,14 @@ main {
   top: var(--piece-igloo3x3-fromtop);
   left: var(--piece-igloo3x3-fromleft);
   text-align:justify;
+  line-height:0;
 }
 .tile-onigloo {
   width: var(--piece-igloo-length);
   height: var(--piece-igloo-length);
   display: inline-block;
   text-align: center;
-  margin:0 2px;
+  padding:2px;
 }
 .meeple-onigloo {
   width: var(--meeple-onigloo-width);

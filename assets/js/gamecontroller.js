@@ -131,6 +131,7 @@ const gameController = {
           if (this.whosMove !== this.human) {
             break;
           }
+          let timeOutMultiplier = 2;
           if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
             this.clickedTile = this.findTileOnTable(elementId);
             if (!this.clickedTile || this.clickedTile.isFaceUp) {
@@ -146,12 +147,16 @@ const gameController = {
             }
           } else if (request === this.REQUEST.toCollect) {
             gameViewer.playSound(gameViewer.sounds.click.filename);
+            timeOutMultiplier = 1;
           } else {
             break;
           }
           // continue to next state
           this.gameState = this.STATE.InPhase1Evaluation;
-          break;
+          // back in the game after Timeout
+          setTimeout(function () { gameController.play(request, elementId); }, gameViewer.tileBack.flipTimeMS * timeOutMultiplier);
+          // wait outside the loop for Timeout to complete
+          break infiniteLoop;
 
         // InPhase1-Evaluation
         case this.STATE.InPhase1Evaluation:
@@ -184,15 +189,7 @@ const gameController = {
           }
           // set next state
           this.gameState = this.STATE.InPhase1Execution;
-          if (this.isEndOfMove) {
-            // back in the game after Timeout
-            setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
-            // wait outside the loop for Timeout to complete
-            break infiniteLoop;
-          } else {
-            // continue to execution
-            break;
-          }
+          break;
 
         // InPhase1-Execution
         case this.STATE.InPhase1Execution:
