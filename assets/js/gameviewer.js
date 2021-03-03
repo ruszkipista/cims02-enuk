@@ -219,8 +219,8 @@ const gameViewer = {
       let iconElement = null;
       if (icon.request === gameController.REQUEST.toDeclare) {
         iconElement = document.createElement('div');
-        icon.clickId = `${icon.id}-click`,
-          iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
+        icon.clickId = `${icon.id}-click`;
+        iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
                                  <label for="${icon.clickId}">
                                    <img src="${this.imagePath}${icon.filename}" alt="${icon.name} button">
                                  </label>
@@ -231,7 +231,6 @@ const gameViewer = {
         iconElement.setAttribute('src', this.imagePath + icon.filename);
         iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
         if (icon.request) {
-          icon.clickId = icon.id;
           iconElement.addEventListener('click', gameViewer.handleIconClick);
         }
       }
@@ -376,16 +375,22 @@ const gameViewer = {
     document.documentElement.style.setProperty('--piece-sun-rotate', `${gameController.sunPosition * 130}deg`);
 
     // set icon positions
-    let element = null;
-    for (let icon of gameController.iconsOnTable) {
-      parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
-      element = document.getElementById(icon.id);
-      if (icon.width){
+    this.setIconPositions(gameController.iconsOnTable);
+  },
+
+  setIconPositions: function (icons) {
+    for (let icon of icons) {
+      const parentElement = document.getElementById(icon.parentId);
+      if (!parentElement) { continue; }
+      parentRect = parentElement.getBoundingClientRect();
+      const element = document.getElementById(icon.id);
+      if (!element) { continue; }
+      if (icon.width) {
         element.style.width = `${parentRect.width * icon.width}px`;
         element.style.height = `${parentRect.width * icon.width}px`;
-      } else{
+      } else {
         element.style.width = `${parentRect.height * icon.height}px`;
-        element.style.height = `${parentRect.height * icon.height}px`;        
+        element.style.height = `${parentRect.height * icon.height}px`;
       }
       element.style.left = `${parentRect.width * icon.leftTopCorner[0]}px`;
       element.style.top = `${parentRect.width * icon.leftTopCorner[1]}px`;
