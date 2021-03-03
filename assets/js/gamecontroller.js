@@ -237,10 +237,6 @@ const gameController = {
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
-          this.clickedTile = null;
-          this.declaredTileName = null;
-          // initialize the radio buttons of tile deceleration icons
-          gameViewer.initDeclareIcons(this.iconsOnTable);
           // remove ActualPlayer’s one meeple from igloo
           const tileId = this.removeMeepleFromIglooToBoard(this.players[this.whosMove]);
           if (!tileId) {
@@ -256,6 +252,10 @@ const gameController = {
 
         // InPhase2-BeforeDeclaration
         case this.STATE.InPhase2BeforeDeclaration:
+          this.clickedTile = null;
+          this.declaredTileName = null;
+          // initialize the radio buttons of tile deceleration icons
+          gameViewer.initDeclareIcons(this.iconsOnTable);
           // instruct ActualPlayer to declare what its next flip going to be, 
           // ask to choose one of the following: (herring, salmon, seal, polarbear, reindeer, igloo)
           this.isListenToClick = true;
@@ -296,7 +296,7 @@ const gameController = {
             // wait for request
             break infiniteLoop;
           }
-          // get clicked on tile
+          // got clicked on tile
           this.clickedTile = this.findTileOnTable(elementId);
           if (!this.clickedTile || this.clickedTile.isFaceUp) {
             // wait for request
@@ -331,7 +331,7 @@ const gameController = {
           // If ClickedElement tile is the last reindeer
           if ((this.clickedTile && this.clickedTile.name === this.TILES.reindeer.name)
             //     OR there is no more meeple on the igloo
-            || this.evaluateMeeplesAtPlayers(this.players)
+            || (!this.isDeclarationCorrect && this.evaluateMeeplesAtPlayers(this.players))
             //     OR all tiles on table are face-up
             || this.evaluateTilesOnTablePhase2(this.tilesOnTable)) {
             //   -> set flag EndOfPhase2
@@ -361,9 +361,12 @@ const gameController = {
             if (this.isEndOfMove) {
               // set up next player
               this.passMoveToNextPlayer();
+              // continue to state InPhase2-CollectOneIgloo
+              this.gameState = this.STATE.InPhase2CollectOneIgloo;
+            } else {
+              // continue to state InPhase2-BeforeDeclaration
+              this.gameState = this.STATE.InPhase2BeforeDeclaration;
             }
-            // continue to state InPhase2-CollectOneIgloo
-            this.gameState = this.STATE.InPhase2CollectOneIgloo;
           }
           break;
 
