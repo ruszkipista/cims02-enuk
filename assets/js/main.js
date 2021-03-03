@@ -2,10 +2,6 @@
 window.addEventListener('load', function () {
   gameController.initialize(3, 1, 4, 3, true, true);
 });
-// reposition the sun piece after window resize or change between landscape and portrait
-window.addEventListener('resize', function () {
-  gameViewer.setBoardPiecesPosition();
-});
 
 // UTILITIES
 function getRandomInt(max) {

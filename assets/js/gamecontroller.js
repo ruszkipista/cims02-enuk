@@ -132,9 +132,13 @@ const gameController = {
 
         // Rules - Before
         case this.STATE.RulesBefore:
+          gameViewer.setTitle();
+          this.iconsOnTable.forEach(function(icon){
+            if (icon.name === gameController.ICONS.start.name){
+              gameViewer.createIcon(icon);
+            }
+          });
           gameViewer.setIconPositions(this.iconsOnTable);
-          const iconElement = document.getElementById('icon-game-start');
-          iconElement.addEventListener('click', gameViewer.handleIconClick);
           this.gameState = this.STATE.RulesProcessMove;
           // wait for request
           this.isListenToClick = true;
@@ -273,8 +277,6 @@ const gameController = {
         case this.STATE.BeforePhase2:
           // back in the game after Timeout
           setTimeout(function () {
-            // re-set title's size and position
-            gameViewer.setTitle(gameController.PHASES.two);
             // set visibility/invisibility of icons
             gameViewer.setVisibilityOfIcons(gameController.iconsOnTable, gameController.PHASES.two);
             // continue to state InPhase2-CollectOneIgloo
@@ -427,8 +429,6 @@ const gameController = {
 
         // EndOfGame
         case this.STATE.EndOfGame:
-          // re-set title's size and position
-          gameViewer.setTitle(this.PHASES.end);
           // set visibility/invisibility of icons
           gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.end);
           // Announce winner (most collected tiles)

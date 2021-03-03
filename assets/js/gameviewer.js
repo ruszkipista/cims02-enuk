@@ -25,21 +25,21 @@ const gameViewer = {
   ],
 
   iconFaces: [
-    { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.7, leftTopCorner: [0.885, 0] },
+    { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.7, leftTopCorner: [0.04, 0.0085] },
     // re-engineered image from here: https://icon-library.net/icon/rules-icon-22.html
-    { name: gameController.ICONS.rules.name, filename: 'icon-rules.png', parentId: 'title', height: 0.5, leftTopCorner: [0.08, 0] },
+    { name: gameController.ICONS.rules.name, filename: 'icon-rules.png', parentId: 'title', height: 0.5, leftTopCorner: [0.9, 0.08] },
     // re-engineered image from here: https://www.iconfinder.com/icons/1628513/game_movie_play_run_start_icon
-    { name: gameController.ICONS.start.name, filename: 'icon-start.png', parentId: 'title', height: 0.5, leftTopCorner: [0.885, 0] },
+    { name: gameController.ICONS.start.name, filename: 'icon-start.png', parentId: 'title', height: 0.5, leftTopCorner: [0.885, 0.3] },
     // re-engineered image from here: https://www.iconfinder.com/icons/1547535/arrow_recycle_refresh_reload_reset_restart_icon
-    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.5, leftTopCorner: [0.885, 0] },
-    { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', width: 0.05, leftTopCorner: null },
-    { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', width: 0.05, leftTopCorner: null },
-    { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.2, 0.015] },
-    { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.3, 0.015] },
-    { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.4, 0.015] },
-    { name: gameController.TILES.salmon.name, filename: 'icon-salmon.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.5, 0.015] },
-    { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.6, 0.015] },
-    { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.7, 0.015] },
+    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.5, leftTopCorner: [0.82, 0.08] },
+    { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', height: 0.6, leftTopCorner: null },
+    { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', height: 0.6, leftTopCorner: null },
+    { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.01, 0.015] },
+    { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.16, 0.015] },
+    { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.31, 0.015] },
+    { name: gameController.TILES.salmon.name, filename: 'icon-salmon.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.46, 0.015] },
+    { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.61, 0.015] },
+    { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.76, 0.015] },
   ],
 
   sounds: {
@@ -97,14 +97,14 @@ const gameViewer = {
     let x0 = iconSideLength / 2;
     let y0 = rectHeight - iconSideLength / 2;
     // store the icon's top-left corner as (distance from Left side, distance from Top)
-    sunPositions.push([(x0 - halfIconSideLength) / rectWidth, (y0 - halfIconSideLength) / rectWidth]);
+    sunPositions.push([(x0 - halfIconSideLength) / rectWidth, (y0 - halfIconSideLength) / rectHeight]);
     // calculate rest of the positions relative to the first positon by increasing the angle
     let angle = 0;
     for (let i = 1; i < numberOfPositions; i++) {
       angle += angleOnePos;
       x = (x0 - p) * Math.cos(angle) - (y0 - q) * Math.sin(angle) + p;
       y = (x0 - p) * Math.sin(angle) + (y0 - q) * Math.cos(angle) + q;
-      sunPositions.push([(x - halfIconSideLength) / rectWidth, (y - halfIconSideLength) / rectWidth]);
+      sunPositions.push([(x - halfIconSideLength) / rectWidth, (y - halfIconSideLength) / rectHeight]);
     }
     return sunPositions;
   },
@@ -212,37 +212,37 @@ const gameViewer = {
     }
   },
 
-  createIcons: function (icons) {
-    for (let icon of icons) {
-      // grab parent
-      const parentElement = document.getElementById(icon.parentId);
-      let iconElement = null;
-      if (icon.request === gameController.REQUEST.toDeclare) {
-        iconElement = document.createElement('div');
-        icon.clickId = `${icon.id}-click`;
-        iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
+  createIcon: function (icon) {
+    // grab parent
+    const parentElement = document.getElementById(icon.parentId);
+    if (!parentElement) { return; }
+
+    let iconElement = null;
+    if (icon.request === gameController.REQUEST.toDeclare) {
+      iconElement = document.createElement('div');
+      icon.clickId = `${icon.id}-click`;
+      iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
                                  <label for="${icon.clickId}">
                                    <img src="${this.imagePath}${icon.filename}" alt="${icon.name} button">
                                  </label>
                                 `;
-        iconElement.firstChild.addEventListener('click', gameViewer.handleIconClick);
-      } else {
-        iconElement = document.createElement('img');
-        iconElement.setAttribute('src', this.imagePath + icon.filename);
-        iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
-        if (icon.request) {
-          iconElement.addEventListener('click', gameViewer.handleIconClick);
-        }
+      iconElement.firstChild.addEventListener('click', gameViewer.handleIconClick);
+    } else {
+      iconElement = document.createElement('img');
+      iconElement.setAttribute('src', this.imagePath + icon.filename);
+      iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
+      if (icon.request) {
+        iconElement.addEventListener('click', gameViewer.handleIconClick);
       }
-      iconElement.setAttribute('id', icon.id);
-      iconElement.classList.add('icon-position');
-      if (icon.name === gameController.ICONS.sunPositions.name) {
-        iconElement.style.opacity = '50%';
-      }
-
-      // append icon to parent
-      parentElement.appendChild(iconElement);
     }
+    iconElement.setAttribute('id', icon.id);
+    iconElement.classList.add('icon-position');
+    if (icon.name === gameController.ICONS.sunPositions.name) {
+      iconElement.style.opacity = '50%';
+    }
+
+    // append icon to parent
+    parentElement.appendChild(iconElement);
   },
 
   initDeclareIcons: function (icons) {
@@ -267,11 +267,16 @@ const gameViewer = {
     }
   },
 
-  generateGameBoard: function (iconsOnTable, tilesOnTable, players, isTest) {
+  generateGameBoard: function (icons, tilesOnTable, players, isTest) {
+    // reposition the sun piece after window resize or change between landscape and portrait
+    window.addEventListener('resize', function () {
+      gameViewer.setBoardPiecesPosition();
+    });
+
     let bodyElement = document.getElementsByTagName('body')[0];
     bodyElement.innerHTML = this.createBodyHTML();
     // set title as background
-    this.setTitle(gameController.PHASES.one);
+    this.setTitle();
     // put game board in place
     let boardPiecesHTML = '';
     // add BOARD to game space
@@ -289,7 +294,7 @@ const gameViewer = {
     document.getElementById('board').innerHTML = boardPiecesHTML;
 
     // add icons to the top area
-    this.createIcons(iconsOnTable);
+    icons.forEach(icon => this.createIcon(icon));
 
     // assemble tiles
     const tilesElement = document.getElementById('tiles');
@@ -315,18 +320,9 @@ const gameViewer = {
     }
   },
 
-  setTitle: function (phase) {
+  setTitle: function () {
     const titleElement = document.getElementById('title');
-    switch (phase) {
-      case gameController.PHASES.rules:
-      case gameController.PHASES.one:
-      case gameController.PHASES.end:
-        titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center / contain no-repeat`;
-        break;
-      case gameController.PHASES.two:
-        titleElement.style.background = `url("${this.imagePath}${this.title.filename}") left 2vw top 2vh / 15vw no-repeat`;
-        break;
-    }
+    titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center center / contain no-repeat`;
   },
 
   setBoardPiecesPosition: function () {
@@ -360,7 +356,7 @@ const gameViewer = {
         return true;
     });
     parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
-    let sunLeftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.width, gameController.PARAMETERS.numberOfSunPositions);
+    let sunLeftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.height * icon.height, gameController.PARAMETERS.numberOfSunPositions);
     let sunCounter = 0;
     for (let icon of gameController.iconsOnTable) {
       if (icon.name === gameController.ICONS.sunPositions.name) {
@@ -388,12 +384,14 @@ const gameViewer = {
       if (icon.width) {
         element.style.width = `${parentRect.width * icon.width}px`;
         element.style.height = `${parentRect.width * icon.width}px`;
+        element.style.left = `${parentRect.width * icon.leftTopCorner[0]}px`;
+        element.style.top = `${parentRect.width * icon.leftTopCorner[1]}px`;
       } else {
         element.style.width = `${parentRect.height * icon.height}px`;
         element.style.height = `${parentRect.height * icon.height}px`;
+        element.style.left = `${parentRect.width * icon.leftTopCorner[0]}px`;
+        element.style.top = `${parentRect.height * icon.leftTopCorner[1]}px`;
       }
-      element.style.left = `${parentRect.width * icon.leftTopCorner[0]}px`;
-      element.style.top = `${parentRect.width * icon.leftTopCorner[1]}px`;
     }
   },
 
