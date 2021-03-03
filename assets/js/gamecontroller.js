@@ -331,6 +331,8 @@ const gameController = {
             // If ClickedElement tile is the same as Declaration -> set flag CorrectDeclaration
           } else if (this.clickedTile.name === this.declaredTileName) {
             this.isDeclarationCorrect = true;
+          } else {
+            this.isEndOfMove = true;
           }
           // If ClickedElement tile is the last reindeer
           if ((this.clickedTile && this.clickedTile.name === this.TILES.reindeer.name)
@@ -354,7 +356,7 @@ const gameController = {
             // prevent repeated run of the previous tile removal and following wait
             this.isDeclarationCorrect = false;
             // back in the game after Timeout
-            setTimeout(function () { 
+            setTimeout(function () {
               gameViewer.playSound(gameViewer.sounds.click.filename);
               gameController.play();
             }, gameViewer.tileBack.flipTimeMS * 2);
