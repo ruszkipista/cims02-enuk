@@ -233,7 +233,11 @@ const gameController = {
           gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.two);
           // continue to state InPhase2-CollectOneIgloo
           this.gameState = this.STATE.InPhase2CollectOneIgloo;
-          break;
+          // back in the game after Timeout
+          setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 4);
+          // wait outside the loop for Timeout to complete
+          break infiniteLoop;
+
 
         // InPhase2-CollectOneIgloo
         case this.STATE.InPhase2CollectOneIgloo:
@@ -303,7 +307,7 @@ const gameController = {
             break infiniteLoop;
           }
           // mute further clicks
-          this.isListenToClick = true;
+          this.isListenToClick = false;
           // If Declaration is set AND Request was to flip a face-down tile up
           //   -> flag RequestToFlip
           //   -> flip the clicked tile face-up
@@ -313,7 +317,7 @@ const gameController = {
           this.gameState = this.STATE.InPhase2Evaluation;
           // back in the game after Timeout
           setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
-          // wait for Timeout to complete outside of the loop
+          // wait outside the loop for Timeout to complete 
           break infiniteLoop;
 
         // InPhase2-Evaluation
@@ -350,7 +354,10 @@ const gameController = {
             // prevent repeated run of the previous tile removal and following wait
             this.isDeclarationCorrect = false;
             // back in the game after Timeout
-            setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
+            setTimeout(function () { 
+              gameViewer.playSound(gameViewer.sounds.click.filename);
+              gameController.play();
+            }, gameViewer.tileBack.flipTimeMS * 2);
             // wait outside the loop for Timeout to complete
             break infiniteLoop;
           }

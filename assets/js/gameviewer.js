@@ -383,7 +383,10 @@ const gameViewer = {
   },
 
   handleTileClick: function (event) {
-    if (!gameController.isListenToClick) { return; }
+    if (!gameController.isListenToClick) { 
+      event.preventDefault();
+      return; 
+    }
     const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
     const request = isClickedOnLeft ? gameController.REQUEST.toFlipLeft : gameController.REQUEST.toFlipRight;
     const clickedElement = event.currentTarget.id
@@ -391,7 +394,10 @@ const gameViewer = {
   },
 
   handleIconClick: function (event) {
-    if (!gameController.isListenToClick) { return; }
+    if (!gameController.isListenToClick) { 
+      event.preventDefault();
+      return; 
+    }
     for (let icon of gameController.iconsOnTable) {
       if (event.currentTarget.id === icon.clickId) {
         gameController.play(icon.request, event.currentTarget.id);
