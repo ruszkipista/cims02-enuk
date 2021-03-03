@@ -25,19 +25,21 @@ const gameViewer = {
   ],
 
   iconFaces: [
-    { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.08, leftTopCorner: [0.885, 0] },
-    { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', height: 0.05, leftTopCorner: null },
-    { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', height: 0.05, leftTopCorner: null },
+    { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.7, leftTopCorner: [0.885, 0] },
+    // re-engineered image from here: https://icon-library.net/icon/rules-icon-22.html
+    { name: gameController.ICONS.rules.name, filename: 'icon-rules.png', parentId: 'title', height: 0.5, leftTopCorner: [0.08, 0] },
     // re-engineered image from here: https://www.iconfinder.com/icons/1628513/game_movie_play_run_start_icon
-    { name: gameController.ICONS.start.name, filename: 'icon-start.png', parentId: 'title', height: 0.07, leftTopCorner: [0.08, 0] },
+    { name: gameController.ICONS.start.name, filename: 'icon-start.png', parentId: 'title', height: 0.5, leftTopCorner: [0.885, 0] },
     // re-engineered image from here: https://www.iconfinder.com/icons/1547535/arrow_recycle_refresh_reload_reset_restart_icon
-    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.07, leftTopCorner: [0.07, 0] },
-    { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.2, 0.015] },
-    { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.3, 0.015] },
-    { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.4, 0.015] },
-    { name: gameController.TILES.salmon.name, filename: 'icon-salmon.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.5, 0.015] },
-    { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.6, 0.015] },
-    { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.7, 0.015] },
+    { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.5, leftTopCorner: [0.885, 0] },
+    { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', width: 0.05, leftTopCorner: null },
+    { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', width: 0.05, leftTopCorner: null },
+    { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.2, 0.015] },
+    { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.3, 0.015] },
+    { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.4, 0.015] },
+    { name: gameController.TILES.salmon.name, filename: 'icon-salmon.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.5, 0.015] },
+    { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.6, 0.015] },
+    { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', width: 0.08, leftTopCorner: [0.7, 0.015] },
   ],
 
   sounds: {
@@ -341,7 +343,7 @@ const gameViewer = {
     document.documentElement.style.setProperty('--piece-igloo3x3-length', `${(iglooLength + 6) * 3}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromleft', `${parentRect.width * this.boardPiece.igloo3x3LeftTopCorner[0]}px`);
     document.documentElement.style.setProperty('--piece-igloo3x3-fromtop', `${parentRect.width * this.boardPiece.igloo3x3LeftTopCorner[1]}px`);
-    
+
     // meeple pieces position
     const meepleWidth = parentRect.width * this.boardPiece.meepleOnBoardWidth;
     document.documentElement.style.setProperty('--meeple-onboard-width', `${meepleWidth}px`);
@@ -359,7 +361,7 @@ const gameViewer = {
         return true;
     });
     parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
-    let sunLeftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.height, gameController.PARAMETERS.numberOfSunPositions);
+    let sunLeftTopCorners = this.calculateSunPositions(parentRect.width, parentRect.height, parentRect.width * icon.width, gameController.PARAMETERS.numberOfSunPositions);
     let sunCounter = 0;
     for (let icon of gameController.iconsOnTable) {
       if (icon.name === gameController.ICONS.sunPositions.name) {
@@ -378,17 +380,22 @@ const gameViewer = {
     for (let icon of gameController.iconsOnTable) {
       parentRect = document.getElementById(icon.parentId).getBoundingClientRect();
       element = document.getElementById(icon.id);
-      element.style.width = `${parentRect.width * icon.height}px`;
-      element.style.height = `${parentRect.width * icon.height}px`;
+      if (icon.width){
+        element.style.width = `${parentRect.width * icon.width}px`;
+        element.style.height = `${parentRect.width * icon.width}px`;
+      } else{
+        element.style.width = `${parentRect.height * icon.height}px`;
+        element.style.height = `${parentRect.height * icon.height}px`;        
+      }
       element.style.left = `${parentRect.width * icon.leftTopCorner[0]}px`;
       element.style.top = `${parentRect.width * icon.leftTopCorner[1]}px`;
     }
   },
 
   handleTileClick: function (event) {
-    if (!gameController.isListenToClick) { 
+    if (!gameController.isListenToClick) {
       event.preventDefault();
-      return; 
+      return;
     }
     const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
     const request = isClickedOnLeft ? gameController.REQUEST.toFlipLeft : gameController.REQUEST.toFlipRight;
@@ -397,9 +404,9 @@ const gameViewer = {
   },
 
   handleIconClick: function (event) {
-    if (!gameController.isListenToClick) { 
+    if (!gameController.isListenToClick) {
       event.preventDefault();
-      return; 
+      return;
     }
     for (let icon of gameController.iconsOnTable) {
       if (event.currentTarget.id === icon.clickId) {

@@ -38,11 +38,12 @@ const gameController = {
   },
   // wherewer you see null, that is going to be updated during setup
   ICONS: {
+    rules: { name: 'game-rules', count: 1, request: null, isVisible: [false, true, true, true] },
+    start: { name: 'game-start', count: 1, request: null, isVisible: [true, false, false, false] },
+    restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, false, true] },
     collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [false, true, false, false] },
     sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [false, true, false, false] },
     sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [false, true, false, false] },
-    start: { name: 'game-start', count: 1, request: null, isVisible: [true, false, false, false] },
-    restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, false, true] },
     declareReindeer: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
     declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
     declareSeal: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
@@ -233,14 +234,16 @@ const gameController = {
 
         // BeforePhase2
         case this.STATE.BeforePhase2:
-          // re-set title's size and position
-          gameViewer.setTitle(this.PHASES.two);
-          // set visibility/invisibility of icons
-          gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.two);
-          // continue to state InPhase2-CollectOneIgloo
-          this.gameState = this.STATE.InPhase2CollectOneIgloo;
           // back in the game after Timeout
-          setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 4);
+          setTimeout(function () {
+            // re-set title's size and position
+            gameViewer.setTitle(gameController.PHASES.two);
+            // set visibility/invisibility of icons
+            gameViewer.setVisibilityOfIcons(gameController.iconsOnTable, gameController.PHASES.two);
+            // continue to state InPhase2-CollectOneIgloo
+            gameController.gameState = gameController.STATE.InPhase2CollectOneIgloo;
+            gameController.play();
+          }, gameViewer.tileBack.flipTimeMS * 3);
           // wait outside the loop for Timeout to complete
           break infiniteLoop;
 
@@ -508,6 +511,7 @@ const gameController = {
             filename: iconFace.filename,
             request: iconCount.request,
             isVisible: iconCount.isVisible,
+            width: iconFace.width,
             height: iconFace.height,
             leftTopCorner: iconFace.leftTopCorner,
           });
