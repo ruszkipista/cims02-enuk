@@ -163,7 +163,7 @@ const gameController = {
           [this.toBeTurnedDown, this.toBeMovedToStack, this.toBeMovedToIgloo, isAllTilesFaceUp] = this.evaluateTilesOnTablePhase1(this.tilesOnTable);
 
           // Phase_2 ends if no animal fled AND all tiles are face-up
-          if (isAllTilesFaceUp && this.toBeTurnedDown.length === 0) {
+          if (isAllTilesFaceUp && this.toBeTurnedDown.size === 0) {
             this.isEndOfPhase1 = true;
             this.isEndOfPhase2 = true;
             // Phase_1 ends if clicked tile is a reindeer AND the sun is in the last position
@@ -271,6 +271,7 @@ const gameController = {
             // wait for request
             break infiniteLoop;
           }
+          gameViewer.playSound(gameViewer.sounds.click.filename);
           // If Request is DeclareNextTileType AND ClickedElement is valid:
           //   -> set Declaration
           //   -> mark Declaration on board
@@ -289,6 +290,9 @@ const gameController = {
           }
           // there is a declaration - now accept click on a face-down tile
           if (request !== this.REQUEST.toFlipLeft && request !== this.REQUEST.toFlipRight) {
+            if (request === this.REQUEST.toDeclare) {
+              gameViewer.playSound(gameViewer.sounds.click.filename);
+            }
             // wait for request
             break infiniteLoop;
           }
@@ -657,14 +661,13 @@ const gameController = {
         // that means, there is not one tile to hide from
         toBeMovedToStack.add(i);
         for (let j = i + 1; j < tiles.length; j++) {
-          if (tiles[j].isFaceUp && tiles[j].rank >= 0) {
-            if (tiles[i].rank === tiles[j].rank + 1) {
-              // j hides from i
-              toBeTurnedDown.add(j);
-            } else if (tiles[i].rank + 1 === tiles[j].rank) {
-              // i hides from j
-              toBeTurnedDown.add(i);
-            }
+          if (!tiles[j].isFaceUp || tiles[j].rank === null) { continue; }
+          if (tiles[i].rank === tiles[j].rank + 1) {
+            // j hides from i
+            toBeTurnedDown.add(j);
+          } else if (tiles[i].rank + 1 === tiles[j].rank) {
+            // i hides from j
+            toBeTurnedDown.add(i);
           }
         }
       }
