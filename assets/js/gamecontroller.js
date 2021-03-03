@@ -22,9 +22,10 @@ const gameController = {
   },
 
   PHASES: {
-    one: 0,
-    two: 1,
-    end: 2,
+    rules: 0,
+    one: 1,
+    two: 2,
+    end: 3,
   },
 
   TILES: {
@@ -37,16 +38,17 @@ const gameController = {
   },
   // wherewer you see null, that is going to be updated during setup
   ICONS: {
-    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [true, false, false] },
-    sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [true, false, false] },
-    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [true, false, false] },
-    restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, true] },
-    declareReindeer: { name: null, count: 1, request: null, isVisible: [false, true, false] },
-    declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, true, false] },
-    declareSeal: { name: null, count: 1, request: null, isVisible: [false, true, false] },
-    declaresSalmon: { name: null, count: 1, request: null, isVisible: [false, true, false] },
-    declareHerring: { name: null, count: 1, request: null, isVisible: [false, true, false] },
-    declareIgloo: { name: null, count: 1, request: null, isVisible: [false, true, false] },
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [false, true, false, false] },
+    sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [false, true, false, false] },
+    sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [false, true, false, false] },
+    start: { name: 'game-start', count: 1, request: null, isVisible: [true, false, false, false] },
+    restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, false, true] },
+    declareReindeer: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
+    declarePolarbear: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
+    declareSeal: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
+    declaresSalmon: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
+    declareHerring: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
+    declareIgloo: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
   },
 
   // game states
@@ -72,7 +74,8 @@ const gameController = {
     toFlipRight: '1',
     toCollect: '2',
     toDeclare: '3',
-    toRestart: '4',
+    toStart: '4',
+    toRestart: '5',
   },
 
   gameState: null,
@@ -131,7 +134,7 @@ const gameController = {
           if (this.whosMove !== this.human) {
             break;
           }
-          let timeOutMultiplier = 2;
+          let timeOutMultiplier = 1;
           if (request === this.REQUEST.toFlipLeft || request === this.REQUEST.toFlipRight) {
             this.clickedTile = this.findTileOnTable(elementId);
             if (!this.clickedTile || this.clickedTile.isFaceUp) {
@@ -217,7 +220,13 @@ const gameController = {
               this.passMoveToNextPlayer();
             }
             // handle End Of Phase 1
-            if (this.isEndOfPhase1) { this.gameState = this.STATE.BeforePhase2; }
+            if (this.isEndOfPhase1) {
+              this.gameState = this.STATE.BeforePhase2;
+              // back in the game after Timeout
+              setTimeout(function () { gameController.play(request, elementId); }, gameViewer.tileBack.flipTimeMS * 2);
+              // wait outside the loop for Timeout to complete
+              break infiniteLoop;
+            }
             else { this.gameState = this.STATE.InPhase1BeforeMove; }
           }
           break;
@@ -483,6 +492,7 @@ const gameController = {
     iconCounts.declareHerring.request = this.REQUEST.toDeclare;
     iconCounts.declareIgloo.name = tileCounts.igloo.name;
     iconCounts.declareIgloo.request = this.REQUEST.toDeclare;
+    iconCounts.start.request = this.REQUEST.toStart;
     iconCounts.restart.request = this.REQUEST.toRestart;
 
     let iconsOnTable = [];

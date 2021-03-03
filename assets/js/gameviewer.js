@@ -28,6 +28,8 @@ const gameViewer = {
     { name: gameController.ICONS.collectTiles.name, filename: 'icon-collect-tiles.png', parentId: 'title', height: 0.08, leftTopCorner: [0.885, 0] },
     { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', height: 0.05, leftTopCorner: null },
     { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', height: 0.05, leftTopCorner: null },
+    // re-engineered image from here: https://www.iconfinder.com/icons/1628513/game_movie_play_run_start_icon
+    { name: gameController.ICONS.start.name, filename: 'icon-start.png', parentId: 'title', height: 0.07, leftTopCorner: [0.08, 0] },
     // re-engineered image from here: https://www.iconfinder.com/icons/1547535/arrow_recycle_refresh_reload_reset_restart_icon
     { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.07, leftTopCorner: [0.07, 0] },
     { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.08, leftTopCorner: [0.2, 0.015] },
@@ -315,6 +317,7 @@ const gameViewer = {
   setTitle: function (phase) {
     const titleElement = document.getElementById('title');
     switch (phase) {
+      case gameController.PHASES.rules:
       case gameController.PHASES.one:
       case gameController.PHASES.end:
         titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center / contain no-repeat`;
