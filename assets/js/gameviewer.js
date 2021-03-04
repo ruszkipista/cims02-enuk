@@ -73,7 +73,7 @@ const gameViewer = {
   },
 
   calculateSunPositions: function (rectWidth, rectHeight, iconSideLength, numberOfPositions) {
-    sunPositions = [];
+    const sunPositions = [];
     const halfIconSideLength = iconSideLength / 2;
 
     // calculate r radius
@@ -116,7 +116,7 @@ const gameViewer = {
              <main>
                <div id="tiles"></div>
                <div id="board"></div>
-             </main>`
+             </main>`;
   },
 
   createIgloo3x3HTML: function (tiles) {
@@ -402,7 +402,7 @@ const gameViewer = {
     }
     const isClickedOnLeft = (event.layerX < event.currentTarget.offsetWidth / 2);
     const request = isClickedOnLeft ? gameController.REQUEST.toFlipLeft : gameController.REQUEST.toFlipRight;
-    const clickedElement = event.currentTarget.id
+    const clickedElement = event.currentTarget.id;
     gameController.play(request, clickedElement);
   },
 

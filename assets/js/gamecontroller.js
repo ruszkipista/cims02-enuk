@@ -199,7 +199,9 @@ const gameController = {
           // continue to next state
           this.gameState = this.STATE.InPhase1Evaluation;
           // back in the game after Timeout
-          setTimeout(function () { gameController.play(request, elementId); }, gameViewer.tileBack.flipTimeMS * timeOutMultiplier);
+          setTimeout(function () { 
+            gameController.play(request, elementId); 
+          }, gameViewer.tileBack.flipTimeMS * timeOutMultiplier, request, elementId);
           // wait outside the loop for Timeout to complete
           break infiniteLoop;
 
@@ -459,7 +461,7 @@ const gameController = {
           break infiniteLoop;
       }
 
-    };
+    }
 
   },
 
@@ -511,14 +513,14 @@ const gameController = {
           idOnBoard: meepleId + '-onboard',
           idOnIgloo: null,
           tileIdonIgloo: null,
-        }
+        };
       }
     }
   },
 
   setupIcons: function (iconCounts, iconFaces) {
     let iconsOnTable = [];
-    for (const [key, iconCount] of Object.entries(iconCounts)) {
+    for (const iconCount of Object.values(iconCounts)) {
       for (let iconFace of iconFaces) {
         if (iconFace.name !== iconCount.name) { continue; }
         for (let i = 0; i < iconCount.count; i++) {
@@ -549,7 +551,7 @@ const gameController = {
     tileCounts.herring.count = numberOfAnimalTiles;
     let tilesOnTable = [];
     let counter = 0;
-    for (const [key, tileCount] of Object.entries(tileCounts)) {
+    for (const tileCount of Object.values(tileCounts)) {
       for (let tileFace of tileFaces) {
         if (tileFace.name !== tileCount.name) { continue; }
         for (let i = 0; i < tileCount.count; i++) {
@@ -611,7 +613,7 @@ const gameController = {
   removeTileFromIgloo: function (tileId) {
     const tileIndex = this.findTileIndexOnIgloo(tileId);
     if (tileIndex >= 0) {
-      return tile = this.tilesOnIgloo.splice(tileIndex, 1)[0];
+      return this.tilesOnIgloo.splice(tileIndex, 1)[0];
     }
   },
 
