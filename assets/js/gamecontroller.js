@@ -133,8 +133,8 @@ const gameController = {
         // Rules - Before
         case this.STATE.RulesBefore:
           gameViewer.setTitle();
-          this.iconsOnTable.forEach(function(icon){
-            if (icon.name === gameController.ICONS.start.name){
+          this.iconsOnTable.forEach(function (icon) {
+            if (icon.name === gameController.ICONS.start.name) {
               gameViewer.createIcon(icon);
             }
           });
@@ -199,8 +199,8 @@ const gameController = {
           // continue to next state
           this.gameState = this.STATE.InPhase1Evaluation;
           // back in the game after Timeout
-          setTimeout(function () { 
-            gameController.play(request, elementId); 
+          setTimeout(function () {
+            gameController.play(request, elementId);
           }, gameViewer.tileBack.flipTimeMS * timeOutMultiplier, request, elementId);
           // wait outside the loop for Timeout to complete
           break infiniteLoop;
@@ -470,12 +470,10 @@ const gameController = {
     this.sunPosition = 0;
     this.round = 0;
     this.setupPlayers(this.PARAMETERS.numberOfPlayers, this.PARAMETERS.isTest);
-    this.tilesOnTable = this.setupTiles(this.TILES, gameViewer.tileFaces,
-      this.PARAMETERS.numberOfSunPositions,
-      this.PARAMETERS.numberOfAnimalTiles);
-    if (!this.PARAMETERS.isTest) { shuffleArrayInplace(this.tilesOnTable); }
+    [this.tilesOnTable, this.tilesOnIgloo] = this.setupTiles(this.TILES, gameViewer.tileFaces, this.PARAMETERS.numberOfSunPositions, this.PARAMETERS.numberOfAnimalTiles);
+    shuffleArrayInplace(this.tilesOnTable);
     // fill webpage with elements
-    gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.players, this.PARAMETERS.isTest);
+    gameViewer.generateGameBoard(this.iconsOnTable, this.tilesOnTable, this.tilesOnIgloo, this.players, this.PARAMETERS.isTest);
     // set moving parts' position relative to their containing element
     gameViewer.setBoardPiecesPosition();
     // set visibility/invisibility of icons
@@ -512,7 +510,7 @@ const gameController = {
           isOnBoard: true,
           idOnBoard: meepleId + '-onboard',
           idOnIgloo: null,
-          tileIdonIgloo: null,
+          tileIdOnTable: null,
         };
       }
     }
@@ -550,14 +548,15 @@ const gameController = {
     tileCounts.salmon.count = numberOfAnimalTiles;
     tileCounts.herring.count = numberOfAnimalTiles;
     let tilesOnTable = [];
+    let tilesOnIgloo = [];
     let counter = 0;
     for (const tileCount of Object.values(tileCounts)) {
       for (let tileFace of tileFaces) {
         if (tileFace.name !== tileCount.name) { continue; }
+        let isIgloo = tileCount.name === tileCounts.igloo.name;
         for (let i = 0; i < tileCount.count; i++) {
           // generate ID for each Tile
           let tileId = `tile-${counter}`;
-          let isIgloo = tileCount.name === tileCounts.igloo.name;
           let tile = {
             id: tileId,
             name: tileCount.name,
@@ -567,14 +566,16 @@ const gameController = {
             idOnIgloo: (isIgloo) ? `${tileId}-onigloo` : '',
             idMeepleOnIgloo: (isIgloo) ? `meeple-on-${tileId}` : '',
             isFaceUp: null,
+            isOnIgloo: (isIgloo) ? false : null,
             sound: tileFace.sound,
           };
           tilesOnTable.push(tile);
+          if (isIgloo) { tilesOnIgloo.push(tile); }
           counter++;
         }
       }
     }
-    return tilesOnTable;
+    return [tilesOnTable, tilesOnIgloo];
   },
 
   passMoveToNextPlayer: function () {
@@ -584,21 +585,12 @@ const gameController = {
 
   findTileOnTable: function (idOnTable) {
     // learnt "find" from https://usefulangle.com/post/3/javascript-search-array-of-objects
-    const tile = this.tilesOnTable.find(function (element, index) {
+    const tile = this.tilesOnTable.find(function (element) {
       if (element.idOnTable === idOnTable) {
         return true;
       }
     });
     return tile;
-  },
-
-  findTileIndexOnIgloo: function (tileId) {
-    const tileIndex = this.tilesOnIgloo.findIndex(function (element, index) {
-      if (element.id === tileId) {
-        return true;
-      }
-    });
-    return tileIndex;
   },
 
   removeTileFromTable: function (tile) {
@@ -608,13 +600,6 @@ const gameController = {
     });
     this.tilesOnTable[tileIndex].isFaceUp = null;
     return tile;
-  },
-
-  removeTileFromIgloo: function (tileId) {
-    const tileIndex = this.findTileIndexOnIgloo(tileId);
-    if (tileIndex >= 0) {
-      return this.tilesOnIgloo.splice(tileIndex, 1)[0];
-    }
   },
 
   // Tile: Table -> Stack
@@ -632,7 +617,7 @@ const gameController = {
   removeTileFromTableToIgloo(tile) {
     if (tile.isFaceUp) {
       this.removeTileFromTable(tile);
-      this.tilesOnIgloo.push(tile);
+      tile.isOnIgloo = true;
       gameViewer.setVisibilityOfElement(tile.idOnTable, false);
       gameViewer.setVisibilityOfElement(tile.idOnIgloo, true);
       gameViewer.playSound(tile.sound);
@@ -641,7 +626,8 @@ const gameController = {
 
   // Tile: Igloo -> Stack
   removeTileFromIglooToStack(tileId) {
-    const tile = this.removeTileFromIgloo(tileId);
+    const tile = this.findTileOnTable(tileId);
+    tile.isOnIgloo = false;
     gameViewer.setVisibilityOfElement(tile.idOnIgloo, false);
     this.players[this.whosMove].tilesInStack.push(tile);
     gameViewer.playSound(gameViewer.sounds.stack.filename);
@@ -653,7 +639,7 @@ const gameController = {
     for (let i = this.players[this.whosMove].meeples.length - 1; i >= 0; i--) {
       let meeple = this.players[this.whosMove].meeples[i];
       if (meeple.isOnBoard) {
-        meeple.tileIdonIgloo = tile.id;
+        meeple.tileIdOnTable = tile.idOnTable;
         meeple.isOnBoard = false;
         meeple.idOnIgloo = tile.idMeepleOnIgloo;
         const meepleOnIglooElement = document.getElementById(tile.idMeepleOnIgloo);
@@ -676,9 +662,9 @@ const gameController = {
         gameViewer.setVisibilityOfElement(meeple.idOnBoard, true);
         gameViewer.setVisibilityOfElement(meeple.idOnIgloo, false);
         meeple.idOnIgloo = null;
-        const tileIdOnIgloo = meeple.tileIdonIgloo;
-        meeple.tileIdonIgloo = null;
-        return tileIdOnIgloo;
+        const tileIdOnTable = meeple.tileIdOnTable;
+        meeple.tileIdOnTable = null;
+        return tileIdOnTable;
       }
     }
     return null;

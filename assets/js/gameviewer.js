@@ -119,29 +119,25 @@ const gameViewer = {
              </main>`;
   },
 
-  createIgloo3x3HTML: function (tiles) {
+  createIgloo3x3HTML: function (tilesOnIgloo) {
     let imgHTML = `<div id="tiles-onigloo" class="layer-onigloo">`;
-    for (let tile of tiles) {
-      if (tile.name === gameController.TILES.igloo.name) {
-        imgHTML += `<img id="${tile.idOnIgloo}" class="tile-onigloo" 
+    for (let tile of tilesOnIgloo) {
+      imgHTML += `<img id="${tile.idOnIgloo}" class="tile-onigloo" 
                          src="${this.imagePath}${tile.filename}"
                          style="visibility: hidden;"
                          alt="game tile ${tile.name}">`;
-      }
     }
     return imgHTML + '</div>';
   },
 
-  createMeeple3x3HTML: function (tiles) {
+  createMeeple3x3HTML: function (tilesOnIgloo) {
     let imgHTML = `<div id="meeples-onigloo" class="layer-onigloo">`;
-    for (let tile of tiles) {
-      if (tile.name === gameController.TILES.igloo.name) {
-        imgHTML += `<div class="tile-onigloo"><img 
+    for (let tile of tilesOnIgloo) {
+      imgHTML += `<div class="tile-onigloo"><img 
                        id="${tile.idMeepleOnIgloo}"
                        class="meeple-onigloo"
                        style="visibility: hidden;" src="" 
                        alt="game meeple"></div>`;
-      }
     }
     return imgHTML + '</div>';
   },
@@ -267,7 +263,7 @@ const gameViewer = {
     }
   },
 
-  generateGameBoard: function (icons, tilesOnTable, players, isTest) {
+  generateGameBoard: function (icons, tilesOnTable, tilesOnIgloo, players, isTest) {
     // reposition the sun piece after window resize or change between landscape and portrait
     window.addEventListener('resize', function () {
       gameViewer.setBoardPiecesPosition();
@@ -283,10 +279,10 @@ const gameViewer = {
     boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
 
     // add hidden IGLOO TILES to the middle of the board
-    boardPiecesHTML += this.createIgloo3x3HTML(tilesOnTable);
+    boardPiecesHTML += this.createIgloo3x3HTML(tilesOnIgloo);
 
     // add hidden MEEPLES on top of igloo tiles - without src
-    boardPiecesHTML += this.createMeeple3x3HTML(tilesOnTable);
+    boardPiecesHTML += this.createMeeple3x3HTML(tilesOnIgloo);
 
     // add TILE STACKS and MEEPLES for all players on the board
     boardPiecesHTML += this.createTileStacksHTML(players);
