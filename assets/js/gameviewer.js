@@ -13,15 +13,15 @@ const gameViewer = {
     { name: gameController.TILES.seal.name, filename: 'tileface-seal.jpg', sound: 'seal-pips.mp3' },
     { name: gameController.TILES.salmon.name, filename: 'tileface-salmon.jpg', sound: 'salmon-pips.mp3' },
     { name: gameController.TILES.herring.name, filename: 'tileface-herring.jpg', sound: 'herring-fart.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo00.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo01.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo02.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo10.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo11.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo12.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo20.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo21.jpg', sound: 'ice-crack.mp3' },
-    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo22.jpg', sound: 'ice-crack.mp3' }
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo00.jpg', sound: 'ice-cube1.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo01.jpg', sound: 'ice-cube2.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo02.jpg', sound: 'ice-cube3.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo10.jpg', sound: 'ice-cube4.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo11.jpg', sound: 'ice-cube5.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo12.jpg', sound: 'ice-cube6.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo20.jpg', sound: 'ice-cube7.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo21.jpg', sound: 'ice-cube8.mp3' },
+    { name: gameController.TILES.igloo.name, filename: 'tileface-igloo22.jpg', sound: 'ice-cube9.mp3' }
   ],
 
   iconFaces: [
