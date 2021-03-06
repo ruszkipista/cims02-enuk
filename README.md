@@ -1,7 +1,7 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
 An interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser. This project is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
 
-[![Enuk boardgame during play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
+[![Enuk boardgame mid-play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
 
 **Game Classification**
 * Category
@@ -232,10 +232,12 @@ OR flag `RequestToCollect`<br>
 
 - The project's product (the website) was written in HTML, CSS and JavaScript, utilising [Bootstrap 5.0 Beta](https://getbootstrap.com/docs/5.0/) framework (which itself uses CSS and JavaScript). Bootstrap is used for its responsive utilities. 
 - Manipulated images with program [Paint.NET](https://www.getpaint.net/). Mainly used for cropping, resizing, background removal and format conversion.
+- downloaded [youtube](https://www.youtube.com/) videos with [youtube-dl](https://youtube-dl.org/)
+- extracted and cut sound clips with [Audacity](https://www.audacityteam.org/)
 - Created wireframes with program from [balsamiq](https://balsamiq.com/wireframes/)
 - Written study notes on [Google Docs](https://docs.google.com/)
 - Disassembled a PDF file with [Adobe Acrobat PRO](https://acrobat.adobe.com/ie/en/acrobat.html)
-- Edited the code with [Visual Studio Code](https://code.visualstudio.com/), the preview was provided via [Live Server](https://github.com/ritwickdey/vscode-live-server) VS Code extension.
+- Edited the code with [Visual Studio Code](https://code.visualstudio.com/), the page preview was provided via [Live Server](https://github.com/ritwickdey/vscode-live-server) VS Code extension.
 - Managed code versions with [Git](https://git-scm.com/downloads)
 - Stored the code and project deliverables cloud service [Github](https://github.com/) repository with versions.
 - Deployed the website on [GitHub Pages](https://pages.github.com/)
@@ -245,7 +247,7 @@ OR flag `RequestToCollect`<br>
 - Generated one image (on top of this Readme) of how the website looks on different size devices with [Am I Responsive](http://ami.responsivedesign.is/)
 - Chose font using [Google Fonts](https://fonts.google.com/)
 - Run CSS code through [Autoprefixer CSS online](https://autoprefixer.github.io/) to supplement suggested vendor prefixes
-- Searched the internet to find content, documentation and solution for issues using [Google](www.google.com)'s search service.
+- Searched the internet to find content, documentation and solution for issues using [Google](https://www.google.com)'s search service.
 - connected to the internet using [Vodafone](https://n.vodafone.ie/shop/broadband.html)'s broadband service.
 
 ## 5. Issues solved during development
@@ -312,12 +314,15 @@ My inspiration for this project came from the assessment booklet mentioning memo
 
 I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project. He suggested to make the gameboard stowaway so all tiles can be accessed without scrolling.
 
-My family had sevaeral suggestion on the UI and how to avoid using text on the game board during play.
+My family had sevaeral suggestion on the UI and how to avoid use of text during play.
+
+[Victor Navas Santajuana](https://www.linkedin.com/in/victor-navas-santajuana-229a2b67/) gave me a code rewiew half way through the project
 
 ### Media
 See the exact source of images in the code comments. Here is the short list of sources:
 - BoardGameGeek's [webpage](https://boardgamegeek.com/boardgame/36554/enuk) about the game, especially this [pdf](https://boardgamegeek.com/filepage/33267/english-rules-enuk),
 - my own photos of the boardgame's board, tiles, meeples
+- youtube videos for sound effects, see the list of sources in [`gameviewer.js`](./assets/js/gameviewer.js)
 
 ## 9. Disclaimer
 The content of this website is for educational purposes only.

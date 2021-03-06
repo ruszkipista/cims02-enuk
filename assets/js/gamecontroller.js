@@ -409,7 +409,7 @@ const gameController = {
             setTimeout(function () {
               gameViewer.playSound(gameViewer.sounds.click.filename);
               gameController.play();
-            }, gameViewer.tileBack.flipTimeMS * 2);
+            }, gameViewer.tileBack.flipTimeMS * 1);
             // wait outside the loop for Timeout to complete
             break infiniteLoop;
           }
