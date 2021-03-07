@@ -1,6 +1,6 @@
 // initialize game space
 window.addEventListener('load', function () {
-  gameController.initialize(3, 1, 4, 3, true, true);
+  gameController.initialize(3, 2, 4, 3, true, true);
 });
 
 // UTILITIES
