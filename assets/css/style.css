@@ -14,15 +14,6 @@ body {
   max-width: 1200px;
   margin: 0 auto;
 }
-header > h1, header > p{
-  text-align: center;
-}
-main p, main ul, main li {
-  text-align: left;
-}
-p > img {
-  display: inline-block;
-}
 #header {
   width: 100%;
   height: var(--header-height);
