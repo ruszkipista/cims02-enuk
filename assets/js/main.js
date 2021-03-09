@@ -50,21 +50,22 @@ const gameRules = {
       if (element.name === gameController.ICONS.sunPositions.name) { return true; }
     });
     for (let position = 1; position <= gameViewer.maxSunPositions; position++) {
-      sunPieceId = `sunpiece-${position}`;
-      positionsFieldsetElement.innerHTML +=
-        `<div class="rules-sun">
-           <img src="${gameViewer.imagePath}${sunPosition.filename}" class="rules-sun" alt="sun piece">
-           <img src="${gameViewer.imagePath}${sunPiece.filename}" id="${sunPieceId}" class="rules-sun" alt="sun position">
-         </div>`;
+      const sunPieceElement = document.createElement('div');
+      sunPieceElement.classList.add('rules-sun');
+      sunPieceElement.innerHTML +=
+        `<img src="${gameViewer.imagePath}${sunPosition.filename}" class="rules-sun" alt="sun position">
+         <img src="${gameViewer.imagePath}${sunPiece.filename}" id="sunpiece-${position}" class="rules-sun" alt="sun piece">`;
+      if (position >= gameViewer.minSunPositions) { sunPieceElement.addEventListener('click', gameRules.handleSunClick); }
+      positionsFieldsetElement.appendChild(sunPieceElement);
     }
     gameRules.setSunPiecesVisibility();
 
-    positionsFieldsetElement.addEventListener('click', function (event) {
-      gameRules.numberOfSunPositions = (++gameRules.numberOfSunPositions - gameViewer.minSunPositions) % (gameViewer.maxSunPositions - gameViewer.minSunPositions +1) + gameViewer.minSunPositions;
-      gameRules.setSunPiecesVisibility();
-    });
-
     gameController.initialize(3, 2, gameViewer.numberOfMeeples, 3, true, true);
+  },
+
+  handleSunClick: function (event) {
+    gameRules.numberOfSunPositions = parseInt(event.currentTarget.lastChild.id.split('-')[1]);
+    gameRules.setSunPiecesVisibility();
   },
 
   setSunPiecesVisibility: function () {
@@ -73,6 +74,8 @@ const gameRules = {
       const sunPieceElement = document.getElementById(sunPieceId);
       sunPieceElement.style.visibility = (position <= gameRules.numberOfSunPositions) ? 'visible' : 'hidden';
     };
+    const sunPositionsElement = document.getElementById('rules-sun-positions');
+    sunPositionsElement.textContent = gameRules.numberOfSunPositions;
   }
 }
 
