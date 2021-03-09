@@ -65,7 +65,7 @@ const gameViewer = {
   },
 
   meeplePieces: [
-    // the laptop image was reengineered from here: https://www.pngkey.com/maxpic/u2e6w7r5a9u2y3w7/
+    // the laptop icon image was reengineered from here: https://www.pngkey.com/maxpic/u2e6w7r5a9u2y3w7/
     { name: 'blue', filenameHuman: 'piece-meeple-blue.png', filenameMachine: 'piece-laptop-blue.png', background: 'enuk-background-blue.jpg' },
     { name: 'green', filenameHuman: 'piece-meeple-green.png', filenameMachine: 'piece-laptop-green.png', background: 'enuk-background-green.jpg' },
     { name: 'orange', filenameHuman: 'piece-meeple-orange.png', filenameMachine: 'piece-laptop-orange.png', background: 'enuk-background-orange.jpg' },

@@ -26,7 +26,8 @@ const gameController = {
     declareIgloo: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
   },
 
-  initialize: function (numberOfSunPositions, numberOfPlayers, numberOfMeeples, numberOfAnimalTiles, isSoundsOn, isTest) {
+  init: function (colorIndexHuman, numberOfSunPositions, numberOfPlayers, numberOfMeeples, numberOfAnimalTiles, isSoundsOn, isTest) {
+    this.PARAMETERS.humanMeepleIndex = colorIndexHuman;
     this.PARAMETERS.numberOfSunPositions = numberOfSunPositions;
     this.PARAMETERS.numberOfPlayers = numberOfPlayers;
     this.PARAMETERS.numberOfMeeples = numberOfMeeples;
@@ -66,7 +67,6 @@ const gameController = {
   },
 
   PHASES: {
-    rules: 0,
     one: 1,
     two: 2,
     end: 3,
@@ -123,31 +123,12 @@ const gameController = {
 
   play: function (request, elementId) {
     if (typeof this.gameState === 'undefined' || this.gameState === null) {
-      this.gameState = this.STATE.RulesBefore;
+      this.gameState = this.STATE.BeforePhase1;
     }
 
     infiniteLoop: while (true) {
 
       switch (this.gameState) {
-
-        // Rules - Before
-        case this.STATE.RulesBefore:
-          gameViewer.setTitle();
-          this.iconsOnTable.forEach(function (icon) {
-            if (icon.name === gameController.ICONS.start.name) {
-              gameViewer.createIcon(icon);
-            }
-          });
-          gameViewer.setIconPositions(this.iconsOnTable);
-          this.gameState = this.STATE.RulesProcessMove;
-          // wait for request
-          this.isListenToClick = true;
-          break infiniteLoop;
-
-        // Rules - ProcessMove
-        case this.STATE.RulesProcessMove:
-          this.gameState = this.STATE.BeforePhase1;
-          break;
 
         // BeforePhase1
         case this.STATE.BeforePhase1:
@@ -483,12 +464,18 @@ const gameController = {
   },
 
   setupPlayers: function (numberOfPlayers, isTest) {
+
+    // remove the human meeple
+    const humanMeeple = gameViewer.meeplePieces.splice(this.PARAMETERS.humanMeepleIndex,1)[0];
     if (isTest) {
       this.human = 0;
     } else {
       shuffleArrayInplace(gameViewer.meeplePieces);
       this.human = getRandomInt(numberOfPlayers);
     }
+    // put the human meeple back
+    gameViewer.meeplePieces.splice(this.human, 0, humanMeeple);
+
     this.players = [];
     for (let i = 0; i < numberOfPlayers; i++) {
       const meeple = gameViewer.meeplePieces[i];

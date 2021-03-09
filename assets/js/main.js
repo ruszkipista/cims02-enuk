@@ -4,6 +4,10 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 const gameRules = {
+  colorPrefix: 'color',
+  colorIndexHuman: 0,
+  opponentPrefix: 'opponent',
+  numberOfOpponents: 0,
   sunPiecePrefix: 'sunpiece',
   numberOfSunPositions: 0,
   tilesPerTypePrefix: 'tilespertype',
@@ -18,26 +22,10 @@ const gameRules = {
     titleElement.addEventListener('click', gameRules.handlePlayClick);
 
     // SETTING: Color
-    const colorFieldsetElement = document.getElementById('color-picker');
-    for (let meeple of gameViewer.meeplePieces) {
-      const meepleId = `color-${meeple.name}`;
-      colorFieldsetElement.innerHTML +=
-        `<label for="${meepleId}">
-          <input type="radio" id="${meepleId}" name="colors">
-          <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
-        </label>`;
-    }
+    gameRules.setupColorPicker(gameRules.colorPrefix);
 
     // SETTING: Opponents
-    const opponentsFieldsetElement = document.getElementById('opponents-picker');
-    for (let opponent = 0; opponent < gameViewer.numberOfMeeples - 1; opponent++) {
-      const opponentId = `opponent-${opponent}`;
-      opponentsFieldsetElement.innerHTML +=
-        `<label for="${opponentId}">
-           <input type="checkbox" id="${opponentId}" name="${opponentId}">
-           <img src="${gameViewer.imagePath}${gameViewer.meepleMachine4Count.filename}" class="rules-meeple" alt="${opponentId} meeple">
-         </label>`;
-    }
+    gameRules.setupOpponentsPicker(gameRules.opponentPrefix);
 
     // SETTING: Sun positions
     gameRules.setupSunPositionsPicker(gameRules.sunPiecePrefix);
@@ -49,8 +37,43 @@ const gameRules = {
 
   },
 
+  setupColorPicker: function (prefix) {
+    const containerElement = document.getElementById('color-picker');
+    for (let [index, meeple] of gameViewer.meeplePieces.entries()) {
+      const meepleId = `${prefix}-${index}`;
+      containerElement.innerHTML +=
+        `<label for="${meepleId}">
+        <input type="radio" id="${meepleId}" name="colors">
+        <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
+      </label>`;
+    }
+    for (let labelElement of containerElement.children) {
+      if (labelElement.tagName === 'LABEL') {
+        labelElement.addEventListener('click', gameRules.handleColorClick);
+      }
+    }
+  },
+
+  handleColorClick: function (event) {
+    gameRules.colorIndexHuman = parseInt(event.currentTarget.children[0].id.split('-')[1]);
+    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
+  },
+
+
+  setupOpponentsPicker: function (prefix) {
+    const containerElement = document.getElementById('opponents-picker');
+    for (let opponent = 0; opponent < gameViewer.numberOfMeeples - 1; opponent++) {
+      const opponentId = `${prefix}-${opponent}`;
+      containerElement.innerHTML +=
+        `<label for="${opponentId}">
+         <input type="checkbox" id="${opponentId}" name="${opponentId}">
+         <img src="${gameViewer.imagePath}${gameViewer.meepleMachine4Count.filename}" class="rules-meeple" alt="${opponentId} meeple">
+       </label>`;
+    }
+  },
+
   setupSunPositionsPicker: function (prefix) {
-    const positionsFieldsetElement = document.getElementById('sunpos-picker');
+    const containerElement = document.getElementById('sunpos-picker');
     const sunPiece = gameViewer.iconFaces.find(function (element) {
       if (element.name === gameController.ICONS.sunPiece.name) { return true; }
     });
@@ -64,7 +87,7 @@ const gameRules = {
         `<img src="${gameViewer.imagePath}${sunPosition.filename}" class="rules-sun" alt="sun position">
          <img src="${gameViewer.imagePath}${sunPiece.filename}" id="${prefix}-${position}" class="rules-sun" alt="sun piece">`;
       if (position >= gameViewer.minSunPositions) { sunPieceElement.addEventListener('click', gameRules.handleSunClick); }
-      positionsFieldsetElement.appendChild(sunPieceElement);
+      containerElement.appendChild(sunPieceElement);
     }
   },
 
@@ -106,8 +129,8 @@ const gameRules = {
   },
 
   handlePlayClick: function (event) {
-    const numberOfOpponents = document.querySelectorAll('#opponents-picker>label>input:checked').length;
-    gameController.initialize(gameRules.numberOfSunPositions, 1 + numberOfOpponents, gameViewer.numberOfMeeples, gameRules.numberOfTilesPerType, true, true);
+    gameRules.numberOfOpponents = document.querySelectorAll('#opponents-picker>label>input:checked').length;
+    gameController.init(gameRules.colorIndexHuman, gameRules.numberOfSunPositions, 1 + gameRules.numberOfOpponents, gameViewer.numberOfMeeples, gameRules.numberOfTilesPerType, true, true);
   },
 
 }
@@ -115,6 +138,7 @@ const gameRules = {
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));
 }
+
 // learnt random shuffling from here https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
 function shuffleArrayInplace(arr) {
   let j;
