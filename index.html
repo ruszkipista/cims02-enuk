@@ -58,14 +58,20 @@
             border-bottom: solid 1px var(--icon-border);
         }
 
-        label :checked+img {
+        label :checked + img {
             margin-top: 0;
             margin-left: 0;
             padding: 5px;
             border-left: solid 2px var(--icon-border);
             border-bottom: solid 4px var(--icon-border);
         }
+        #opponents-picker :not(:checked) + img {
+            opacity: 50%;
+        }
 
+        #opponents-picker :checked + img {
+            opacity: 100%;
+        }
         .rules-meeple {
             max-height: 50px;
         }
@@ -95,18 +101,11 @@
     </header>
     <section>
         <h2>Settings</h2>
-        <fieldset>
+        <fieldset id="color-picker">
             <legend>Choose your color</legend>
-            <label for="color-blue"><input type="radio" id="color-blue" name="color-human"><img
-                    src="./assets/img/piece-meeple-blue.png" class="rules-meeple" alt="blue meeple"></label>
-            <label for="color-orange"><input type="radio" id="color-orange" name="color-human"><img
-                    src="./assets/img/piece-meeple-orange.png" class="rules-meeple" alt="orange meeple"></label>
-            <label for="color-purple"><input type="radio" id="color-purple" name="color-human"><img
-                    src="./assets/img/piece-meeple-purple.png" class="rules-meeple" alt="purple meeple"></label>
-            <label for="color-green"><input type="radio" id="color-green" name="color-human"><img
-                    src="./assets/img/piece-meeple-green.png" class="rules-meeple" alt="green meeple"></label>
-            <label for="color-red"><input type="radio" id="color-red" name="color-human"><img
-                    src="./assets/img/piece-meeple-red.png" class="rules-meeple" alt="red meeple"></label>
+        </fieldset>
+        <fieldset id="opponents-picker">
+            <legend>How many opponents do you want to play with?</legend>
         </fieldset>
 
         <h2>Game Materials</h2>

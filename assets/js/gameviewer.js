@@ -1,6 +1,7 @@
 // object GAMEVIEWER
 //===================
 const gameViewer = {
+  numberOfMeeples: 4,
   imagePath: './assets/img/',
   audioPath: './assets/audio/',
   title: { filename: 'enuk-title.png' },
@@ -66,6 +67,10 @@ const gameViewer = {
     { name: 'purple', filenameHuman: 'piece-meeple-purple.png', filenameMachine: 'piece-laptop-purple.png', background: 'enuk-background-purple.jpg' },
     { name: 'red', filenameHuman: 'piece-meeple-red.png', filenameMachine: 'piece-laptop-red.png', background: 'enuk-background-red.jpg' },
   ],
+
+  meepleMachine4Count: {
+    filename: 'piece-laptop-black.png',
+  },
 
   setBackground: function (backgroundFile) {
     const bodyElement = document.getElementsByTagName('body')[0];
