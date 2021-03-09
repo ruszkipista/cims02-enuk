@@ -1,5 +1,5 @@
 // initialize Rules page after Load
-window.addEventListener('DOMContentLoaded', function(){
+window.addEventListener('DOMContentLoaded', function () {
   gameRules.init();
 });
 
@@ -17,14 +17,16 @@ function shuffleArrayInplace(arr) {
 }
 
 const gameRules = {
+  numberOfSunPositions: 0,
 
   init: function () {
+    this.numberOfSunPositions = gameViewer.minSunPositions;
 
     const colorFieldsetElement = document.getElementById('color-picker');
     for (let meeple of gameViewer.meeplePieces) {
-      meepleId = `color-${meeple.name}`;
+      const meepleId = `color-${meeple.name}`;
       colorFieldsetElement.innerHTML +=
-       `<label for="${meepleId}">
+        `<label for="${meepleId}">
           <input type="radio" id="${meepleId}" name="colors">
           <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
         </label>`;
@@ -32,15 +34,45 @@ const gameRules = {
 
     const opponentsFieldsetElement = document.getElementById('opponents-picker');
     for (let opponent = 0; opponent < gameViewer.numberOfMeeples - 1; opponent++) {
-      opponentId = `opponent-${opponent}`;
-      opponentsFieldsetElement.innerHTML += 
+      const opponentId = `opponent-${opponent}`;
+      opponentsFieldsetElement.innerHTML +=
         `<label for="${opponentId}">
            <input type="checkbox" id="${opponentId}" name="${opponentId}">
            <img src="${gameViewer.imagePath}${gameViewer.meepleMachine4Count.filename}" class="rules-meeple" alt="${opponentId} meeple">
          </label>`;
     }
 
+    const positionsFieldsetElement = document.getElementById('sunpos-picker');
+    const sunPiece = gameViewer.iconFaces.find(function (element) {
+      if (element.name === gameController.ICONS.sunPiece.name) { return true; }
+    });
+    const sunPosition = gameViewer.iconFaces.find(function (element) {
+      if (element.name === gameController.ICONS.sunPositions.name) { return true; }
+    });
+    for (let position = 1; position <= gameViewer.maxSunPositions; position++) {
+      sunPieceId = `sunpiece-${position}`;
+      positionsFieldsetElement.innerHTML +=
+        `<div class="rules-sun">
+           <img src="${gameViewer.imagePath}${sunPosition.filename}" class="rules-sun" alt="sun piece">
+           <img src="${gameViewer.imagePath}${sunPiece.filename}" id="${sunPieceId}" class="rules-sun" alt="sun position">
+         </div>`;
+    }
+    gameRules.setSunPiecesVisibility();
+
+    positionsFieldsetElement.addEventListener('click', function (event) {
+      gameRules.numberOfSunPositions = (++gameRules.numberOfSunPositions - gameViewer.minSunPositions) % (gameViewer.maxSunPositions - gameViewer.minSunPositions +1) + gameViewer.minSunPositions;
+      gameRules.setSunPiecesVisibility();
+    });
+
     gameController.initialize(3, 2, gameViewer.numberOfMeeples, 3, true, true);
   },
+
+  setSunPiecesVisibility: function () {
+    for (let position = 1; position <= gameViewer.maxSunPositions; position++) {
+      sunPieceId = `sunpiece-${position}`;
+      const sunPieceElement = document.getElementById(sunPieceId);
+      sunPieceElement.style.visibility = (position <= gameRules.numberOfSunPositions) ? 'visible' : 'hidden';
+    };
+  }
 }
 

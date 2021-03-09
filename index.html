@@ -75,7 +75,17 @@
         .rules-meeple {
             max-height: 50px;
         }
-
+        .rules-sun{
+            position: relative;
+            display: inline-block;
+            margin-top: 5px;
+            width: 50px;
+            height: 50px;
+        }
+        .rules-sun > img {
+            position: absolute;
+            max-height: 50px;
+        }
         .rules-tiles {
             max-height: 90px;
         }
@@ -105,7 +115,10 @@
             <legend>Choose your color</legend>
         </fieldset>
         <fieldset id="opponents-picker">
-            <legend>How many opponents do you want to play with?</legend>
+            <legend>Set the number of opponents</legend>
+        </fieldset>
+        <fieldset id="sunpos-picker">
+            <legend>Set the length of the day</legend>
         </fieldset>
 
         <h2>Game Materials</h2>
@@ -136,9 +149,6 @@
             <img src="./assets/img/tileface-igloo20.jpg" class="rules-tiles" alt="igloo piece tile">
             <img src="./assets/img/tileface-igloo21.jpg" class="rules-tiles" alt="igloo piece tile">
             <img src="./assets/img/tileface-igloo22.jpg" class="rules-tiles" alt="igloo piece tile">
-        </p>
-        <p>Players can choose from 5 colors:<br>
-            <img src="./assets/img/rules-meeples.jpg" style="width: 281.28px; height: 76.28px;">
         </p>
         <p>Each player starts out with 4 meeples under their empty stack. In the example below the human player chose
             the blue color while the computer went with the orange:<br>

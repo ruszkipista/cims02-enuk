@@ -2,6 +2,8 @@
 //===================
 const gameViewer = {
   numberOfMeeples: 4,
+  minSunPositions: 3,
+  maxSunPositions: 9,
   imagePath: './assets/img/',
   audioPath: './assets/audio/',
   title: { filename: 'enuk-title.png' },
