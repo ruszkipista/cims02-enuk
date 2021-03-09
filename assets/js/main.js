@@ -13,6 +13,10 @@ const gameRules = {
     this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
 
+    gameViewer.setTitle();
+    const titleElement = document.getElementById('title');
+    titleElement.addEventListener('click', gameRules.handlePlayClick);
+
     // SETTING: Color
     const colorFieldsetElement = document.getElementById('color-picker');
     for (let meeple of gameViewer.meeplePieces) {
@@ -43,7 +47,6 @@ const gameRules = {
     gameRules.setupTilesPerTypePicker(gameRules.tilesPerTypePrefix);
     gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
 
-    gameController.initialize(3, 2, gameViewer.numberOfMeeples, 3, true, true);
   },
 
   setupSunPositionsPicker: function (prefix) {
@@ -100,6 +103,11 @@ const gameRules = {
   handleTileClick: function (event) {
     gameRules.numberOfTilesPerType = parseInt(event.currentTarget.lastChild.id.split('-')[1]);
     gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
+  },
+
+  handlePlayClick: function (event) {
+    const numberOfOpponents = document.querySelectorAll('#opponents-picker>label>input:checked').length;
+    gameController.initialize(gameRules.numberOfSunPositions, 1 + numberOfOpponents, gameViewer.numberOfMeeples, gameRules.numberOfTilesPerType, true, true);
   },
 
 }
