@@ -12,6 +12,8 @@ const gameRules = {
   numberOfSunPositions: 0,
   tilesPerTypePrefix: 'tilespertype',
   numberOfTilesPerType: 0,
+  isSoundsOn: true,
+  isTest: false,
 
   init: function () {
     this.numberOfSunPositions = gameViewer.minSunPositions;
@@ -130,7 +132,13 @@ const gameRules = {
 
   handlePlayClick: function (event) {
     gameRules.numberOfOpponents = document.querySelectorAll('#opponents-picker>label>input:checked').length;
-    gameController.init(gameRules.colorIndexHuman, gameRules.numberOfSunPositions, 1 + gameRules.numberOfOpponents, gameViewer.numberOfMeeples, gameRules.numberOfTilesPerType, true, true);
+    gameController.init(gameRules.colorIndexHuman,
+      gameRules.numberOfSunPositions,
+      1 + gameRules.numberOfOpponents,
+      gameViewer.numberOfMeeples,
+      gameRules.numberOfTilesPerType,
+      gameRules.isSoundsOn,
+      gameRules.isTest);
   },
 
 }

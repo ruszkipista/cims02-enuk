@@ -58,6 +58,7 @@ const gameController = {
   },
 
   PARAMETERS: {
+    humanMeepleIndex: null,
     numberOfSunPositions: null,
     numberOfPlayers: null,
     numberOfMeeples: null,
@@ -459,8 +460,8 @@ const gameController = {
     gameViewer.setBoardPiecesPosition();
     // set visibility/invisibility of icons
     gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.one);
-    // determine whos move first?
-    this.passMoveToNextPlayer();
+    // set who moves first
+    this.whosMove = 0;
   },
 
   setupPlayers: function (numberOfPlayers, isTest) {
@@ -475,6 +476,7 @@ const gameController = {
     }
     // put the human meeple back
     gameViewer.meeplePieces.splice(this.human, 0, humanMeeple);
+    this.PARAMETERS.humanMeepleIndex = this.human;
 
     this.players = [];
     for (let i = 0; i < numberOfPlayers; i++) {
@@ -566,7 +568,7 @@ const gameController = {
   },
 
   passMoveToNextPlayer: function () {
-    this.whosMove = (this.PARAMETERS.isTest) ? this.human : (++this.whosMove % this.PARAMETERS.numberOfPlayers);
+    this.whosMove = ++this.whosMove % this.PARAMETERS.numberOfPlayers;
     if (this.whosMove === 0) { ++this.round; }
   },
 
