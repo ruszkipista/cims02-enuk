@@ -8,6 +8,7 @@
     --header-height: 10vh;
     --icon-base: #FFFAE6;
     --icon-border: #88888850;
+    --icon-placeholder: #41A2B2;
   }
 body {
   background: url("") center top / cover;

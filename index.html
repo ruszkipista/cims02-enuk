@@ -58,31 +58,50 @@
             border-bottom: solid 1px var(--icon-border);
         }
 
-        label :checked + img {
+        label :checked+img {
             margin-top: 0;
             margin-left: 0;
             padding: 5px;
             border-left: solid 2px var(--icon-border);
             border-bottom: solid 4px var(--icon-border);
         }
-        #opponents-picker :not(:checked) + img {
+
+        #opponents-picker :not(:checked)+img {
             opacity: 50%;
         }
 
-        #opponents-picker :checked + img {
+        #opponents-picker :checked+img {
             opacity: 100%;
         }
+
         .rules-meeple {
             max-height: 50px;
         }
-        .rules-sun{
+
+        .rules-sun {
             position: relative;
             display: inline-block;
             margin-top: 5px;
             width: 50px;
             height: 50px;
         }
-        .rules-sun > img {
+
+        .rules-sun>img {
+            position: absolute;
+            max-height: 50px;
+        }
+
+        .rules-tilecounter {
+            position: relative;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+        }
+        div.rules-tilecounter{
+            border: 2px solid var(--icon-placeholder);
+        }
+
+        .rules-tilecounter>img {
             position: absolute;
             max-height: 50px;
         }
@@ -118,17 +137,25 @@
             <legend>Set the number of opponents [0-3]</legend>
         </fieldset>
         <fieldset id="sunpos-picker">
-            <legend>Set the length of the day [3-9]</legend>
+            <legend>Set the length of the day [3-9] (and also number of reindeers)</legend>
+        </fieldset>
+        <fieldset id="tilespertype-picker">
+            <legend>Set the number of animal tiles per type [2-14]</legend>
         </fieldset>
 
         <h2>Game Materials</h2>
         <p>There are 5 types of animal tiles: reindeer (with an eskimo), polar bear, seal, salmon and herring.<br>
-        <div><span id="rules-sun-positions"></span> x <img src="./assets/img/tileface-reindeer.jpg" class="rules-tiles" alt="Reindeer with Eskimo tile">,
+        <div><span class="rules-sun-positions"></span> x <img src="./assets/img/tileface-reindeer.jpg"
+                class="rules-tiles" alt="Reindeer with Eskimo tile">,
         </div>
-        <div>14 x <img src="./assets/img/tileface-polarbear.jpg" class="rules-tiles" alt="Polar Bear tile">,</div>
-        <div>14 x <img src="./assets/img/tileface-seal.jpg" class="rules-tiles" alt="Seal tile">,</div>
-        <div>14 x <img src="./assets/img/tileface-salmon.jpg" class="rules-tiles" alt="Salmon tile">,</div>
-        <div>14 x <img src="./assets/img/tileface-herring.jpg" class="rules-tiles" alt="Herring tile"></div>
+        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-polarbear.jpg"
+                class="rules-tiles" alt="Polar Bear tile">,</div>
+        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-seal.jpg" class="rules-tiles"
+                alt="Seal tile">,</div>
+        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-salmon.jpg" class="rules-tiles"
+                alt="Salmon tile">,</div>
+        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-herring.jpg" class="rules-tiles"
+                alt="Herring tile"></div>
         </p>
         <p>Every animal (except the reindeer) fears of one other animal. The herring flees from the salmon, the salmon
             flees from the seal. The seal flees from the polar bear, the
