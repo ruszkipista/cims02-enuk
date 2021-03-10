@@ -13,14 +13,13 @@ const gameRules = {
   tilesPerTypePrefix: 'tilespertype',
   numberOfTilesPerType: 0,
   isSoundsOn: true,
-  isTest: false,
+  isTest: true,
 
   init: function () {
     this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
 
-    gameViewer.setTitle();
-    const titleElement = document.getElementById('title');
+    const titleElement = document.getElementById('rules-start');
     titleElement.addEventListener('click', gameRules.handlePlayClick);
 
     // SETTING: Color

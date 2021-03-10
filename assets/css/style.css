@@ -9,10 +9,11 @@
     --icon-base: #FFFAE6;
     --icon-border: #88888850;
     --icon-placeholder: #41A2B2;
+    --max-width: 1200px;
   }
 body {
   background: url("") center top / cover;
-  max-width: 1200px;
+  max-width: var(--max-width);
   margin: 0 auto;
 }
 #header {
@@ -22,8 +23,16 @@ body {
   text-align: center;
 }
 #title {
-  position: relative;
   height: 10vh;
+  position: fixed;
+  top: 0;
+  width: 100%;
+  max-width: var(--max-width);
+  background: url(../img/enuk-title.png) center center / contain no-repeat white;
+  z-index: 10;
+  border: solid 1px var(--icon-border);
+  border-top: none;
+  border-radius: 0 0 1rem 1rem;
 }
 .icon-position{
   position: absolute;
@@ -66,7 +75,7 @@ main {
 #piece-board {
   display: inline-block;
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--max-width);
 }
 #icon-piece-sun {
   position: absolute;

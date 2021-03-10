@@ -281,8 +281,7 @@ const gameViewer = {
 
     let bodyElement = document.getElementsByTagName('body')[0];
     bodyElement.innerHTML = this.createBodyHTML();
-    // set title as background
-    this.setTitle();
+
     // put game board in place
     let boardPiecesHTML = '';
     // add BOARD to game space
@@ -324,11 +323,6 @@ const gameViewer = {
     for (let icon of icons) {
       this.setVisibilityOfElement(icon.id, icon.isVisible[phase]);
     }
-  },
-
-  setTitle: function () {
-    const titleElement = document.getElementById('title');
-    titleElement.style.background = `url("${this.imagePath}${this.title.filename}") center center / contain no-repeat`;
   },
 
   setBoardPiecesPosition: function () {
