@@ -118,7 +118,7 @@ const gameRules = {
       const tilePieceElement = document.createElement('div');
       tilePieceElement.classList.add('rules-tilecounter');
       tilePieceElement.innerHTML +=
-        `<img src="${gameViewer.imagePath}${tilePiece.filename}" id="${prefix}-${position}" class="rules-tilecounter" alt="tile-back counter">`;
+        `<img src="${gameViewer.imagePath}${tilePiece.filename}" id="${prefix}-${position}" class="img-fluid" alt="tile-back counter">`;
       if (position >= gameViewer.minTilesPerType) { tilePieceElement.addEventListener('click', gameRules.handleTileClick); }
       containerElement.appendChild(tilePieceElement);
     }

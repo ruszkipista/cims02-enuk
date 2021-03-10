@@ -11,28 +11,18 @@
     --icon-placeholder: #41A2B2;
     --max-width: 1200px;
   }
-body {
-  background: url("") center top / cover;
-  max-width: var(--max-width);
-  margin: 0 auto;
-}
-#header {
-  width: 100%;
-  height: var(--header-height);
-  margin: 0 auto;
-  text-align: center;
-}
+
 #title {
   height: 10vh;
-  position: fixed;
-  top: 0;
-  width: 100%;
-  max-width: var(--max-width);
   background: url(../img/enuk-title.png) center center / contain no-repeat white;
   z-index: 10;
   border: solid 1px var(--icon-border);
   border-top: none;
   border-radius: 0 0 1rem 1rem;
+}
+#title>img{
+  max-height: 100%;
+  width: auto;
 }
 .icon-position{
   position: absolute;

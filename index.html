@@ -6,40 +6,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Enuk</title>
     <link rel="icon" href="./assets/img/enuk-logo.png">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
     <link href="./assets/css/style.css" type="text/css" rel="stylesheet">
     <script src="./assets/js/main.js" type="text/javascript"></script>
     <script src="./assets/js/gamecontroller.js" type="text/javascript"></script>
     <script src="./assets/js/gameviewer.js" type="text/javascript"></script>
     <style>
-        section#rules-main {
-            margin-top: 10vh;
-            padding: 1rem;
-        }
-
-        #rules-start {
-            height: 80%;
-            float: right;
-            margin: 10px;
-        }
-
-        section div {
-            display: inline-block;
-        }
-
-        section p,
-        section ul,
-        section li {
-            text-align: left;
-        }
-
-        fieldset {
-            height: 80px;
+        header+section {
+            margin-top: var(--header-height) !important;
         }
 
         fieldset>label {
-            position: relative;
-            display: inline-block;
-            margin: 0 20px;
+            margin: 0 1rem 0 0;
         }
 
         fieldset>label>input {
@@ -47,23 +26,22 @@
         }
 
         fieldset>label>img {
-            position: absolute;
-            left: 0;
             background-color: var(--icon-base);
             border-left: solid 1px var(--icon-border);
             border-radius: 0.5rem;
-            margin-top: 6px;
-            margin-left: 2px;
-            padding: 2px;
+            margin-bottom: 0;
+            margin-left: 3px;
+            padding: 8px;
             border-bottom: solid 1px var(--icon-border);
         }
 
         fieldset>label :checked+img {
-            margin-top: 0;
-            margin-left: 0;
-            padding: 5px;
-            border-left: solid 2px var(--icon-border);
-            border-bottom: solid 4px var(--icon-border);
+            margin-bottom: 0;
+            margin-left: 0px;
+            margin-right: 8px;
+            padding: 1px;
+            border-left: solid 3px var(--icon-border);
+            border-bottom: solid 5px var(--icon-border);
         }
 
         #opponents-picker :not(:checked)+img {
@@ -75,11 +53,10 @@
         }
 
         .rules-meeple {
-            max-height: 50px;
+            max-height: 4rem;
         }
 
         .rules-sun {
-            position: relative;
             display: inline-block;
             margin-top: 5px;
             width: 50px;
@@ -92,19 +69,15 @@
         }
 
         .rules-tilecounter {
-            position: relative;
             display: inline-block;
-            width: 30px;
-            height: 30px;
-        }
-
-        div.rules-tilecounter {
             border: 2px solid var(--icon-placeholder);
+            width: 36px;
+            height: 36px;
         }
 
         .rules-tilecounter>img {
             position: absolute;
-            max-height: 50px;
+            max-height: 32px;
         }
 
         .rules-tiles {
@@ -118,15 +91,18 @@
     </style>
 </head>
 
-<body>
-    <header>
-        <div id="title">
-            <img src="./assets/img/enuk-eskimo-cub.png" style="height: 100%;" alt="Enuk with polar bear cub">
-            <img id="rules-start" src="./assets/img/icon-start.png" alt="Start icon">
+<body class="container">
+
+    <header class="fixed-top">
+        <div id="title" class="position-relative">
+            <img class="position-absolute top-0 start-0 p-1" src="./assets/img/enuk-eskimo-cub.png"
+                alt="Enuk with polar bear cub">
+            <img class="position-absolute top-0 end-0 p-3" id="rules-start" src="./assets/img/icon-start.png"
+                alt="Start icon">
         </div>
     </header>
 
-    <section id="rules-main">
+    <section class="row">
         <h1>RULES OF THE GAME</h1>
         <p>There&rsquo;s a lot to discover on the ice floes of Greenland &hellip;</p>
         <p>Enuk, the little Eskimo boy, is really excited. He&rsquo;s been looking forward to wandering around with his
@@ -135,58 +111,62 @@
             igloo, and that&rsquo;s what he&rsquo;s looking forward to the most.</p>
         <p>The players will have to try to collect as many animal tiles as possible. The one who has the most tiles at
             the end is the winner!</p>
-        <h2>Settings</h2>
-        <fieldset id="color-picker">
+
+        <h2>Game Materials</h2>
+        <fieldset id="color-picker" class="col-12 col-lg-6">
             <legend>Choose your color</legend>
         </fieldset>
-        <fieldset id="opponents-picker">
+        <fieldset id="opponents-picker" class="col-12 col-lg-6">
             <legend>Set the number of opponents [0-3]</legend>
         </fieldset>
-        <fieldset id="sunpos-picker">
-            <legend>Set the length of the day [3-9] (and also number of reindeers)</legend>
+        <p col-12>There are 5 types of animal tiles: reindeer (with an eskimo), polar bear, seal, salmon and herring.
+        </p>
+        <fieldset id="sunpos-picker" class="col-12 col-lg-6">
+            <legend>Set the length of the day [3-9]</legend>
         </fieldset>
-        <fieldset id="tilespertype-picker">
+        <fieldset id="tilespertype-picker" class="col-12 col-lg-6">
             <legend>Set the number of tiles per animal type [2-14]</legend>
         </fieldset>
 
-        <h2>Game Materials</h2>
-        <p>There are 5 types of animal tiles: reindeer (with an eskimo), polar bear, seal, salmon and herring.<br>
-        <div><span class="rules-sun-positions"></span> x <img src="./assets/img/tileface-reindeer.jpg"
-                class="rules-tiles" alt="Reindeer with Eskimo tile">,
+        <div class="col-2 offset-2"><span class="rules-sun-positions"></span> x <img
+                src="./assets/img/tileface-reindeer.jpg" class="rules-tiles" alt="Reindeer with Eskimo tile">
         </div>
-        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-polarbear.jpg"
-                class="rules-tiles" alt="Polar Bear tile">,</div>
-        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-seal.jpg" class="rules-tiles"
-                alt="Seal tile">,</div>
-        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-salmon.jpg" class="rules-tiles"
-                alt="Salmon tile">,</div>
-        <div><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-herring.jpg" class="rules-tiles"
-                alt="Herring tile"></div>
-        </p>
-        <p>Every animal (except the reindeer) fears of one other animal. The herring flees from the salmon, the salmon
+        <div class="col-2"><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-polarbear.jpg"
+                class="rules-tiles" alt="Polar Bear tile"></div>
+        <div class="col-2"><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-seal.jpg"
+                class="rules-tiles" alt="Seal tile"></div>
+        <div class="col-2"><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-salmon.jpg"
+                class="rules-tiles" alt="Salmon tile"></div>
+        <div class="col-2"><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-herring.jpg"
+                class="rules-tiles" alt="Herring tile"></div>
+
+        <p class="col-12 col-lg-6 mt-3">Every animal (except the reindeer) fears of one other animal. The herring flees
+            from the salmon, the salmon
             flees from the seal. The seal flees from the polar bear, the
             polar bear flees as soon as a reindeer turns up with an Eskimo.<br>
             <img src="./assets/img/rules-flee.jpg" class="rules-tiles"
                 alt="rank of animals: herring, salmon, seal, polar bear, reindeer (with Eskimo)">
         </p>
-        <p>The game board has an imprint of an igloo,<br>
-            <img src="./assets/img/enuk-board-front.jpg" class="rules-board"
-                alt="game board with imprint of an igloo"><br>
-            which will be built from these 9 tiles:<br>
-            <img src="./assets/img/tileface-igloo00.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo01.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo02.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo10.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo11.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo12.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo20.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo21.jpg" class="rules-tiles" alt="igloo piece tile">
-            <img src="./assets/img/tileface-igloo22.jpg" class="rules-tiles" alt="igloo piece tile">
-        </p>
-        <p>Each player starts out with 4 meeples under their empty stack. In the example below the human player chose
+        <p class="col-12 col-lg-6 mt-3">Each player starts out with 4 meeples under their empty stack. In the example
+            below the human player chose
             the blue color while the computer went with the orange:<br>
             <img src="./assets/img/rules-stack-0.png" style="width: 313.00px; height: 71.00px;">
         </p>
+        <p class="col-12 col-lg-6 mt-3">The game board has an imprint of an igloo,<br>
+            <img src="./assets/img/enuk-board-front.jpg" class="rules-board" alt="game board with imprint of an igloo">
+        </p>
+        <p class="col-12 col-lg-6 mt-3">which will be built from these 9 tiles:<br>
+            <img src="./assets/img/tileface-igloo00.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo01.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo02.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo10.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo11.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo12.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo20.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo21.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+            <img src="./assets/img/tileface-igloo22.jpg" class="rules-tiles m-1" alt="igloo piece tile">
+        </p>
+
         <h2>Game Sequence</h2>
         <p>The game runs in two phases:</p>
         <ul>
@@ -194,45 +174,46 @@
             <li>Finishing Phase: Declaring and collecting tiles</li>
         </ul>
         <h2>First Phase</h2>
-        <p>The game starts with the table covered with all the shuffled tiles facing down:</p>
-        <p><img src="./assets/img/rules-example-00.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">The game starts with the table covered with all the shuffled tiles facing
+            down:<br><img src="./assets/img/rules-example-00.png">
         </p>
-        <p>It is Blue player&rsquo;s turn now. They turn over a tile - herring. If Blue ends their move now they can
-            collect it.</p>
-        <p><img src="./assets/img/rules-example-01.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">It is Blue player&rsquo;s turn now. They turn over a tile - herring. If Blue
+            ends their move now they can collect it.<br>
+            <img src="./assets/img/rules-example-01.png">
         </p>
-        <p>But Blue rather flips another tile - it is a polar bear. If Blue ends their move now they can collect both of
-            these tiles:</p>
-        <p><img src="./assets/img/rules-example-02.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">But Blue rather flips another tile - it is a polar bear. If Blue ends their move
+            now they can collect both of these tiles:<br>
+            <img src="./assets/img/rules-example-02.png">
         </p>
-        <p>However, Blue decides to turn over another tile. Another herring.There is no threat between the herring and
-            the polar bear, so no-one flees. Therefore it&rsquo;s still the Blue player&rsquo;s turn.</p>
-        <p><img src="./assets/img/rules-example-03.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">However, Blue decides to turn over another tile. Another herring.There is no
+            threat between the herring and the polar bear, so no-one flees. Therefore it&rsquo;s still the Blue
+            player&rsquo;s turn.<br>
+            <img src="./assets/img/rules-example-03.png">
         </p>
-        <p>Now a salmon turns up!</p>
-        <p><img src="./assets/img/rules-example-04.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">Now a salmon turns up!<br>
+            <img src="./assets/img/rules-example-04.png">
         </p>
-        <p>The herring fears the salmon so they flee! </p>
-        <p><img src="./assets/img/rules-example-05.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">The herring fears the salmon so they flee!<br>
+            <img src="./assets/img/rules-example-05.png">
         </p>
-        <p>Player Blue has to turn back the 2 herring tiles,</p>
-        <p><img src="./assets/img/rules-example-06.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">Player Blue has to turn back the 2 herring tiles,<br>
+            <img src="./assets/img/rules-example-06.png">
         </p>
-        <p>and the remaining 2 face-up tiles are collected and placed on their stack:</p>
-        <p><img src="./assets/img/rules-example-07.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">and the remaining 2 face-up tiles are collected and placed on their stack:<br>
+            <img src="./assets/img/rules-example-07.png">
             <img src="./assets/img/rules-stack-2.png" style="width: 303.00px; height: 98.00px;">
         </p>
-        <p>This signals the end of Blue&rsquo;s turn. Now it&rsquo;s Orange&rsquo;s turn. Orange flips a tile - it
-            is a seal:</p>
-        <p><img src="./assets/img/rules-example-08.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">This signals the end of Blue&rsquo;s turn. Now it&rsquo;s Orange&rsquo;s turn.
+            Orange flips a tile - it is a seal:<br>
+            <img src="./assets/img/rules-example-08.png">
         </p>
-        <p>In their next move, they remember the positions of the 2 herring tiles and, as the herring doesn&rsquo;t
-            fear the seal, they can be turned up safely:</p>
-        <p><img src="./assets/img/rules-example-09.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">In their next move, they remember the positions of the 2 herring tiles and, as
+            the herring doesn&rsquo;t fear the seal, they can be turned up safely:<br>
+            <img src="./assets/img/rules-example-09.png">
         </p>
-        <p>Orange then decides that 3 tiles are enough and ends their move by collecting the 3 face-up tiles and
-            adding them to their stack:</p>
-        <p><img src="./assets/img/rules-example-10.png" style="width: 350.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">Orange then decides that 3 tiles are enough and ends their move by collecting
+            the 3 face-up tiles and adding them to their stack:<br>
+            <img src="./assets/img/rules-example-10.png">
             <img src="./assets/img/rules-stack-5.png" style="width: 316.00px; height: 103.00px;">
         </p>
         <h2>The rules during First Phase</h2>
@@ -276,19 +257,21 @@
         <p>The First Phase ends when the sun piece is moved onto the last field on the board.</p>
 
         <h2>Finishing Phase</h2>
-        <p>Blue&rsquo;s last flip turned up a reindeer, this moved the sun into the last position. </p>
-        <p><img src="./assets/img/rules-sun-position-9.png" style="width: 490.00px; height: 110.00px;">
+        <p class="col-12 col-lg-6 mt-3">Blue&rsquo;s last flip turned up a reindeer, this moved the sun into the last
+            position.<br>
+            <img src="./assets/img/rules-sun-position-9.png" style="width: 490.00px; height: 110.00px;">
         </p>
-        <p>Blue collects all face-up tiles from the table and it&rsquo;s Orange&rsquo;s turn.</p>
-        <p>These are the remaining tiles on the table:</p>
-        <p><img src="./assets/img/rules-example-21.png" style="width: 280.00px; height: 141.00px;">
+        <p class="col-12 col-lg-6 mt-3">Blue collects all face-up tiles from the table and it&rsquo;s Orange&rsquo;s
+            turn.<br>These are the remaining tiles on the table:<br>
+            <img src="./assets/img/rules-example-21.png" style="width: 280.00px; height: 141.00px;">
         </p>
-        <p>Orange has one meeple on the igloo. This gives them the right to flip and collect tiles until they
-            can predict what they&rsquo;ll turn over.</p>
-        <p><img src="./assets/img/rules-igloo-finish-1.png" style="width: 228.40px; height: 226.19px;">
+        <p class="col-12 col-lg-6 mt-3">Orange has one meeple on the igloo. This gives them the right to flip and
+            collect tiles until they can predict what they&rsquo;ll turn over.<br>
+            <img src="./assets/img/rules-igloo-finish-1.png" style="width: 228.40px; height: 226.19px;">
         </p>
-        <p>Orange&rsquo;s meeple is removed and the tile underneath is put on their stack:</p>
-        <p><img src="./assets/img/rules-igloo-finish-2.png" style="width: 221.40px; height: 219.26px;">
+        <p class="col-12 col-lg-6 mt-3">Orange&rsquo;s meeple is removed and the tile underneath is put on their
+            stack:<br>
+            <img src="./assets/img/rules-igloo-finish-2.png" style="width: 221.40px; height: 219.26px;">
         </p>
         <p>Orange remembers the position of a polar bear from earlier. They declare that their next flip is
             going to be a polar bear by clicking on the polar bear icon:
@@ -341,7 +324,10 @@
         <p>A game by Stefan Dorra (www.dorra-spiele.de) and Manfred Reindl for 2-5 players aged 5 and over.<br>
             &copy; Copyright 2008 Queen Games, D-842 Troisdorf, Germany</p>
     </section>
-    <noscript> The game requires JavaScript to run, but this browser does not support it! </noscript>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-b5kHyXgcpbZJO/tY9Ul7kGkf1S0CWuKcCD38l8YkeH8z8QjE0GmW1gYU5S9FOnJ0"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

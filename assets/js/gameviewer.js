@@ -389,7 +389,7 @@ const gameViewer = {
       } else {
         element.style.width = `${parentRect.height * icon.height}px`;
         element.style.height = `${parentRect.height * icon.height}px`;
-        element.style.left = `${parentRect.width * icon.leftTopCorner[0]}px`;
+        element.style.left = `${parentRect.left + parentRect.width * icon.leftTopCorner[0]}px`;
         element.style.top = `${parentRect.height * icon.leftTopCorner[1]}px`;
       }
     }
