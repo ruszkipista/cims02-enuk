@@ -112,21 +112,24 @@
             the end is the winner!</p>
 
         <h2>Game Materials</h2>
+        <fieldset id="sound-picker" class="form-check form-switch col-6 ps-3">
+            <legend>Switch&nbsp;<span class="rules-sound">On</span>&nbsp;sound effects:
+                <input class="form-check-input float-end me-5" type="checkbox" id="sound-picker-switch">
+            </legend>
+        </fieldset>
+        <fieldset id="test-picker" class="form-check form-switch col-6 ps-3">
+            <legend>Switch&nbsp;<span class="rules-test">On</span>&nbsp;test mode:
+                <input class="form-check-input float-end me-5" type="checkbox" id="test-picker-switch">
+            </legend>
+        </fieldset>
         <fieldset id="color-picker" class="col-12 col-lg-6">
             <legend>Choose your color</legend>
         </fieldset>
         <fieldset id="opponents-picker" class="col-12 col-lg-6">
             <legend>Set the number of opponents [0-3]</legend>
         </fieldset>
-        <p col-12>There are 5 types of animal tiles: reindeer (with an eskimo), polar bear, seal, salmon and herring.
-        </p>
-        <fieldset id="sunpos-picker" class="col-12 col-lg-6">
-            <legend>Set the length of the day [3-9]</legend>
-        </fieldset>
-        <fieldset id="tilespertype-picker" class="col-12 col-lg-6">
-            <legend>Set the number of tiles per animal type [2-14]</legend>
-        </fieldset>
-
+        <p class="col-12 mt-3">There are 5 types of animal tiles: reindeer (with an eskimo), polar bear, seal, salmon
+            and herring.</p>
         <div class="col-2 offset-2"><span class="rules-sun-positions"></span> x <img
                 src="./assets/img/tileface-reindeer.jpg" class="rules-tiles" alt="Reindeer with Eskimo tile">
         </div>
@@ -139,6 +142,20 @@
         <div class="col-2"><span class="rules-tilespertype"></span> x <img src="./assets/img/tileface-herring.jpg"
                 class="rules-tiles" alt="Herring tile"></div>
 
+        <fieldset id="sunpos-picker" class="col-12 col-lg-6">
+            <legend>Set the length of the day [3-9]</legend>
+        </fieldset>
+        <fieldset id="tilespertype-picker" class="col-12 col-lg-6">
+            <legend>Set the number of animal tiles [2-14]</legend>
+        </fieldset>
+
+        <p class="col-12 col-lg-6 mt-3">The game board has an imprint of an igloo,<br>
+            <img src="./assets/img/enuk-board-front.jpg" class="rules-board" alt="game board with imprint of an igloo">
+        </p>
+        <p class="col-12 col-lg-6 mt-3">which will be built from these 9 tiles:<br>
+            <img src="./assets/img/rules-igloo-finish-0.png" class="rules-board" alt="igloo tile pieces">
+        </p>
+
         <p class="col-12 col-lg-6 mt-3">Every animal (except the reindeer) fears of one other animal. The herring flees
             from the salmon, the salmon
             flees from the seal. The seal flees from the polar bear, the
@@ -150,12 +167,6 @@
             below the human player chose
             the blue color while the computer went with the orange:<br>
             <img src="./assets/img/rules-stack-0.png">
-        </p>
-        <p class="col-12 col-lg-6 mt-3">The game board has an imprint of an igloo,<br>
-            <img src="./assets/img/enuk-board-front.jpg" class="rules-board" alt="game board with imprint of an igloo">
-        </p>
-        <p class="col-12 col-lg-6 mt-3">which will be built from these 9 tiles:<br>
-            <img src="./assets/img/rules-igloo-finish-0.png" class="rules-board" alt="igloo tile pieces">
         </p>
 
         <!-- GAME SEQUENCE -->
@@ -316,10 +327,13 @@
         <p>The game ends when there are no more meeples on the board or all tiles have been turned over.</p>
         <p>Did you manage to collect the most tiles? If you did, you&rsquo;ve won the game.</p>
         <p>
-            <img class="rules-board float-start p-3" src="./assets/img/enuk-icecube.jpg" alt="Enuk holds a big ice cube">
-            <img class="rules-board float-end p-3" src="./assets/img/enuk-queen-kids.jpg" alt="logo of Queen KIDS game publisher">
+            <img class="rules-board float-start p-3" src="./assets/img/enuk-icecube.jpg"
+                alt="Enuk holds a big ice cube">
+            <img class="rules-board float-end p-3" src="./assets/img/enuk-queen-kids.jpg"
+                alt="logo of Queen KIDS game publisher">
         </p>
-        <p class="clearfix text-center">A game by Stefan Dorra (www.dorra-spiele.de) and Manfred Reindl for 2-5 players aged 5 and over.<br>
+        <p class="clearfix text-center">A game by Stefan Dorra (www.dorra-spiele.de) and Manfred Reindl for 2-5 players
+            aged 5 and over.<br>
             &copy; Copyright 2008 Queen Games, D-842 Troisdorf, Germany</p>
     </section>
 
