@@ -30,11 +30,11 @@ const gameRules = {
         gameRules.numberOfTilesPerType,
         gameRules.isSoundsOn,
         gameRules.isTestOn);
-    }),
+    });
 
-      // SETTING: Sounds
-      // learnt deserialization from here https://stackoverflow.com/questions/3263161/cannot-set-boolean-values-in-localstorage
-      gameRules.setupSoundsSwitch();
+    // SETTING: Sounds
+    // learnt deserialization from here https://stackoverflow.com/questions/3263161/cannot-set-boolean-values-in-localstorage
+    gameRules.setupSoundsSwitch();
 
     // SETTING: Test
     gameRules.setupTestSwitch();
@@ -174,7 +174,7 @@ const gameRules = {
       sunPieceId = `${prefix}-${position}`;
       const sunPieceElement = document.getElementById(sunPieceId);
       sunPieceElement.style.visibility = (position <= current) ? 'visible' : 'hidden';
-    };
+    }
     if (classToUpdate) {
       const counterElements = document.getElementsByClassName(classToUpdate);
       for (let counterElement of counterElements) {
@@ -206,7 +206,7 @@ const gameRules = {
     gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
   },
 
-}
+};
 
 function getRandomInt(max) {
   return Math.floor(Math.random() * Math.floor(max));

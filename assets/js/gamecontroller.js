@@ -167,8 +167,8 @@ const gameController = {
             // flip the tile face-up
             gameViewer.flipTileOnTable(this.clickedTile, request === this.REQUEST.toFlipLeft);
             // handle: reindeer -> advance sun
-            if (this.clickedTile.name === this.TILES.reindeer.name
-              && this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
+            if (this.clickedTile.name === this.TILES.reindeer.name &&
+              this.sunPosition < this.PARAMETERS.numberOfSunPositions - 1) {
               this.sunPosition++;
               gameViewer.setBoardPiecesPosition(this.sunPosition, this.PARAMETERS.numberOfPlayers);
             }
@@ -181,7 +181,7 @@ const gameController = {
           // continue to next state
           this.gameState = this.STATE.InPhase1Evaluation;
           // back in the game after Timeout
-          setTimeout(function () {
+          setTimeout(function (request, elementId) {
             gameController.play(request, elementId);
           }, gameViewer.tileBack.flipTimeMS * timeOutMultiplier, request, elementId);
           // wait outside the loop for Timeout to complete
@@ -201,19 +201,19 @@ const gameController = {
             this.isEndOfPhase1 = true;
             this.isEndOfPhase2 = true;
             // Phase_1 ends if clicked tile is a reindeer AND the sun is in the last position
-          } else if (this.clickedTile
-            && this.clickedTile.name === this.TILES.reindeer.name
-            && this.sunPosition === this.PARAMETERS.numberOfSunPositions - 1) {
+          } else if (this.clickedTile &&
+            this.clickedTile.name === this.TILES.reindeer.name &&
+            this.sunPosition === this.PARAMETERS.numberOfSunPositions - 1) {
             this.isEndOfPhase1 = true;
           }
           // move ends if
-          if (this.isEndOfPhase1
+          if (this.isEndOfPhase1 ||
             // player decided to collect the turned up tiles, or
-            || request === this.REQUEST.toCollect
+            request === this.REQUEST.toCollect ||
             // latest clicked tile is an igloo, or
-            || (this.clickedTile && this.clickedTile.name === this.TILES.igloo.name)
+            (this.clickedTile && this.clickedTile.name === this.TILES.igloo.name) ||
             // at least one animal hid (there is a tile to be turned down)
-            || this.toBeTurnedDown.size > 0) {
+            this.toBeTurnedDown.size > 0) {
             this.isEndOfMove = true;
           }
           // set next state
@@ -249,7 +249,9 @@ const gameController = {
             if (this.isEndOfPhase1) {
               this.gameState = this.STATE.BeforePhase2;
               // back in the game after Timeout
-              setTimeout(function () { gameController.play(request, elementId); }, gameViewer.tileBack.flipTimeMS * 2);
+              setTimeout(function (request, elementId) {
+                gameController.play(request, elementId);
+              }, gameViewer.tileBack.flipTimeMS * 2, request, elementId);
               // wait outside the loop for Timeout to complete
               break infiniteLoop;
             }
@@ -260,13 +262,13 @@ const gameController = {
         // BeforePhase2
         case this.STATE.BeforePhase2:
           // back in the game after Timeout
-          setTimeout(function () {
+          setTimeout(function (gameViewer) {
             // set visibility/invisibility of icons
             gameViewer.setVisibilityOfIcons(gameController.iconsOnTable, gameController.PHASES.two);
             // continue to state InPhase2-CollectOneIgloo
             gameController.gameState = gameController.STATE.InPhase2CollectOneIgloo;
             gameController.play();
-          }, gameViewer.tileBack.flipTimeMS * 3);
+          }, gameViewer.tileBack.flipTimeMS * 3, gameViewer);
           // wait outside the loop for Timeout to complete
           break infiniteLoop;
 
@@ -367,11 +369,11 @@ const gameController = {
             this.isEndOfMove = true;
           }
           // If ClickedElement tile is the last reindeer
-          if ((this.clickedTile && this.clickedTile.name === this.TILES.reindeer.name)
+          if ((this.clickedTile && this.clickedTile.name === this.TILES.reindeer.name) ||
             //     OR there is no more meeple on the igloo
-            || (!this.isDeclarationCorrect && this.evaluateMeeplesAtPlayers(this.players))
+            (!this.isDeclarationCorrect && this.evaluateMeeplesAtPlayers(this.players)) ||
             //     OR all tiles on table are face-up
-            || this.evaluateTilesOnTablePhase2(this.tilesOnTable)) {
+            this.evaluateTilesOnTablePhase2(this.tilesOnTable)) {
             //   -> set flag EndOfPhase2
             this.isEndOfPhase2 = true;
             this.isEndOfMove = true;
@@ -388,10 +390,10 @@ const gameController = {
             // prevent repeated run of the previous tile removal and following wait
             this.isDeclarationCorrect = false;
             // back in the game after Timeout
-            setTimeout(function () {
+            setTimeout(function (gameViewer) {
               gameViewer.playSound(gameViewer.sounds.click.filename);
               gameController.play();
-            }, gameViewer.tileBack.flipTimeMS * 1);
+            }, gameViewer.tileBack.flipTimeMS * 1, gameViewer);
             // wait outside the loop for Timeout to complete
             break infiniteLoop;
           }
@@ -467,7 +469,7 @@ const gameController = {
   setupPlayers: function (numberOfPlayers, isTest) {
 
     // remove the human meeple
-    const humanMeeple = gameViewer.meeplePieces.splice(this.PARAMETERS.humanMeepleIndex,1)[0];
+    const humanMeeple = gameViewer.meeplePieces.splice(this.PARAMETERS.humanMeepleIndex, 1)[0];
     if (isTest) {
       this.human = 0;
     } else {

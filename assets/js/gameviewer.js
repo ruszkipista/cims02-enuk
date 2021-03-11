@@ -101,8 +101,8 @@ const gameViewer = {
     // x′ = (x−p)cos(θ) − (y−q)sin(θ) + p
     // y′ = (x−p)sin(θ) + (y−q)cos(θ) + q
     // calculate rotation center (p,q)
-    p = rectWidth / 2;
-    q = iconSideLength / 2 + r;
+    const p = rectWidth / 2;
+    const q = iconSideLength / 2 + r;
     // set up first position (left hand side)
     let x0 = iconSideLength / 2;
     let y0 = rectHeight - iconSideLength / 2;
@@ -112,8 +112,8 @@ const gameViewer = {
     let angle = 0;
     for (let i = 1; i < numberOfPositions; i++) {
       angle += angleOnePos;
-      x = (x0 - p) * Math.cos(angle) - (y0 - q) * Math.sin(angle) + p;
-      y = (x0 - p) * Math.sin(angle) + (y0 - q) * Math.cos(angle) + q;
+      const x = (x0 - p) * Math.cos(angle) - (y0 - q) * Math.sin(angle) + p;
+      const y = (x0 - p) * Math.sin(angle) + (y0 - q) * Math.cos(angle) + q;
       sunPositions.push([(x - halfIconSideLength) / rectWidth, (y - halfIconSideLength) / rectHeight]);
     }
     return sunPositions;
@@ -213,8 +213,8 @@ const gameViewer = {
         `<img class="tile-edge" 
               src="${this.imagePath}${this.tileEdges[(player.tilesInStack.length === 1) ? 1 : 0].filename}"
               style="margin-left: ${getRandomInt(5) - 2}px"
-              alt="tile edge for score keeping">`
-        + stackElement.innerHTML;
+              alt="tile edge for score keeping">
+        ` + stackElement.innerHTML;
     }
   },
 
@@ -378,7 +378,7 @@ const gameViewer = {
     for (let icon of icons) {
       const parentElement = document.getElementById(icon.parentId);
       if (!parentElement) { continue; }
-      parentRect = parentElement.getBoundingClientRect();
+      const parentRect = parentElement.getBoundingClientRect();
       const element = document.getElementById(icon.id);
       if (!element) { continue; }
       if (icon.width) {
