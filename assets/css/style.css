@@ -24,12 +24,57 @@
   max-height: 100%;
   width: auto;
 }
-.icon-position{
+
+/* RULES page   */
+header+section { margin-top: var(--header-height) !important; }
+fieldset>label { margin: 0 1rem 0 0; }
+fieldset>label>input { opacity: 0; }
+fieldset>label>img {
+  background-color: var(--icon-base);
+  border-left: solid 1px var(--icon-border);
+  border-radius: 0.5rem;
+  margin-bottom: 0;
+  margin-left: 3px;
+  padding: 8px;
+  border-bottom: solid 1px var(--icon-border);
+}
+fieldset>label :checked+img {
+  margin-bottom: 0;
+  margin-left: 0px;
+  margin-right: 8px;
+  padding: 1px;
+  border-left: solid 3px var(--icon-border);
+  border-bottom: solid 5px var(--icon-border);
+}
+#opponents-picker :not(:checked)+img { opacity: 50%; }
+#opponents-picker :checked+img { opacity: 100%; }
+.rules-meeple { max-height: 4rem; }
+.rules-sun {
+  display: inline-block;
+  margin-top: 5px;
+  width: 50px;
+  height: 50px;
+}
+.rules-sun>img {
   position: absolute;
+  max-height: 50px;
 }
-.icon-position > input {
-  opacity: 0;
+.rules-tilecounter {
+  display: inline-block;
+  border: 2px solid var(--icon-placeholder);
+  width: 36px;
+  height: 36px;
 }
+.rules-tilecounter>img {
+  position: absolute;
+  max-height: 32px;
+}
+.rules-tiles { max-height: 90px; }
+.rules-board { max-height: 280px; }
+
+/* GAME page */
+.icon-position{ position: absolute; }
+.icon-position > input { opacity: 0; }
 /* learnt about 3D radio button input here https://codepen.io/andreasnylin/pen/agiDp */
 .icon-position > label {
   position: absolute;
@@ -56,12 +101,8 @@
   border-left: solid 2px var(--icon-border);
   border-bottom: solid 4px var(--icon-border);
 }
-main {
-  text-align: center;
-}
-#board {
-  position: relative;
-}
+main { text-align: center; }
+#board { position: relative; }
 #piece-board {
   display: inline-block;
   width: 100%;
@@ -108,18 +149,10 @@ main {
   top: var(--board-meeples-fromtop);
   border-top: 3px solid;
 }
-.tiles-stack-player0 {
-  left: var(--tiles-stack-fromleft0);
-}
-.tiles-stack-player1 {
-  left: var(--tiles-stack-fromleft1);
-}
-.tiles-stack-player2 {
-  left: var(--tiles-stack-fromleft2);
-}
-.tiles-stack-player3 {
-  left: var(--tiles-stack-fromleft3);
-}
+.tiles-stack-player0 { left: var(--tiles-stack-fromleft0); }
+.tiles-stack-player1 { left: var(--tiles-stack-fromleft1); }
+.tiles-stack-player2 { left: var(--tiles-stack-fromleft2); }
+.tiles-stack-player3 { left: var(--tiles-stack-fromleft3); }
 .meeple-on-board {
   width: var(--meeple-onboard-width);
   margin-top:2px;
@@ -142,7 +175,7 @@ main {
     perspective: 1000px; /* Remove this if you don't want the 3D effect */
   }
   
-  /* This container is needed to position the two sides */
+  /* This container is needed to position the two sides od a tile */
 .tile-inner {
     position: relative;
     width: 100%;
@@ -161,9 +194,7 @@ main {
     backface-visibility: hidden;
 }
 /* Style the back side */
-.tile-back {
-    transform: rotateY(180deg);
-}
+.tile-back { transform: rotateY(180deg); }
 /* Flip!  */
 .tile-flip-right { transform: rotateY(180deg); }
 .tile-flip-left  { transform: rotateY(-180deg); }
