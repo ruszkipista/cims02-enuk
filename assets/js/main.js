@@ -12,15 +12,21 @@ const gameRules = {
   numberOfSunPositions: 0,
   tilesPerTypePrefix: 'tilespertype',
   numberOfTilesPerType: 0,
-  isSoundsOn: true,
-  isTest: true,
+  isSoundsOn: false,
+  isTestOn: false,
 
   init: function () {
     this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
 
-    const titleElement = document.getElementById('rules-start');
-    titleElement.addEventListener('click', gameRules.handlePlayClick);
+    const startElement = document.getElementById('rules-start');
+    startElement.addEventListener('click', gameRules.handlePlayClick);
+
+    const soundElement = document.getElementById('sound-picker-switch');
+    soundElement.addEventListener('click', gameRules.handleSoundClick);
+
+    const testElement = document.getElementById('test-picker-switch');
+    testElement.addEventListener('click', gameRules.handleTestClick);
 
     // SETTING: Color
     gameRules.setupColorPicker(gameRules.colorPrefix);
@@ -36,6 +42,18 @@ const gameRules = {
     gameRules.setupTilesPerTypePicker(gameRules.tilesPerTypePrefix);
     gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
 
+  },
+
+  handleSoundClick: function(event){
+    gameRules.isSoundsOn = event.currentTarget.checked;
+    const updateElement = document.getElementById('rules-sound');
+    updateElement.textContent = (gameRules.isSoundsOn) ? 'Off' : 'On';
+  },
+
+  handleTestClick: function(event){
+    gameRules.isTestOn = event.currentTarget.checked;
+    const updateElement = document.getElementById('rules-test');
+    updateElement.textContent = (gameRules.isTestOn) ? 'Off' : 'On';
   },
 
   setupColorPicker: function (prefix) {
@@ -137,7 +155,7 @@ const gameRules = {
       gameViewer.numberOfMeeples,
       gameRules.numberOfTilesPerType,
       gameRules.isSoundsOn,
-      gameRules.isTest);
+      gameRules.isTestOn);
   },
 
 }
