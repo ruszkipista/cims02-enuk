@@ -11,16 +11,8 @@ const gameRules = {
   sunPiecePrefix: 'sunpiece',
   tilesPerTypePrefix: 'tilespertype',
 
-  // isSoundsOn: false,
-  // isTestOn: false,
-  // colorIndexHuman: 0,
-  // numberOfOpponents: 0,
-  // numberOfSunPositions: 0,
-  // numberOfTilesPerType: 0,
-
   init: function () {
 
-    this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
 
     const startElement = document.getElementById('rules-start');
@@ -145,6 +137,9 @@ const gameRules = {
   },
 
   setupSunPositionsPicker: function (prefix) {
+    gameRules.numberOfSunPositions = JSON.parse(localStorage.getItem(prefix));
+    if (gameRules.numberOfSunPositions === null) { gameRules.numberOfSunPositions = gameViewer.minSunPositions; }
+
     const containerElement = document.getElementById('sunpos-picker');
     const sunPiece = gameViewer.iconFaces.find(function (element) {
       if (element.name === gameController.ICONS.sunPiece.name) { return true; }
@@ -166,6 +161,7 @@ const gameRules = {
 
   handleSunClick: function (event) {
     gameRules.numberOfSunPositions = parseInt(event.currentTarget.lastChild.id.split('-')[1]);
+    localStorage.setItem(gameRules.sunPiecePrefix, gameRules.numberOfSunPositions);
     gameRules.setElementsVisibility(gameRules.sunPiecePrefix, gameRules.numberOfSunPositions, 1, gameViewer.maxSunPositions, 'rules-sun-positions');
   },
 
