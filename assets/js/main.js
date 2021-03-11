@@ -20,7 +20,6 @@ const gameRules = {
 
   init: function () {
 
-    this.colorIndexHuman = 0;
     this.numberOfOpponents = 0;
     this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
@@ -45,14 +44,12 @@ const gameRules = {
 
     // SETTING: Color
     gameRules.setupColorPicker(gameRules.colorPrefix, gameRules.colorIndexHuman);
-    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
 
     // SETTING: Opponents
     gameRules.setupOpponentsPicker(gameRules.opponentPrefix);
 
     // SETTING: Sun positions
     gameRules.setupSunPositionsPicker(gameRules.sunPiecePrefix);
-    gameRules.setElementsVisibility(gameRules.sunPiecePrefix, gameRules.numberOfSunPositions, 1, gameViewer.maxSunPositions, 'rules-sun-positions');
 
     // SETTING: number of Tiles Per Animal Type
     gameRules.setupTilesPerTypePicker(gameRules.tilesPerTypePrefix);
@@ -78,12 +75,17 @@ const gameRules = {
   },
 
   setupColorPicker: function (prefix) {
+    gameRules.colorIndexHuman = JSON.parse(localStorage.getItem(prefix));
+    if (gameRules.colorIndexHuman !== null) {
+      gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
+    }
+
     const containerElement = document.getElementById('color-picker');
     for (let [index, meeple] of gameViewer.meeplePieces.entries()) {
       const meepleId = `${prefix}-${index}`;
       containerElement.innerHTML +=
         `<label for="${meepleId}">
-        <input type="radio" id="${meepleId}" name="colors">
+        <input type="radio" id="${meepleId}" name="colors" ${(index === gameRules.colorIndexHuman) ? 'checked' : ''}>
         <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
       </label>`;
     }
@@ -95,8 +97,9 @@ const gameRules = {
   },
 
   handleColorClick: function (event) {
-    gameRules.PARAMETERS.colorIndexHuman = parseInt(event.currentTarget.children[0].id.split('-')[1]);
-    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.PARAMETERS.colorIndexHuman].background);
+    gameRules.colorIndexHuman = parseInt(event.currentTarget.children[0].id.split('-')[1]);
+    localStorage.setItem(gameRules.colorPrefix, gameRules.colorIndexHuman);
+    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
   },
 
 
@@ -129,6 +132,7 @@ const gameRules = {
       if (position >= gameViewer.minSunPositions) { sunPieceElement.addEventListener('click', gameRules.handleSunClick); }
       containerElement.appendChild(sunPieceElement);
     }
+    gameRules.setElementsVisibility(prefix, gameRules.numberOfSunPositions, 1, gameViewer.maxSunPositions, 'rules-sun-positions');
   },
 
   handleSunClick: function (event) {
