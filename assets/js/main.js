@@ -7,7 +7,7 @@ const gameRules = {
   soundTargetId: 'rules-sound',
   testTargetId: 'rules-test',
   colorPrefix: 'color',
-  opponentPrefix: 'opponent',
+  opponentsPrefix: 'opponent',
   sunPiecePrefix: 'sunpiece',
   tilesPerTypePrefix: 'tilespertype',
 
@@ -20,7 +20,6 @@ const gameRules = {
 
   init: function () {
 
-    this.numberOfOpponents = 0;
     this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
 
@@ -29,32 +28,41 @@ const gameRules = {
 
     // SETTING: Sounds
     // learnt deserialization from here https://stackoverflow.com/questions/3263161/cannot-set-boolean-values-in-localstorage
-    this.isSoundsOn = JSON.parse(localStorage.getItem(this.soundTargetId));
-    this.setSwitchTarget(this.soundTargetId, this.isSoundsOn);
-    const soundElement = document.getElementById('sound-picker-switch');
-    soundElement.checked = this.isSoundsOn;
-    soundElement.addEventListener('click', gameRules.handleSoundClick);
+    gameRules.setupSoundsSwitch();
 
     // SETTING: Test
-    this.isTestOn = JSON.parse(localStorage.getItem(this.testTargetId));
-    this.setSwitchTarget(this.testTargetId, this.isTestOn);
-    const testElement = document.getElementById('test-picker-switch');
-    testElement.checked = this.isTestOn;
-    testElement.addEventListener('click', gameRules.handleTestClick);
+    gameRules.setupTestSwitch();
 
     // SETTING: Color
     gameRules.setupColorPicker(gameRules.colorPrefix, gameRules.colorIndexHuman);
 
     // SETTING: Opponents
-    gameRules.setupOpponentsPicker(gameRules.opponentPrefix);
+    gameRules.setupOpponentsPicker(gameRules.opponentsPrefix);
 
     // SETTING: Sun positions
     gameRules.setupSunPositionsPicker(gameRules.sunPiecePrefix);
 
     // SETTING: number of Tiles Per Animal Type
     gameRules.setupTilesPerTypePicker(gameRules.tilesPerTypePrefix);
-    gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
 
+  },
+
+  handlePlayClick: function (event) {
+    gameController.init(gameRules.colorIndexHuman,
+      gameRules.numberOfSunPositions,
+      1 + gameRules.numberOfOpponents,
+      gameViewer.numberOfMeeples,
+      gameRules.numberOfTilesPerType,
+      gameRules.isSoundsOn,
+      gameRules.isTestOn);
+  },
+
+  setupSoundsSwitch: function () {
+    this.isSoundsOn = JSON.parse(localStorage.getItem(this.soundTargetId));
+    this.setSwitchTarget(this.soundTargetId, this.isSoundsOn);
+    const soundElement = document.getElementById('sound-picker-switch');
+    soundElement.checked = this.isSoundsOn;
+    soundElement.addEventListener('click', gameRules.handleSoundClick);
   },
 
   handleSoundClick: function (event) {
@@ -68,10 +76,27 @@ const gameRules = {
     updateElement.textContent = (isOn) ? 'Off' : 'On';
   },
 
+  setupTestSwitch: function () {
+    this.isTestOn = JSON.parse(localStorage.getItem(this.testTargetId));
+    this.setSwitchTarget(this.testTargetId, this.isTestOn);
+    const testElement = document.getElementById('test-picker-switch');
+    testElement.checked = this.isTestOn;
+    testElement.addEventListener('click', gameRules.handleTestClick);
+  },
+
   handleTestClick: function (event) {
     gameRules.isTestOn = event.currentTarget.checked;
     localStorage.setItem(gameRules.testTargetId, gameRules.isTestOn);
     gameRules.setSwitchTarget(gameRules.testTargetId, gameRules.isTestOn);
+  },
+
+  setEventListenerOnInputElements: function (containerElement, clickHandler) {
+    for (let childElement of containerElement.children) {
+      // put the evvent listener on the <input> element
+      if (childElement.children.length > 0 && childElement.children[0].tagName === 'INPUT') {
+        childElement.addEventListener('click', clickHandler);
+      }
+    }
   },
 
   setupColorPicker: function (prefix) {
@@ -85,15 +110,11 @@ const gameRules = {
       const meepleId = `${prefix}-${index}`;
       containerElement.innerHTML +=
         `<label for="${meepleId}">
-        <input type="radio" id="${meepleId}" name="colors" ${(index === gameRules.colorIndexHuman) ? 'checked' : ''}>
-        <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
-      </label>`;
+          <input type="radio" id="${meepleId}" name="colors" ${(index === gameRules.colorIndexHuman) ? 'checked' : ''}>
+          <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
+        </label>`;
     }
-    for (let labelElement of containerElement.children) {
-      if (labelElement.tagName === 'LABEL') {
-        labelElement.addEventListener('click', gameRules.handleColorClick);
-      }
-    }
+    gameRules.setEventListenerOnInputElements(containerElement, gameRules.handleColorClick);
   },
 
   handleColorClick: function (event) {
@@ -102,17 +123,25 @@ const gameRules = {
     gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
   },
 
-
   setupOpponentsPicker: function (prefix) {
+    gameRules.numberOfOpponents = JSON.parse(localStorage.getItem(prefix));
+
     const containerElement = document.getElementById('opponents-picker');
-    for (let opponent = 0; opponent < gameViewer.numberOfMeeples - 1; opponent++) {
+    for (let opponent = 1; opponent < gameViewer.numberOfMeeples; opponent++) {
       const opponentId = `${prefix}-${opponent}`;
       containerElement.innerHTML +=
         `<label for="${opponentId}">
-         <input type="checkbox" id="${opponentId}" name="${opponentId}">
-         <img src="${gameViewer.imagePath}${gameViewer.meepleMachine4Count.filename}" class="rules-meeple" alt="${opponentId} meeple">
-       </label>`;
+           <input type="checkbox" id="${opponentId}" name="${opponentId}" ${(opponent <= gameRules.numberOfOpponents) ? 'checked' : ''}>
+           <img src="${gameViewer.imagePath}${gameViewer.meepleMachine4Count.filename}" class="rules-meeple" alt="${opponentId} meeple">
+         </label>`;
     }
+    gameRules.setEventListenerOnInputElements(containerElement, gameRules.handleOpponentClick);
+  },
+
+  handleOpponentClick: function (event) {
+    // read how many laptops are selected
+    gameRules.numberOfOpponents = document.querySelectorAll('#opponents-picker>label>input:checked').length;
+    localStorage.setItem(gameRules.opponentsPrefix, gameRules.numberOfOpponents);
   },
 
   setupSunPositionsPicker: function (prefix) {
@@ -165,22 +194,12 @@ const gameRules = {
       if (position >= gameViewer.minTilesPerType) { tilePieceElement.addEventListener('click', gameRules.handleTileClick); }
       containerElement.appendChild(tilePieceElement);
     }
+    gameRules.setElementsVisibility(prefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
   },
 
   handleTileClick: function (event) {
     gameRules.numberOfTilesPerType = parseInt(event.currentTarget.lastChild.id.split('-')[1]);
     gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
-  },
-
-  handlePlayClick: function (event) {
-    gameRules.numberOfOpponents = document.querySelectorAll('#opponents-picker>label>input:checked').length;
-    gameController.init(gameRules.colorIndexHuman,
-      gameRules.numberOfSunPositions,
-      1 + gameRules.numberOfOpponents,
-      gameViewer.numberOfMeeples,
-      gameRules.numberOfTilesPerType,
-      gameRules.isSoundsOn,
-      gameRules.isTestOn);
   },
 
 }
