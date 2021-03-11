@@ -4,6 +4,13 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 const gameRules = {
+  colorIndexHuman: null,
+  numberOfSunPositions: null,
+  numberOfOpponents: null,
+  numberOfTilesPerType: null,
+  isSoundsOn: null,
+  isTestOn: null,
+
   soundTargetId: 'rules-sound',
   testTargetId: 'rules-test',
   colorPrefix: 'color',
@@ -13,14 +20,21 @@ const gameRules = {
 
   init: function () {
 
-    this.numberOfTilesPerType = gameViewer.minTilesPerType;
-
+    // set up event listener for Play icon
     const startElement = document.getElementById('rules-start');
-    startElement.addEventListener('click', gameRules.handlePlayClick);
+    startElement.addEventListener('click', function (event) {
+      gameController.init(gameRules.colorIndexHuman,
+        gameRules.numberOfSunPositions,
+        1 + gameRules.numberOfOpponents,
+        gameViewer.numberOfMeeples,
+        gameRules.numberOfTilesPerType,
+        gameRules.isSoundsOn,
+        gameRules.isTestOn);
+    }),
 
-    // SETTING: Sounds
-    // learnt deserialization from here https://stackoverflow.com/questions/3263161/cannot-set-boolean-values-in-localstorage
-    gameRules.setupSoundsSwitch();
+      // SETTING: Sounds
+      // learnt deserialization from here https://stackoverflow.com/questions/3263161/cannot-set-boolean-values-in-localstorage
+      gameRules.setupSoundsSwitch();
 
     // SETTING: Test
     gameRules.setupTestSwitch();
@@ -37,16 +51,6 @@ const gameRules = {
     // SETTING: number of Tiles Per Animal Type
     gameRules.setupTilesPerTypePicker(gameRules.tilesPerTypePrefix);
 
-  },
-
-  handlePlayClick: function (event) {
-    gameController.init(gameRules.colorIndexHuman,
-      gameRules.numberOfSunPositions,
-      1 + gameRules.numberOfOpponents,
-      gameViewer.numberOfMeeples,
-      gameRules.numberOfTilesPerType,
-      gameRules.isSoundsOn,
-      gameRules.isTestOn);
   },
 
   setupSoundsSwitch: function () {
@@ -180,6 +184,9 @@ const gameRules = {
   },
 
   setupTilesPerTypePicker: function (prefix) {
+    gameRules.numberOfTilesPerType = JSON.parse(localStorage.getItem(prefix));
+    if (gameRules.numberOfTilesPerType === null) { gameRules.numberOfTilesPerType = gameViewer.minTilesPerType; }
+
     const containerElement = document.getElementById('tilespertype-picker');
     const tilePiece = gameViewer.tileBack;
     for (let position = 1; position <= gameViewer.maxTilesPerType; position++) {
@@ -195,6 +202,7 @@ const gameRules = {
 
   handleTileClick: function (event) {
     gameRules.numberOfTilesPerType = parseInt(event.currentTarget.lastChild.id.split('-')[1]);
+    localStorage.setItem(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType);
     gameRules.setElementsVisibility(gameRules.tilesPerTypePrefix, gameRules.numberOfTilesPerType, 1, gameViewer.maxTilesPerType, 'rules-tilespertype');
   },
 
