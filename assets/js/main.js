@@ -4,32 +4,48 @@ window.addEventListener('DOMContentLoaded', function () {
 });
 
 const gameRules = {
+  soundTargetId: 'rules-sound',
+  testTargetId: 'rules-test',
   colorPrefix: 'color',
-  colorIndexHuman: 0,
   opponentPrefix: 'opponent',
-  numberOfOpponents: 0,
   sunPiecePrefix: 'sunpiece',
-  numberOfSunPositions: 0,
   tilesPerTypePrefix: 'tilespertype',
-  numberOfTilesPerType: 0,
-  isSoundsOn: false,
-  isTestOn: false,
+
+  // isSoundsOn: false,
+  // isTestOn: false,
+  // colorIndexHuman: 0,
+  // numberOfOpponents: 0,
+  // numberOfSunPositions: 0,
+  // numberOfTilesPerType: 0,
 
   init: function () {
+
+    this.colorIndexHuman = 0;
+    this.numberOfOpponents = 0;
     this.numberOfSunPositions = gameViewer.minSunPositions;
     this.numberOfTilesPerType = gameViewer.minTilesPerType;
 
     const startElement = document.getElementById('rules-start');
     startElement.addEventListener('click', gameRules.handlePlayClick);
 
+    // SETTING: Sounds
+    // learnt deserialization from here https://stackoverflow.com/questions/3263161/cannot-set-boolean-values-in-localstorage
+    this.isSoundsOn = JSON.parse(localStorage.getItem(this.soundTargetId));
+    this.setSwitchTarget(this.soundTargetId, this.isSoundsOn);
     const soundElement = document.getElementById('sound-picker-switch');
+    soundElement.checked = this.isSoundsOn;
     soundElement.addEventListener('click', gameRules.handleSoundClick);
 
+    // SETTING: Test
+    this.isTestOn = JSON.parse(localStorage.getItem(this.testTargetId));
+    this.setSwitchTarget(this.testTargetId, this.isTestOn);
     const testElement = document.getElementById('test-picker-switch');
+    testElement.checked = this.isTestOn;
     testElement.addEventListener('click', gameRules.handleTestClick);
 
     // SETTING: Color
-    gameRules.setupColorPicker(gameRules.colorPrefix);
+    gameRules.setupColorPicker(gameRules.colorPrefix, gameRules.colorIndexHuman);
+    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
 
     // SETTING: Opponents
     gameRules.setupOpponentsPicker(gameRules.opponentPrefix);
@@ -44,16 +60,21 @@ const gameRules = {
 
   },
 
-  handleSoundClick: function(event){
+  handleSoundClick: function (event) {
     gameRules.isSoundsOn = event.currentTarget.checked;
-    const updateElement = document.getElementById('rules-sound');
-    updateElement.textContent = (gameRules.isSoundsOn) ? 'Off' : 'On';
+    localStorage.setItem(gameRules.soundTargetId, gameRules.isSoundsOn);
+    gameRules.setSwitchTarget(gameRules.soundTargetId, gameRules.isSoundsOn);
   },
 
-  handleTestClick: function(event){
+  setSwitchTarget: function (targetElementId, isOn) {
+    const updateElement = document.getElementById(targetElementId);
+    updateElement.textContent = (isOn) ? 'Off' : 'On';
+  },
+
+  handleTestClick: function (event) {
     gameRules.isTestOn = event.currentTarget.checked;
-    const updateElement = document.getElementById('rules-test');
-    updateElement.textContent = (gameRules.isTestOn) ? 'Off' : 'On';
+    localStorage.setItem(gameRules.testTargetId, gameRules.isTestOn);
+    gameRules.setSwitchTarget(gameRules.testTargetId, gameRules.isTestOn);
   },
 
   setupColorPicker: function (prefix) {
@@ -74,8 +95,8 @@ const gameRules = {
   },
 
   handleColorClick: function (event) {
-    gameRules.colorIndexHuman = parseInt(event.currentTarget.children[0].id.split('-')[1]);
-    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
+    gameRules.PARAMETERS.colorIndexHuman = parseInt(event.currentTarget.children[0].id.split('-')[1]);
+    gameViewer.setBackground(gameViewer.meeplePieces[gameRules.PARAMETERS.colorIndexHuman].background);
   },
 
 
