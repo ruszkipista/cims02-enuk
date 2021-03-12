@@ -12,10 +12,10 @@ const gameController = {
   },
   // wherever you see null, that is going to be updated during setup
   ICONS: {
-    rules: { name: 'game-rules', count: 1, request: null, isVisible: [false, false, false, true] },
+    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [false, true, false, false] },
     start: { name: 'game-start', count: 1, request: null, isVisible: [true, false, false, false] },
     restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, false, true] },
-    collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [false, true, false, false] },
+    rules: { name: 'game-rules', count: 1, request: null, isVisible: [false, false, false, true] },
     sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [false, true, false, false] },
     sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [false, true, false, false] },
     declareReindeer: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },

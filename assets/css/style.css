@@ -16,9 +16,7 @@ body{
 #title {
   height: var(--header-height);
   background: url(../img/enuk-title.png) center center / contain no-repeat white;
-  z-index: 10;
   border-bottom: solid 1px var(--icon-border);
-  border-top: none;
 }
 #title>img{
   max-height: 100%;

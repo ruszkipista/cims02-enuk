@@ -104,8 +104,8 @@ const gameViewer = {
     document.getElementById('board').innerHTML = boardPiecesHTML;
 
     // add icons to the top area
-    icons.forEach(icon => this.createIcon(icon));
     this.createDeclareFieldset(icons);
+    icons.forEach(icon => this.createIcon(icon));
 
     // assemble tiles
     const tilesElement = document.getElementById('tiles');
@@ -266,7 +266,7 @@ const gameViewer = {
     let iconElement = null;
     iconElement = document.createElement('img');
     iconElement.setAttribute('src', this.imagePath + icon.filename);
-    iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
+    iconElement.setAttribute('alt', `${icon.name} ${(icon.request) ? 'button' : 'icon'}`);
     if (icon.request) {
       iconElement.addEventListener('click', gameViewer.handleIconClick);
     }
@@ -284,7 +284,7 @@ const gameViewer = {
     const parentElement = document.getElementById('title');
     if (!parentElement) { return; }
 
-    containerElement = document.createElement('fieldset');
+    const containerElement = document.createElement('fieldset');
     containerElement.setAttribute('id', 'declare');
     for (let icon of icons) {
       if (icon.request !== gameController.REQUEST.toDeclare) { continue; }
