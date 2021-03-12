@@ -100,9 +100,23 @@ fieldset>label :checked+img {
   border-left: solid 2px var(--icon-border);
   border-bottom: solid 4px var(--icon-border);
 }
-/* main { text-align: center; } */
+#board-container {
+  position: absolute;
+  text-align: center;
+  top: 10vh;
+  width: 100%;
+  margin: 0 auto;
+  opacity: 0.3;
+  z-index: -1;
+}
+#header:hover + main>div#board-container{
+  opacity: 1;
+  z-index: 100;
+}
 #board { 
   position: relative;
+  display: inline-block;
+  max-width: 1200px;
 }
 #piece-board {
   width: 100%;

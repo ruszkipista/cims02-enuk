@@ -125,7 +125,7 @@ const gameViewer = {
              </header>
              <main>
                <div id="tiles"></div>
-               <div id="board"></div>
+               <div id="board-container"><div id="board"></div></div>
              </main>`;
   },
 
@@ -280,6 +280,7 @@ const gameViewer = {
     });
 
     let bodyElement = document.getElementsByTagName('body')[0];
+    bodyElement.classList.remove('container');
     bodyElement.innerHTML = this.createBodyHTML();
 
     // put game board in place
