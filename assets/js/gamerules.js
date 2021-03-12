@@ -86,15 +86,6 @@ const gameRules = {
     gameRules.setSwitchTarget(gameRules.testTargetId, gameRules.isTestOn);
   },
 
-  setEventListenerOnInputElements: function (containerElement, clickHandler) {
-    for (let childElement of containerElement.children) {
-      // put the evvent listener on the <input> element
-      if (childElement.children.length > 0 && childElement.children[0].tagName === 'INPUT') {
-        childElement.addEventListener('click', clickHandler);
-      }
-    }
-  },
-
   setupColorPicker: function (prefix) {
     gameRules.colorIndexHuman = JSON.parse(localStorage.getItem(prefix));
     if (gameRules.colorIndexHuman !== null) {
@@ -110,11 +101,11 @@ const gameRules = {
           <img src="${gameViewer.imagePath}${meeple.filenameHuman}" class="rules-meeple" alt="${meeple.name} meeple">
         </label>`;
     }
-    gameRules.setEventListenerOnInputElements(containerElement, gameRules.handleColorClick);
+    gameViewer.setEventListenerOnInputElements(containerElement, gameRules.handleColorClick);
   },
 
   handleColorClick: function (event) {
-    gameRules.colorIndexHuman = parseInt(event.currentTarget.children[0].id.split('-')[1]);
+    gameRules.colorIndexHuman = parseInt(event.currentTarget.id.split('-')[1]);
     localStorage.setItem(gameRules.colorPrefix, gameRules.colorIndexHuman);
     gameViewer.setBackground(gameViewer.meeplePieces[gameRules.colorIndexHuman].background);
   },
@@ -131,7 +122,7 @@ const gameRules = {
            <img src="${gameViewer.imagePath}${gameViewer.meepleMachine4Count.filename}" class="rules-meeple" alt="${opponentId} meeple">
          </label>`;
     }
-    gameRules.setEventListenerOnInputElements(containerElement, gameRules.handleOpponentClick);
+    gameViewer.setEventListenerOnInputElements(containerElement, gameRules.handleOpponentClick);
   },
 
   handleOpponentClick: function (event) {

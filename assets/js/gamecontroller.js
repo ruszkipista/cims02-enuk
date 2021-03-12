@@ -12,7 +12,7 @@ const gameController = {
   },
   // wherever you see null, that is going to be updated during setup
   ICONS: {
-    rules: { name: 'game-rules', count: 1, request: null, isVisible: [false, true, true, true] },
+    rules: { name: 'game-rules', count: 1, request: null, isVisible: [false, false, false, true] },
     start: { name: 'game-start', count: 1, request: null, isVisible: [true, false, false, false] },
     restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, false, true] },
     collectTiles: { name: 'collect-tiles', count: 1, request: null, isVisible: [false, true, false, false] },

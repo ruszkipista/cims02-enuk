@@ -40,12 +40,12 @@ const gameViewer = {
     { name: gameController.ICONS.restart.name, filename: 'icon-restart.png', parentId: 'title', height: 0.5, leftTopCorner: [0.82, 0.08] },
     { name: gameController.ICONS.sunPositions.name, filename: 'icon-sun-position.png', parentId: 'title', height: 0.6, leftTopCorner: null },
     { name: gameController.ICONS.sunPiece.name, filename: 'piece-sun.png', parentId: 'title', height: 0.6, leftTopCorner: null },
-    { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.01, 0.015] },
-    { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.16, 0.015] },
-    { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.31, 0.015] },
-    { name: gameController.TILES.salmon.name, filename: 'icon-salmon.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.46, 0.015] },
-    { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.61, 0.015] },
-    { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', height: 0.8, leftTopCorner: [0.76, 0.015] },
+    { name: gameController.TILES.reindeer.name, filename: 'icon-reindeer.jpg', parentId: 'title', height: 0.8 },
+    { name: gameController.TILES.polarbear.name, filename: 'icon-polarbear.jpg', parentId: 'title', height: 0.8 },
+    { name: gameController.TILES.seal.name, filename: 'icon-seal.jpg', parentId: 'title', height: 0.8 },
+    { name: gameController.TILES.salmon.name, filename: 'icon-salmon.jpg', parentId: 'title', height: 0.8 },
+    { name: gameController.TILES.herring.name, filename: 'icon-herring.jpg', parentId: 'title', height: 0.8 },
+    { name: gameController.TILES.igloo.name, filename: 'icon-igloo.jpg', parentId: 'title', height: 0.8 },
   ],
 
   sounds: {
@@ -75,6 +75,45 @@ const gameViewer = {
 
   meepleMachine4Count: {
     filename: 'piece-laptop-black.png',
+  },
+
+  generateGameBoard: function (icons, tilesOnTable, tilesOnIgloo, players, isTest) {
+    // reposition the sun piece after window resize or change between landscape and portrait
+    window.addEventListener('resize', function () {
+      gameViewer.setBoardPiecesPosition();
+    });
+
+    let bodyElement = document.getElementsByTagName('body')[0];
+    bodyElement.classList.remove('container');
+    bodyElement.innerHTML = this.createBodyHTML();
+
+    // put game board in place
+    let boardPiecesHTML = '';
+    // add BOARD to game space
+    boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
+
+    // add hidden IGLOO TILES to the middle of the board
+    boardPiecesHTML += this.createIgloo3x3HTML(tilesOnIgloo);
+
+    // add hidden MEEPLES on top of igloo tiles - without src
+    boardPiecesHTML += this.createMeeple3x3HTML(tilesOnIgloo);
+
+    // add TILE STACKS and MEEPLES for all players on the board
+    boardPiecesHTML += this.createTileStacksHTML(players);
+
+    document.getElementById('board').innerHTML = boardPiecesHTML;
+
+    // add icons to the top area
+    icons.forEach(icon => this.createIcon(icon));
+    this.createDeclareFieldset(icons);
+
+    // assemble tiles
+    const tilesElement = document.getElementById('tiles');
+    for (let tile of tilesOnTable) {
+      tile.isFaceUp = false;
+      let tileElement = this.createTileOnTable(tile, isTest);
+      tilesElement.appendChild(tileElement);
+    }
   },
 
   setBackground: function (backgroundFile) {
@@ -219,43 +258,63 @@ const gameViewer = {
   },
 
   createIcon: function (icon) {
+    if (icon.request === gameController.REQUEST.toDeclare) { return; }
     // grab parent
     const parentElement = document.getElementById(icon.parentId);
     if (!parentElement) { return; }
 
     let iconElement = null;
-    if (icon.request === gameController.REQUEST.toDeclare) {
-      iconElement = document.createElement('div');
-      icon.clickId = `${icon.id}-click`;
-      iconElement.innerHTML = `<input type="radio" id="${icon.clickId}" name="${icon.request}" />
-                                 <label for="${icon.clickId}">
-                                   <img src="${this.imagePath}${icon.filename}" alt="${icon.name} button">
-                                 </label>
-                                `;
-      iconElement.firstChild.addEventListener('click', gameViewer.handleIconClick);
-    } else {
-      iconElement = document.createElement('img');
-      iconElement.setAttribute('src', this.imagePath + icon.filename);
-      iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
-      if (icon.request) {
-        iconElement.addEventListener('click', gameViewer.handleIconClick);
-      }
+    iconElement = document.createElement('img');
+    iconElement.setAttribute('src', this.imagePath + icon.filename);
+    iconElement.setAttribute('alt', icon.name + (icon.request) ? ' button' : ' icon');
+    if (icon.request) {
+      iconElement.addEventListener('click', gameViewer.handleIconClick);
     }
     iconElement.setAttribute('id', icon.id);
     iconElement.classList.add('icon-position');
     if (icon.name === gameController.ICONS.sunPositions.name) {
       iconElement.style.opacity = '50%';
     }
-
     // append icon to parent
     parentElement.appendChild(iconElement);
+  },
+
+  createDeclareFieldset: function (icons) {
+    // grab parent
+    const parentElement = document.getElementById('title');
+    if (!parentElement) { return; }
+
+    containerElement = document.createElement('fieldset');
+    containerElement.setAttribute('id', 'declare');
+    for (let icon of icons) {
+      if (icon.request !== gameController.REQUEST.toDeclare) { continue; }
+      icon.id = `declare-${icon.name}`;
+      containerElement.innerHTML +=
+        `<label for="${icon.clickId}" id="${icon.id}">
+          <input type="radio" id="${icon.clickId}" name="${icon.request}">
+          <img src="${gameViewer.imagePath}${icon.filename}" alt="${icon.name} button">
+        </label>`;
+    }
+    // append fieldset to parent
+    parentElement.appendChild(containerElement);
+    // set event liteners
+    gameViewer.setEventListenerOnInputElements(containerElement, gameViewer.handleIconClick);
+  },
+
+  setEventListenerOnInputElements: function (containerElement, clickHandler) {
+    for (let childElement of containerElement.children) {
+      // put the evvent listener on the <input> element
+      if (childElement.children.length > 0 && childElement.children[0].tagName === 'INPUT') {
+        childElement.children[0].addEventListener('click', clickHandler);
+      }
+    }
   },
 
   initDeclareIcons: function (icons) {
     for (let icon of icons) {
       if (icon.request === gameController.REQUEST.toDeclare) {
         // grab input element
-        const inputElement = document.getElementById(icon.id).firstChild;
+        const inputElement = document.getElementById(icon.clickId);
         inputElement.checked = "";
       }
     }
@@ -265,7 +324,7 @@ const gameViewer = {
     for (let icon of icons) {
       if (icon.request === gameController.REQUEST.toDeclare) {
         // grab input element
-        const inputElement = document.getElementById(icon.id).firstChild;
+        const inputElement = document.getElementById(icon.clickId);
         if (inputElement.checked) {
           return icon.name;
         }
@@ -273,46 +332,10 @@ const gameViewer = {
     }
   },
 
-  generateGameBoard: function (icons, tilesOnTable, tilesOnIgloo, players, isTest) {
-    // reposition the sun piece after window resize or change between landscape and portrait
-    window.addEventListener('resize', function () {
-      gameViewer.setBoardPiecesPosition();
-    });
-
-    let bodyElement = document.getElementsByTagName('body')[0];
-    bodyElement.classList.remove('container');
-    bodyElement.innerHTML = this.createBodyHTML();
-
-    // put game board in place
-    let boardPiecesHTML = '';
-    // add BOARD to game space
-    boardPiecesHTML = `<img id="${this.boardPiece.id}" src="${this.imagePath}${this.boardPiece.name}" alt="game board">`;
-
-    // add hidden IGLOO TILES to the middle of the board
-    boardPiecesHTML += this.createIgloo3x3HTML(tilesOnIgloo);
-
-    // add hidden MEEPLES on top of igloo tiles - without src
-    boardPiecesHTML += this.createMeeple3x3HTML(tilesOnIgloo);
-
-    // add TILE STACKS and MEEPLES for all players on the board
-    boardPiecesHTML += this.createTileStacksHTML(players);
-
-    document.getElementById('board').innerHTML = boardPiecesHTML;
-
-    // add icons to the top area
-    icons.forEach(icon => this.createIcon(icon));
-
-    // assemble tiles
-    const tilesElement = document.getElementById('tiles');
-    for (let tile of tilesOnTable) {
-      tile.isFaceUp = false;
-      let tileElement = this.createTileOnTable(tile, isTest);
-      tilesElement.appendChild(tileElement);
-    }
-  },
-
   setVisibilityOfElement: function (elementID, isVisible) {
     const element = document.getElementById(elementID);
+    if (!element) { return; }
+
     if (isVisible) {
       element.style.visibility = 'visible';
     } else {
@@ -378,7 +401,8 @@ const gameViewer = {
   setIconPositions: function (icons) {
     for (let icon of icons) {
       const parentElement = document.getElementById(icon.parentId);
-      if (!parentElement) { continue; }
+      if (!parentElement || !icon.leftTopCorner) { continue; }
+
       const parentRect = parentElement.getBoundingClientRect();
       const element = document.getElementById(icon.id);
       if (!element) { continue; }

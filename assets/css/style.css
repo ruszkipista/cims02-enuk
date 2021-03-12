@@ -10,14 +10,15 @@
     --icon-border: #88888850;
     --icon-placeholder: #41A2B2;
   }
-
+body{
+  background: center center / cover no-repeat;
+}
 #title {
   height: 10vh;
   background: url(../img/enuk-title.png) center center / contain no-repeat white;
   z-index: 10;
   border: solid 1px var(--icon-border);
   border-top: none;
-  border-radius: 0 0 1rem 1rem;
 }
 #title>img{
   max-height: 100%;
@@ -26,6 +27,7 @@
 
 /* RULES page   */
 header+section { margin-top: var(--header-height) !important; }
+/* learnt about 3D radio button input here https://codepen.io/andreasnylin/pen/agiDp */
 fieldset>label { margin: 0 1rem 0 0; }
 fieldset>label>input { opacity: 0; }
 fieldset>label>img {
@@ -73,32 +75,13 @@ fieldset>label :checked+img {
 
 /* GAME page */
 .icon-position{ position: absolute; }
-.icon-position > input { opacity: 0; }
-/* learnt about 3D radio button input here https://codepen.io/andreasnylin/pen/agiDp */
-.icon-position > label {
+#declare{
   position: absolute;
-  display: inline-block;
-  height: inherit;
-  width: inherit;
-  left: 0;
-  background-color: var(--icon-base);
-  border-left: solid 1px var(--icon-border);
-  border-radius: 0.8rem;
-  margin-top: 6px;
-  margin-left: 2px;
-  padding: 2px;
-  border-bottom: solid 1px var(--icon-border);
+  top: 1vh;
+  width: 100%;
 }
-.icon-position > label > img {
-  height: inherit;
-  width: inherit; 
-}
-.icon-position :checked + label {
-  margin-top: 0;
-  margin-left: 0;
-  padding: 5px;
-  border-left: solid 2px var(--icon-border);
-  border-bottom: solid 4px var(--icon-border);
+#declare>label>img{
+  height: 8vh;
 }
 #board-container {
   position: absolute;
@@ -111,7 +94,8 @@ fieldset>label :checked+img {
 }
 #header:hover + main>div#board-container{
   opacity: 1;
-  z-index: 100;
+  z-index: 1;
+  transition: opacity .3s;
 }
 #board { 
   position: relative;
