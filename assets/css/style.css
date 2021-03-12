@@ -9,7 +9,6 @@
     --icon-base: #FFFAE6;
     --icon-border: #88888850;
     --icon-placeholder: #41A2B2;
-    --max-width: 1200px;
   }
 
 #title {
@@ -101,12 +100,12 @@ fieldset>label :checked+img {
   border-left: solid 2px var(--icon-border);
   border-bottom: solid 4px var(--icon-border);
 }
-main { text-align: center; }
-#board { position: relative; }
+/* main { text-align: center; } */
+#board { 
+  position: relative;
+}
 #piece-board {
-  display: inline-block;
   width: 100%;
-  max-width: var(--max-width);
 }
 #icon-piece-sun {
   position: absolute;
@@ -127,7 +126,7 @@ main { text-align: center; }
   height: var(--piece-igloo-length);
   display: inline-block;
   text-align: center;
-  padding:2px;
+  margin:2px;
 }
 .meeple-onigloo {
   width: var(--meeple-onigloo-width);
