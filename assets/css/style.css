@@ -12,9 +12,10 @@
   }
 body{
   background: center center / cover no-repeat;
+  overflow: hidden;
 }
 #title {
-  height: 10vh;
+  height: var(--header-height);
   background: url(../img/enuk-title.png) center center / contain no-repeat white;
   z-index: 10;
   border: solid 1px var(--icon-border);
@@ -86,7 +87,7 @@ fieldset>label :checked+img {
 #board-container {
   position: absolute;
   text-align: center;
-  top: 10vh;
+  top: var(--header-height);
   width: 100%;
   margin: 0 auto;
   opacity: 0.3;
