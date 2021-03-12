@@ -12,13 +12,12 @@
   }
 body{
   background: center center / cover no-repeat;
-  overflow: hidden;
 }
 #title {
   height: var(--header-height);
   background: url(../img/enuk-title.png) center center / contain no-repeat white;
   z-index: 10;
-  border: solid 1px var(--icon-border);
+  border-bottom: solid 1px var(--icon-border);
   border-top: none;
 }
 #title>img{
