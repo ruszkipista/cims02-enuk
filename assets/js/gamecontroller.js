@@ -51,6 +51,7 @@ const gameController = {
     this.ICONS.declareIgloo.request = this.REQUEST.toDeclare;
     this.ICONS.start.request = this.REQUEST.toStart;
     this.ICONS.restart.request = this.REQUEST.toRestart;
+    this.ICONS.rules.request = this.REQUEST.toRules;
 
     this.iconsOnTable = this.setupIcons(this.ICONS, gameViewer.iconFaces);
 
@@ -96,10 +97,11 @@ const gameController = {
   REQUEST: {
     toStart: '1',
     toRestart: '2',
-    toFlipLeft: '3',
-    toFlipRight: '4',
-    toCollect: '5',
-    toDeclare: '6',
+    toRules: '3',
+    toFlipLeft: '4',
+    toFlipRight: '5',
+    toCollect: '6',
+    toDeclare: '7',
   },
 
   gameState: null,
@@ -441,6 +443,9 @@ const gameController = {
             // continue to state BeforePhase1
             this.gameState = this.STATE.BeforePhase1;
             break;
+          } else if (request === this.REQUEST.toRules) {
+            gameViewer.playSound(gameViewer.sounds.click.filename);
+            location.reload();
           }
           break infiniteLoop;
       }

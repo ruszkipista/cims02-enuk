@@ -453,4 +453,6 @@ const gameViewer = {
     }
   },
 
+  reloadRules: function () { location.reload(); }
+
 };
