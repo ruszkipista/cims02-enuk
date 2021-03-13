@@ -16,6 +16,7 @@ const gameController = {
     start: { name: 'game-start', count: 1, request: null, isVisible: [true, false, false, false] },
     restart: { name: 'game-restart', count: 1, request: null, isVisible: [false, false, false, true] },
     rules: { name: 'game-rules', count: 1, request: null, isVisible: [false, false, false, true] },
+    podium: { name: 'piece-podium', count: 1, request: null, isVisible: [false, false, false, true] },
     sunPositions: { name: 'sun-position', count: null, request: null, isVisible: [false, true, false, false] },
     sunPiece: { name: 'piece-sun', count: 1, request: null, isVisible: [false, true, false, false] },
     declareReindeer: { name: null, count: 1, request: null, isVisible: [false, false, true, false] },
@@ -241,6 +242,7 @@ const gameController = {
           // handle End of Phase 2
           if (this.isEndOfPhase2) {
             this.gameState = this.STATE.EndOfGame;
+            gameViewer.playSound(gameViewer.sounds.fanfare.filename);
           } else {
             // handle End Of Move
             if (this.isEndOfMove) {
@@ -270,7 +272,7 @@ const gameController = {
             // continue to state InPhase2-CollectOneIgloo
             gameController.gameState = gameController.STATE.InPhase2CollectOneIgloo;
             gameController.play();
-          }, gameViewer.tileBack.flipTimeMS * 3, gameViewer);
+          }, gameViewer.tileBack.flipTimeMS * 1, gameViewer);
           // wait outside the loop for Timeout to complete
           break infiniteLoop;
 
@@ -352,7 +354,7 @@ const gameController = {
           // continue to next state
           this.gameState = this.STATE.InPhase2Evaluation;
           // back in the game after Timeout
-          setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 2);
+          setTimeout(function () { gameController.play(); }, gameViewer.tileBack.flipTimeMS * 1);
           // wait outside the loop for Timeout to complete 
           break infiniteLoop;
 
@@ -402,6 +404,7 @@ const gameController = {
           if (this.isEndOfPhase2) {
             // continue to next state
             this.gameState = this.STATE.EndOfGame;
+            gameViewer.playSound(gameViewer.sounds.fanfare.filename);
           } else {
             if (this.isEndOfMove) {
               // set up next player
@@ -420,9 +423,7 @@ const gameController = {
           // set visibility/invisibility of icons
           gameViewer.setVisibilityOfIcons(this.iconsOnTable, this.PHASES.end);
           // Announce winner (most collected tiles)
-
-          // Offer to restart the game
-
+          gameViewer.markWinnerStack(this.players);
           // Allow free tile flipping on tiles remaining on the table
           this.isListenToClick = true;
           // continue to state EndOfGame-ProcessMove
@@ -445,7 +446,7 @@ const gameController = {
             break;
           } else if (request === this.REQUEST.toRules) {
             gameViewer.playSound(gameViewer.sounds.click.filename);
-            location.reload();
+            gameViewer.reloadRules();
           }
           break infiniteLoop;
       }

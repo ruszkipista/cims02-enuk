@@ -11,7 +11,12 @@ const gameViewer = {
   audioPath: './assets/audio/',
   title: { filename: 'enuk-title.png' },
   tileBack: { filename: 'tileback-ice.jpg', flipTimeMS: 800 },
-  tileEdges: [{ filename: 'tileedge-mid.png' }, { filename: 'tileedge-top.png' }],
+  tileEdges: [
+    { filename: 'tileedge-mid.png' },
+    { filename: 'tileedge-top.png' },
+    //icon re-engineered from here: https://stock.adobe.com/ca/images/crown-fish-logo/106111941
+    { filename: 'icon-crown.png' },
+  ],
 
   tileFaces: [
     { name: gameController.TILES.reindeer.name, filename: 'tileface-reindeer.jpg' },
@@ -52,11 +57,14 @@ const gameViewer = {
     flip: { filename: 'tile-flip.mp3' },
     stack: { filename: 'tile-stack.mp3' },
     click: { filename: 'button-click.mp3' },
+    // extracted from https://www.youtube.com/watch?v=ffSrCZLcuI0&t=21s
+    fanfare: { filename: 'game-tada.mp3' },
   },
 
   boardPiece: {
     id: 'piece-board',
     name: 'enuk-board-front.jpg',
+    containerId: 'board-container',
     iglooLength: 0.1355,
     igloo3x3LeftTopCorner: [0.3, 0.232],
     meepleOnBoardWidth: 0.025,
@@ -164,7 +172,7 @@ const gameViewer = {
              </header>
              <main>
                <div id="tiles"></div>
-               <div id="board-container"><div id="board"></div></div>
+               <div id="${this.boardPiece.containerId}"><div id="board"></div></div>
              </main>`;
   },
 
@@ -246,7 +254,7 @@ const gameViewer = {
   },
 
   addOneTileEdgeToStack: function (player) {
-    let stackElement = document.getElementById(player.tileStackID);
+    const stackElement = document.getElementById(player.tileStackID);
     if (player.tilesInStack.length > 0) {
       stackElement.innerHTML =
         `<img class="tile-edge" 
@@ -255,6 +263,22 @@ const gameViewer = {
               alt="tile edge for score keeping">
         ` + stackElement.innerHTML;
     }
+  },
+
+  markWinnerStack: function (players) {
+    let winner = players[0];
+    for (let player of players) {
+      if (player !== winner && player.tilesInStack.length > winner.tilesInStack.length) {
+        winner = player;
+      }
+    }
+    const stackElement = document.getElementById(winner.tileStackID);
+    stackElement.innerHTML +=
+      `<img class="tile-edge" 
+            src="${this.imagePath}${this.tileEdges[2].filename}"
+            alt="crown for the winner">`;
+    const boardElement = document.getElementById(this.boardPiece.containerId);
+    boardElement.style.opacity = 1;
   },
 
   createIcon: function (icon) {
@@ -413,7 +437,7 @@ const gameViewer = {
         element.style.top = `${parentRect.width * icon.leftTopCorner[1]}px`;
       } else {
         element.style.width = `${parentRect.height * icon.height}px`;
-        element.style.height = `${parentRect.height * icon.height}px`;
+        // element.style.height = `${parentRect.height * icon.height}px`;
         element.style.left = `${parentRect.left + parentRect.width * icon.leftTopCorner[0]}px`;
         element.style.top = `${parentRect.height * icon.leftTopCorner[1]}px`;
       }
@@ -451,6 +475,10 @@ const gameViewer = {
       audio.src = `${gameViewer.audioPath}${filename}`;
       audio.play();
     }
+  },
+
+  announceWinner: function () {
+
   },
 
   reloadRules: function () { location.reload(); }
