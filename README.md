@@ -20,9 +20,6 @@ Enuk is a mixture of memory and push-your-luck. Players turn over animal tiles, 
 
 ![the webpage on different devices](./assets/doc/responsive-am-i.png "the webpage on different size devices")
 
-### Attention assessor!
-I kept a journal during the development about my daily activities, see it [here](./assets/doc/ci-ms2-study-notes-journal.pdf) frozen in time or [live](https://docs.google.com/document/d/1eooOU-uZVoeEShXQkXs86pQumJEob1c4Pa6hwJqahNw/edit?usp=sharing).
-
 ## Contents
 - [1. UX design](#1-ux-design "1. UX design")
   - [1.1 Strategy Plane](#11-strategy-plane "1.1 Strategy Plane")
@@ -43,21 +40,30 @@ I kept a journal during the development about my daily activities, see it [here]
 ## 1. UX design
 ### 1.1 Strategy Plane
 Stakeholders of the website:
-- player
+- children from age 5 who want to play Arctic themed memory game in a browser
+- adults letting children play on a computer
 
 #### 1.1.1 Goals and Objectives of Stakeholders (users)
 |G#|User|Goals, Needs, Objectives|
 |--|----|------------------------|
-|G1|.|.|
+|G1|child|wants to play on computer|
+|G2|child|wants to be able to play without the need of adult constantly present|
+|G3|child|wants engaging game|
+|G4|adult|the game should be educative|
+|G5|adult|the game should be playable without reading skills|
 
 ### 1.2 Scope plane
-It has been decided to create an interactive website.
+It has been decided to create an interactive webpage written in HTML, CSS and JavaScript. The webpage will feature the board game Enuk closely resembling the visual experience of the original game enhanced with built-in rules and sound effects.
 
 The following table lists the planned features, each feature referenced with original goal(s):
 
 |F#|Goal|Feature|
 |--|----|-------|
-|.|.|.|
+|F1|G5|Rules are available within the game|
+|F2|G2|moves and feedback in the game are graphical and audible, understandable without text|
+|F3|G4|situations, characters, objects, sounds exists in nature|
+|F4|G4|design and graphical elements are to be taken from original game|
+|F5|G3|game is repeatable with variability and adjustable level of challenge|
 
 ### 1.3 User Stories
 * As a player
