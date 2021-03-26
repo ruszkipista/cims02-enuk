@@ -42,15 +42,17 @@ Enuk is a mixture of memory and push-your-luck. Players turn over animal tiles, 
 Stakeholders of the website:
 - children from age 5 who want to play Arctic themed memory game in a browser
 - adults letting children play on a computer
+- game designers of the original board game
 
 #### 1.1.1 Goals and Objectives of Stakeholders (users)
 |G#|User|Goals, Needs, Objectives|
 |--|----|------------------------|
 |G1|child|wants to play on computer|
-|G2|child|wants to be able to play without the need of adult constantly present|
+|G2|child|wants to be able to play without the need of adult constantly present or other players|
 |G3|child|wants engaging game|
 |G4|adult|the game should be educative|
 |G5|adult|the game should be playable without reading skills|
+|G6|designer|the computer game should preserve the original design, characters, rules as close as possible
 
 ### 1.2 Scope plane
 It has been decided to create an interactive webpage written in HTML, CSS and JavaScript. The webpage will feature the board game Enuk closely resembling the visual experience of the original game enhanced with built-in rules and sound effects.
@@ -62,11 +64,15 @@ The following table lists the planned features, each feature referenced with ori
 |F1|G5|Rules are available within the game|
 |F2|G2|moves and feedback in the game are graphical and audible, understandable without text|
 |F3|G4|situations, characters, objects, sounds exists in nature|
-|F4|G4|design and graphical elements are to be taken from original game|
+|F4|G6|design and graphical elements are to be taken from original game|
 |F5|G3|game is repeatable with variability and adjustable level of challenge|
 
 ### 1.3 User Stories
-* As a player
+* As a child I want to play a game on the computer, so I am entertained and challenged.
+* As a child I want to play without an adult reading game instructions off the screen.
+* As an adult I want a game for my child which can be played without help, so I can do something else.
+* As an adult I want a game about arctic animals, so my child can learn about them and their relationships.
+* As an adult I want a game with rules built into the game play, so I my help is not needed to during the play.
 
 ### 1.4 Structure plane
 The structure of the website to be built consist of
