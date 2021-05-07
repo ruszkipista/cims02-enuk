@@ -24,6 +24,15 @@ body{
 }
 
 /* RULES page   */
+.slide-x {
+  animation: slide-x 1s ease-in-out infinite;
+}
+@keyframes slide-x {
+  0%,
+  100% { transform: translate(0,    0); }
+  50%  { transform: translate(1rem, 0); }
+}
+
 header+section { margin-top: var(--header-height) !important; }
 /* learnt about 3D radio button input here https://codepen.io/andreasnylin/pen/agiDp */
 fieldset>label { margin: 0 1rem 0 0; }
