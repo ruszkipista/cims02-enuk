@@ -81,10 +81,12 @@ The structure of the website to be built consist of a **Rules** and a **Game** p
 ### 1.5 Skeleton plane
 
 <details>
-   <summary>Features of Rules page</summary>
+  <summary>Features of Rules page</summary>
 
 |Section|Feature / Content description|
 |--------------|-----------------------------|
+|Navbar|ENUK logo|
+|Navbar|start game button for linking to the Game page|
 |Header|colorful summary about the game|
 |Game Materials|Toggle Switch for sound on/off|
 |Game Materials|Toggle Switch for test mode on/off|
@@ -93,30 +95,35 @@ The structure of the website to be built consist of a **Rules** and a **Game** p
 |Game Materials| 5 animal tiles with multipliers to show how many of them goes into the game|
 |Game Materials|sliding meter to select number of animal tiles from each type (bear,seal,salmon,herring) [2-14]|
 |Game Materials|sliding meter to select number of sun positions on the board which is tied to the number of reindeer tiles [3-9]|
-|.|.|
+|Game Materials|game board|
+|Game Materials|9 igloo tiles|
+|Game Materials|figure explaining fleeing order|
+|Game Materials|for each players placeholder for stack of collected tiles with 4 meeples underneath|
+|First Phase|explain a small First Phase game play through several steps, illustrated with images|
+|Rules of First Phase|explain detailed rules for First Phase illustrated with images|
+|Finishing Phase|explain a short Finishing Phase game play through several steps, illustrated with images|
+|Rules of Finishing Phase|explain detailed rules for Finishing Phase illustrated with images|
+|End of the Game|rules for when the game ends|
+|Credits|give credit to the authors of the original board game|
 
 </details>
 
 <details>
-   <summary>Wireframe of Rules page</summary>
-   <img width="100%" src="./assets/doc/ci-ms2-wireframe-rules-l.png" alt="Wireframe - Rules - size L" title="Wireframe - Rules - size L">
+  <summary>Wireframe of Rules page</summary>
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-rules-l.png" alt="Wireframe - Rules - size L" title="Wireframe - Rules - size L">
 </details>
 
 <details>
-   <summary>Features of Games page</summary>
-
-|Page / *section*|Feature#|Feature / Content description|Link or Action|
-|--------------|--------|-----------------------------|--------------|
-|.|.|.|.|
+  <summary>Features of Games page</summary>
 
 </details>
 
 <details>
-   <summary>Wireframes of Games page</summary>
-   <h3>Game area populated with face-down tiles</h3>
-   <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-1-l.png" alt="Wireframe - Game 1 - size L" title="Wireframe - Game 1 - size L">
-   <h3>Game area covered with pull-down gameboard</h3>
-   <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-2-l.png" alt="Wireframe - Game 2 - size L" title="Wireframe - Game 2 - size L">
+  <summary>Wireframes of Games page</summary>
+  <h3>Game area populated with face-down tiles</h3>
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-1-l.png" alt="Wireframe - Game 1 - size L" title="Wireframe - Game 1 - size L">
+  <h3>Game area covered with pull-down gameboard</h3>
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-2-l.png" alt="Wireframe - Game 2 - size L" title="Wireframe - Game 2 - size L">
 </details>
 
 ### 1.6 Surface plane
