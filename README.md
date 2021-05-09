@@ -4,10 +4,7 @@ An interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) i
 [![Enuk boardgame mid-play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
 
 **Game Classification**
-* Category
-  - Animals 
-  - Children's Game 
-  - Memory
+* Category: [ Animals, Children's Game, Memory ]
 * Age - 5 years and up
 
 #### Publisher's description:
@@ -55,39 +52,72 @@ Stakeholders of the website:
 |G6|designer|the computer game should preserve the original design, characters, rules as close as possible
 
 ### 1.2 Scope plane
-It has been decided to create an interactive webpage written in HTML, CSS and JavaScript. The webpage will feature the board game Enuk closely resembling the visual experience of the original game enhanced with built-in rules and sound effects.
+It has been decided to create an interactive webpage written in HTML, CSS and JavaScript. The webpage will feature Enuk board game,  closely resembling the visual experience of the original game, enhanced with built-in rules and sound effects.
 
 The following table lists the planned features, each feature referenced with original goal(s):
 
 |F#|Goal|Feature|
 |--|----|-------|
-|F1|G5|Rules are available within the game|
-|F2|G2|moves and feedback in the game are graphical and audible, understandable without text|
+|F1|G5|Rules are explained separate from the game|
+|F1|G5|The game play incorporates every rule, restricts actions and decision to the immediately available ones|
+|F2|G2|moves and feedbacks in the game are graphical and audible, understandable without text|
 |F3|G4|situations, characters, objects, sounds exists in nature|
 |F4|G6|design and graphical elements are to be taken from original game|
-|F5|G3|game is repeatable with variability and adjustable level of challenge|
+|F5|G3|game is repeatable with variability and the challenge level is adjustable|
 
 ### 1.3 User Stories
 * As a child I want to play a game on the computer, so I am entertained and challenged.
-* As a child I want to play without an adult reading game instructions off the screen.
+* As a child I want to play without an adult reading in-play instructions off the screen, so I am not dependent on others.
 * As an adult I want a game for my child which can be played without help, so I can do something else.
 * As an adult I want a game about arctic animals, so my child can learn about them and their relationships.
-* As an adult I want a game with rules built into the game play, so I my help is not needed to during the play.
+* As an adult I want a game with rules built into the game play, so my help is not needed during the play.
+* As the original game designer, I want to see my product extended into digital space, so my recogition extends further.
 
 ### 1.4 Structure plane
-The structure of the website to be built consist of
-- a **Home** page,
+The structure of the website to be built consist of a **Rules** and a **Game** page. The website loads the Rules page first, the Games page is accessible from the Rules page only. At the end of a game play the Rules page becomes accessible again. 
 
 ![pages with navigation links](./assets/doc/ci-ms2-site-structure.jpg "Website structure")
 
 ### 1.5 Skeleton plane
-Feature list in page/section structure with content hinting and navigation links. The following table is a sample, describes the page **XXX**. Check out the whole list [here](./assets/doc/ci-ms2-features.pdf) in PDF format.
+
+<details>
+   <summary>Features of Rules page</summary>
+
+|Section|Feature / Content description|
+|--------------|-----------------------------|
+|Header|colorful summary about the game|
+|Game Materials|Toggle Switch for sound on/off|
+|Game Materials|Toggle Switch for test mode on/off|
+|Game Materials|toggle radio buttons to chose own color|
+|Game Materials|toggle radio buttons to chose number of opponents [0-3]|
+|Game Materials| 5 animal tiles with multipliers to show how many of them goes into the game|
+|Game Materials|sliding meter to select number of animal tiles from each type (bear,seal,salmon,herring) [2-14]|
+|Game Materials|sliding meter to select number of sun positions on the board which is tied to the number of reindeer tiles [3-9]|
+|.|.|
+
+</details>
+
+<details>
+   <summary>Wireframe of Rules page</summary>
+   <img width="100%" src="./assets/doc/ci-ms2-wireframe-rules-l.png" alt="Wireframe - Rules - size L" title="Wireframe - Rules - size L">
+</details>
+
+<details>
+   <summary>Features of Games page</summary>
 
 |Page / *section*|Feature#|Feature / Content description|Link or Action|
 |--------------|--------|-----------------------------|--------------|
 |.|.|.|.|
 
-Created wireframes for **XXX** page in 3 width, see the others as well [here](./assets/doc/ci-ms2-wireframes.pdf) or the balsamiq file [here](./assets/doc/ci-ms2-wireframes.bmpr).
+</details>
+
+<details>
+   <summary>Wireframes of Games page</summary>
+   <h3>Game area populated with face-down tiles</h3>
+   <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-1-l.png" alt="Wireframe - Game 1 - size L" title="Wireframe - Game 1 - size L">
+   <h3>Game area covered with pull-down gameboard</h3>
+   <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-2-l.png" alt="Wireframe - Game 2 - size L" title="Wireframe - Game 2 - size L">
+</details>
 
 ### 1.6 Surface plane
 Chose font [Roboto](https://fonts.google.com/specimen/Roboto) for the headers.
