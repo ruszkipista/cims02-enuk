@@ -81,7 +81,9 @@ The structure of the website to be built consist of a **Rules** and a **Game** p
 ### 1.5 Skeleton plane
 
 <details>
-  <summary>Features of Rules page</summary>
+  <summary>Features and Wireframe of Rules page</summary>
+
+<h3>Rules page with Navbar and responsive Body of text and images and Input fields</h3>
 
 |Section|Feature / Content description|
 |--------------|-----------------------------|
@@ -91,14 +93,16 @@ The structure of the website to be built consist of a **Rules** and a **Game** p
 |Game Materials|Toggle Switch for sound on/off|
 |Game Materials|Toggle Switch for test mode on/off|
 |Game Materials|toggle radio buttons to chose own color|
-|Game Materials|toggle radio buttons to chose number of opponents [0-3]|
-|Game Materials| 5 animal tiles with multipliers to show how many of them goes into the game|
-|Game Materials|sliding meter to select number of animal tiles from each type (bear,seal,salmon,herring) [2-14]|
-|Game Materials|sliding meter to select number of sun positions on the board which is tied to the number of reindeer tiles [3-9]|
-|Game Materials|game board|
-|Game Materials|9 igloo tiles|
-|Game Materials|figure explaining fleeing order|
-|Game Materials|for each players placeholder for stack of collected tiles with 4 meeples underneath|
+|Game Materials|3 toggle buttons to chose number of opponents [0-3]|
+|Game Materials|5 animal tiles with multipliers to show how many of them goes into the game|
+|Game Materials|sliding meter [2-14] to select number of animal tiles from each type (bear,seal,salmon,herring)|
+|Game Materials|sliding meter [3-9] to select number of sun positions on the board which is tied to the number of reindeer tiles|
+|Game Materials|save chosen game parameters to browser's local storage at every user interactions for persistance|
+|Game Materials|Read game parameters at page refresh and set up the input fields to the last saved state, so game can be repeated with same settings|
+|Game Materials|game board, so it's structure can be explained|
+|Game Materials|9 igloo tiles, so a state near the end can be explained|
+|Game Materials|figure explaining fleeing order, so the rule can be loaded into player's visual memory|
+|Game Materials|for each player, placeholder for stack of collected tiles with 4 meeples underneath, so game state can be explained|
 |First Phase|explain a small First Phase game play through several steps, illustrated with images|
 |Rules of First Phase|explain detailed rules for First Phase illustrated with images|
 |Finishing Phase|explain a short Finishing Phase game play through several steps, illustrated with images|
@@ -106,24 +110,63 @@ The structure of the website to be built consist of a **Rules** and a **Game** p
 |End of the Game|rules for when the game ends|
 |Credits|give credit to the authors of the original board game|
 
+<br>
+<img width="100%" src="./assets/doc/ci-ms2-wireframe-rules-l.png" alt="Wireframe-Rules page" title="Rules page">
 </details>
 
 <details>
-  <summary>Wireframe of Rules page</summary>
-  <img width="100%" src="./assets/doc/ci-ms2-wireframe-rules-l.png" alt="Wireframe - Rules - size L" title="Wireframe - Rules - size L">
+  <summary>Features and wireframes of Game page during First Phase</summary>
+
+<h3>Game area with Navbar and Tiles</h3>
+
+|Section|Feature / Content description|
+|--------------|-----------------------------|
+|Navbar|ENUK logo|
+|Navbar|for First Phase, set up sun positions as circles as many were set on the Rules page as a parameter. The arrangement of the circles form an arc starting from left-bottom corner of the Navbar up to the top-horizontal midpoint and down to the right-bottom corner. The arc mimics the sun's low path over the horizon|
+|Navbar|for First Phase, put up a sun icon into the left-most sun position and advance it (with animation) to the next (to right) when a player turns a reindeer tile|
+|Navbar|put up an eskimo glove icon, so when player can indicate that they want to collect face-up tiles from the board, by clicking on this icon|
+|Game area|change the background color of the game area to the actual player's color, so it is evident, who's turn it is|
+|Game area|put up tiles face down onto the game area in rows in a grid structure. The number of each tile types are set by parameters from the Rules page. If the test parameter is On, label each tile so the tester can know what the tiles' backs are hiding|
+|Game area|when a player clicks on a face-down tile, flip the tile, revealing the face image, if sound is switched on, play a sound effect in sync with the flip animation|
+|Game area|when a player flips an igloo tile, after the face image is revealed, the tile is moved to the board onto the igloo placeholder and a meeple is placed on top of this tile. The meeple is taken from underneath the player's stack (if there is left). If sound is switched on, play a sound effect in sync with the tile removal|
+|Game area|each animal (except the reindeer) fears of one other animal: herring fears salmon, salmon fears seal, seal fears polar bear, polar bear fears reindeer (with eskimo), when player flips a tile, check if the flipped animal fears any face-up animals on the board OR any face-up animal fears the flipped animal. If there is fear, the fleeing animals's tile turned back face-down (with sound effect), remaining face-up tiles are removed to the player's stack (with sound effect)|
+|Game area|if player clicks on the collect button (eskimo glove icon), remove the face-up tiles from board and move them into the player's stack (with sound effect)|
+
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-1-l.png" alt="Wireframe-Game 1-size L" title="Game - First Phase - Tiles">
+
+  <h3>Game area with Navbar and temporary pull-down Board</h3>
+
+|Section|Feature / Content description|
+|--------------|-----------------------------|
+|Navbar|if player hovers over the Navbar, bring the GameBoard forward, on top of the game area. If the hovering ends over the Navbar, put the board back into the background|
+
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-2-l.png" alt="Wireframe-Game 2-size L" title="Game - First Phase - pull down Board">
 </details>
 
-<details>
-  <summary>Features of Games page</summary>
-
-</details>
 
 <details>
-  <summary>Wireframes of Games page</summary>
-  <h3>Game area populated with face-down tiles</h3>
-  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-1-l.png" alt="Wireframe - Game 1 - size L" title="Wireframe - Game 1 - size L">
+ <summary>Features and wireframe of Game page during Final Phase</summary>
+
+|Section|Feature / Content description|
+|--------------|-----------------------------|
+|Navbar|put up 6 toggle radio buttons with icons of (reindeer, bear, seal, salmon, herring, igloo), so player can signal what they predict their next flip will be|
+
   <h3>Game area covered with pull-down gameboard</h3>
-  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-2-l.png" alt="Wireframe - Game 2 - size L" title="Wireframe - Game 2 - size L">
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-3-l.png" alt="Wireframe-Game 3-size L" title="Game - Final Phase">
+</details>
+
+
+<details>
+ <summary>Features and wireframe of Game page at the End Of Game Phase</summary>
+
+<h3>Game area with Navbar and permanent pull-down Board</h3>
+
+|Section|Feature / Content description|
+|--------------|-----------------------------|
+|Navbar|for Game End, put up a Replay button, so player can restart the game immediatelly without changing the game parameters|
+|Navbar|for Game End, put up a Rules button, so player can go back to the Rules page for studying the rules of changing the parameters|
+
+  <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-3-l.png" alt="Wireframe-Game 4-size L" title="Game - End Phase">
 </details>
 
 ### 1.6 Surface plane
@@ -142,7 +185,10 @@ there are 2 phases in the game:
 - Phase 1: flipping and collecting tiles, building the igloo
 - Phase 2: player declares next tile before flipping it, if correct, collects the tile
 
+<details>
+<summary>
 The following states represent the stages the game play goes through from rendering the game board until declaring the winner.
+</summary>
 
 **A.** state <a id="A">**BeforePhase1**</a> (generate game area for Phase 1)
 1. generate game table with 74 tiles face down, random order in matrix layout (rows and columns)
@@ -271,11 +317,14 @@ OR flag `RequestToCollect`<br>
 1. If `Request` is `RequestToRestart` -> continue to state <a href="#A">**BeforePhase1**<a>
 2. If `Request` is `RequestToFlip` -> flip `ClickedElement`
 
-### 2.3 Pseudo code of machine player model
+</details>
 
+### 2.3 Pseudo code of machine player model
+`#TODO`
 
 ## 3. Features Left to Implement
-
+* develop a program agent for playing one player's part, so the human player and program agent take turns during the game until one wins
+* integrate the program agent into the game play with same visualization as for human player, so the human player can follow the agent's move
 
 ## 4. Technologies and Tools Used
 
