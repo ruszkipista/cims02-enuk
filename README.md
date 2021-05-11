@@ -129,15 +129,15 @@ The structure of the website to be built consist of a **Rules** and a **Game** p
 |Section|Feature / Content description|
 |--------------|-----------------------------|
 |Navbar|ENUK logo|
-|Navbar|for First Phase, set up sun positions as circles as many were set on the Rules page as a parameter. The arrangement of the circles form an arc starting from left-bottom corner of the Navbar up to the top-horizontal midpoint and down to the right-bottom corner. The arc mimics the sun's low path over the horizon|
-|Navbar|for First Phase, put up a sun icon into the left-most sun position and advance it (with animation) to the next (to right) when a player turns a reindeer tile|
+|Navbar|set up sun positions as circles as many were set on the Rules page as a parameter. The arrangement of the circles form an arc starting from left-bottom corner of the Navbar up to the top-horizontal midpoint and down to the right-bottom corner. The arc mimics the sun's low path over the horizon|
+|Navbar|put up a Sun icon into the left-most sun position and advance it (with animation) to the next (to right) when a player turns a reindeer tile|
 |Navbar|put up an eskimo glove icon, so when player can indicate that they want to collect face-up tiles from the board, by clicking on this icon|
+|Game area|if player clicks on the collect button (eskimo glove icon), remove the face-up tiles from board and move them into the player's stack (with sound effect)|
 |Game area|change the background color of the game area to the actual player's color, so it is evident, who's turn it is|
 |Game area|put up tiles face down onto the game area in rows in a grid structure. The number of each tile types are set by parameters from the Rules page. If the test parameter is On, label each tile so the tester can know what the tiles' backs are hiding. Every tile remaining on the area face-down retains their place, so the player can visually memorize their position. Every tile can be flipped back and forth (restricted by game rules)|
 |Game area|when a player clicks on a face-down tile, flip the tile, revealing the face image, if sound is switched on, play a sound effect in sync with the flip animation|
 |Game area|when a player flips an igloo tile, after the face image is revealed, the tile is moved to the board onto the igloo placeholder and a meeple is placed on top of this tile. The meeple is taken from underneath the player's stack (if there is left). If sound is switched on, play a sound effect in sync with the tile removal|
 |Game area|each animal (except the reindeer) fears of one other animal: herring fears salmon, salmon fears seal, seal fears polar bear, polar bear fears reindeer (with eskimo), when player flips a tile, check if the flipped animal fears any face-up animals on the board OR any face-up animal fears the flipped animal. If there is fear, the fleeing animals's tile turned back face-down (with sound effect), remaining face-up tiles are removed to the player's stack (with sound effect)|
-|Game area|if player clicks on the collect button (eskimo glove icon), remove the face-up tiles from board and move them into the player's stack (with sound effect)|
 
   <br>
   <img width="100%" src="./assets/doc/ci-ms2-wireframe-game-1-l.png" alt="Wireframe-Game 1-size L" title="Game - First Phase - Tiles">
@@ -376,24 +376,12 @@ See my [study notes/development journal](./assets/doc/ci-ms2-study-notes-journal
 
 First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/), [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now all html pages validate to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." All 3 `*.js` file validates to one type of warning that variables are unknown or unused. They are due to the split of JavaScript code into three separate files.
 
-The whole testing were conducted manually.
+The whole testing was conducted manually on Windows 10 desktop device running Chrome browser on a 1920x1080 resolution screen and on an Android tablet.
 
-Here is a sample from the test log, see the complete document [here](./assets/doc/ci-ms2-testing.pdf)
+See the whole 
+<a href="./assets/doc/ci-ms2-test-log.html" target="_blank">test log</a>
 
-```
-Background: 
-Desktop device is a desktop Windows 10 operating system running Chrome (on 1920x1080 pixels screen) and Firefox browser (on 1600x1200 pixels screen)
-Mobile device is a OnePlus2 mobile phone running OxigenOS 3.6.1 (equivalent to Android 6.0.1) and Chrome Mobile browser on screen resolution 1080x1920 pixels
-
-User Story:
-
-Scenario: 
-```
-|Test no.|Pre-condition|Event|Expected|Result|Comment|
-|-|-|-|-|-|-|
-|1|on Desktop Chrome,|pass|-|
-
-The website performs on desktop and mobile devices as intended, no responsivity issues were found.
+Conclusion: The website performs on desktop as intended.
 
 No additional bugs were discovered during the final testing.
 
