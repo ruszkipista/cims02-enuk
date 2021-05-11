@@ -1,7 +1,7 @@
 # [Enuk](https://ruszkipista.github.io/cims02-enuk/)
 An interactive webpage to play [Enuk boardgame](https://dorra-spiele.de/enuk/) in a browser. This project is my second milestone in obtaining the [Full Stack Web Development](https://codeinstitute.net/full-stack-software-development-diploma/) diploma from [Code Institute](https://codeinstitute.net/)
 
-[![Enuk boardgame mid-play](./assets/doc/enuk-game-state.jpg)](https://boardgamegeek.com/boardgame/36554/enuk)
+<p style="text-align: center;"><a href="https://boardgamegeek.com/boardgame/36554/enuk" target="_blank"><img src="./assets/doc/enuk-game-state.jpg" alt="Enuk boardgame" title="Enuk boardgame mid-play status"></a><p>
 
 **Game Classification**
 * Category: [ Animals, Children's Game, Memory ]
@@ -28,7 +28,7 @@ Enuk is a mixture of memory and push-your-luck. Players turn over animal tiles, 
 - [2. Program design](#2-program-design "2. Program design")
 - [3. Features Left to Implement](#3-features-left-to-implement "3. Features Left to Implement")
 - [4. Technologies and Tools Used](#4-technologies-and-tools-used "4. Technologies and Tools Used")
-- [5. Issues solved during development](#5-issues-solved-during-development "5. Issues solved during development")
+- [5. Issues solved during development](#5-issues-solved-during-development-and-testing "5. Issues solved during development and testing")
 - [6. Testing](#6-testing "6. Testing")
 - [7. Deployment](#7-deployment "7. Deployment")
 - [8. Credits](#8-credits "8 Credits")
@@ -54,6 +54,8 @@ Stakeholders of the website:
 ### 1.2 Scope plane
 It has been decided to create an interactive webpage written in HTML, CSS and JavaScript. The webpage will feature Enuk board game,  closely resembling the visual experience of the original game, enhanced with built-in rules and sound effects.
 
+Note: Although much effort made to satisfy responsivity criteria, this game is playable on computer screen only. On other screens the tiles on the game area overflows on smaller screens, so the player needs to scroll and during scrolling in the brain the stored visual references of known tiles gets destroyed so the game degrades to a push-your-luck game which is not the intention of the desiger/artist/developer.
+
 The following table lists the planned features, each feature referenced with original goal(s):
 
 |F#|Goal|Feature|
@@ -76,7 +78,7 @@ The following table lists the planned features, each feature referenced with ori
 ### 1.4 Structure plane
 The structure of the website to be built consist of a **Rules** and a **Game** page. The website loads the Rules page first, the Games page is accessible from the Rules page only. At the end of a game play the Rules page becomes accessible again. 
 
-![pages with navigation links](./assets/doc/ci-ms2-site-structure.jpg "Website structure")
+<p style="text-align: center;"><img src="./assets/doc/ci-ms2-site-structure.jpg" alt="Website structure" title="pages with navigation links"><p>
 
 ### 1.5 Skeleton plane
 
@@ -396,7 +398,7 @@ The website performs on desktop and mobile devices as intended, no responsivity 
 No additional bugs were discovered during the final testing.
 
 ## 7. Deployment
-
+### Deployment to GitHub Pages
 The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims01-lkc/](https://ruszkipista.github.io/cims01-lkc/).
 I followed [this](https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) tutorial to deploy the project on GitHub Pages, these were the steps:
 1. On GitHub navigate to the repository's main page
@@ -411,6 +413,7 @@ I followed [this](https://docs.github.com/en/github/working-with-github-pages/co
 6. After a while you are presented whith this status message at the same place
 ![Settings/GitHub Pages](./assets/doc/ci-ms2-deployment-5.png "Your site is published")
 
+### Deployment to a different hosting solution
 If you want to deploy this project to a different hosting solution, you need to copy all the files from this repository. Follow the repository cloning steps from [this](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository) tutorial.
 After you have your local copies of these files, you copy them into the home folder of the webserver, keeping the folder structure as is.
 Just because this is a static website, you can even start up the Home page by double clicking on the `index.html` file in your local file system - effectively launching you default browser with the starting page.
@@ -428,7 +431,7 @@ Just because this is a static website, you can even start up the Home page by do
 ### Acknowledgements
 My inspiration for this project came from the assessment booklet mentioning memory game as a possible project and this board game jumped into my mind immediatelly. We played this game with our kids many times, even recently during the [pandemic](https://en.wikipedia.org/wiki/COVID-19_pandemic) lockdown.
 
-I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project. He suggested to make the gameboard stowaway so all tiles can be accessed without scrolling.
+I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project. He suggested to make the gameboard stowaway so all tiles can be accessed without scrolling and emphasize the Play button on the Rules page.
 
 My family had several suggestions on the UI and how to avoid the use of written information during play.
 
@@ -441,4 +444,4 @@ See the exact source of images in the code comments. Here is the short list of s
 - youtube videos for sound effects, see the list of sources in [`gameviewer.js`](./assets/js/gameviewer.js)
 
 ## 9. Disclaimer
-The content of this website is for educational purposes only.
+The content of this website is for entertainment and educational purposes only.
