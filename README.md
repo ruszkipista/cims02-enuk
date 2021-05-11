@@ -194,7 +194,7 @@ Chose font [Roboto](https://fonts.google.com/specimen/Roboto) for the headers.
 
 The images, tiles and icons are digital reproduction of the physical board game. Most of them are photgraphed and transformed in an image editor. This method preserves the original look and style.
 
-Sond effect had been added to certain screen actions to give audio feedback.
+Sound effect had been added to certain screen actions to give audio feedback.
 
 ## 2. Program design
 The interactivity is provided with JavaScript program running in the browser on the client side. It has 3 theoretically distinct parts:
@@ -341,9 +341,6 @@ OR flag `RequestToCollect`<br>
 
 </details>
 
-### 2.3 Pseudo code of machine player model
-`#TODO`
-
 ## 3. Features Left to Implement
 * develop a program agent for playing one player's part, so the human player and program agent take turns during the game until one wins
 * integrate the program agent into the game play with same visualization as for human player, so the human player can follow the agent's move
@@ -362,7 +359,7 @@ OR flag `RequestToCollect`<br>
 - Stored the code and project deliverables cloud service [Github](https://github.com/) repository with versions.
 - Deployed the website on [GitHub Pages](https://pages.github.com/)
 - The development machine run [Windows 10](https://www.microsoft.com/en-us/software-download/windows10) operating system.
-- The website was tested on desktop on [Chrome](https://www.google.com/intl/en_ie/chrome/) and [Firefox](https://www.mozilla.org/en-US/firefox/) web browsers, also on a [OnePlus2](https://www.oneplus.com/ie/support/spec/oneplus-2) mobile phone running [Android](https://www.android.com/) and mobile [Chrome](https://play.google.com/store/apps/details?id=com.android.chrome&hl=en) browser.
+- The website was tested on desktop on [Chrome](https://www.google.com/intl/en_ie/chrome/) and [Firefox](https://www.mozilla.org/en-US/firefox/) web browsers, also on a [OnePlus2](https://www.oneplus.com/ie/support/spec/oneplus-2) mobile phone running [Android OS](https://www.android.com/) and mobile [Chrome](https://play.google.com/store/apps/details?id=com.android.chrome&hl=en) browser.
 - Generated favicon with [Favicon & App Icon Generator](https://www.favicon-generator.org/)
 - Generated one image (on top of this Readme) of how the website looks on different size devices with [Am I Responsive](http://ami.responsivedesign.is/)
 - Chose font using [Google Fonts](https://fonts.google.com/)
@@ -370,13 +367,12 @@ OR flag `RequestToCollect`<br>
 - Searched the internet to find content, documentation and solution for issues using [Google](https://www.google.com)'s search service.
 - connected to the internet using [Vodafone](https://n.vodafone.ie/shop/broadband.html)'s broadband service.
 
-## 5. Issues solved during development
-### 5.1 X
-
+## 5. Issues solved during development and testing
+See my [study notes/development journal](./assets/doc/ci-ms2-study-notes-journal.pdf) with lots of issues and bugs solved.
 
 ## 6. Testing
 
-First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/) [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now all html pages validate to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." `The script.js` validates to a couple of readibility warnings which I chose to ignore.
+First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/), [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now all html pages validate to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." All 3 `*.js` file validates to one type of warning that variables are unknown or unused. They are due to the split of JavaScript code into three separate files.
 
 The whole testing were conducted manually.
 
@@ -434,7 +430,7 @@ My inspiration for this project came from the assessment booklet mentioning memo
 
 I thank [Nishant Kumar](https://github.com/nishant8BITS) for mentoring me during the project. He suggested to make the gameboard stowaway so all tiles can be accessed without scrolling.
 
-My family had sevaeral suggestion on the UI and how to avoid use of text during play.
+My family had several suggestions on the UI and how to avoid the use of written information during play.
 
 [Victor Navas Santajuana](https://www.linkedin.com/in/victor-navas-santajuana-229a2b67/) gave me a code rewiew half way through the project
 
