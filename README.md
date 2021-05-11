@@ -374,12 +374,11 @@ See my [study notes/development journal](./assets/doc/ci-ms2-study-notes-journal
 
 ## 6. Testing
 
-First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/), [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now all html pages validate to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." All 3 `*.js` file validates to one type of warning that variables are unknown or unused. They are due to the split of JavaScript code into three separate files.
+First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/), [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now the `index.html` page validates to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." All 3 `*.js` file validates to one type of warning that variables are unknown or unused. They are due to the split of JavaScript code into three separate files.
 
 The whole testing was conducted manually on Windows 10 desktop device running Chrome browser on a 1920x1080 resolution screen and on an Android tablet.
 
-See the whole 
-<a href="https://ruszkipista.github.io/cims02-enuk/assets/doc/ci-ms2-test-log.html" target="_blank">test log</a>
+See the whole <a href="https://ruszkipista.github.io/cims02-enuk/assets/doc/ci-ms2-test-log.html" target="_blank">test log</a> or [here](./assets/doc/ci-ms2-test-log.pdf)
 
 Conclusion: The website performs on desktop as intended.
 
@@ -390,15 +389,15 @@ No additional bugs were discovered during the final testing.
 The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims01-lkc/](https://ruszkipista.github.io/cims02-enuk/).
 I followed [this](https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) tutorial to deploy the project on GitHub Pages, these were the steps:
 1. On GitHub navigate to the repository's main page
-2. Under your repository name, click Settings
+2. Under your repository name, click Settings<br>
 ![Repository/Settings](./assets/doc/ci-ms2-deployment-1.png "Click on Settings")
-3. Under "GitHub Pages", use the None or Branch drop-down menu and select a publishing source
+3. Under "GitHub Pages", use the None or Branch drop-down menu and select a publishing source<br>
 ![Settings/GitHub Pages/Branch](./assets/doc/ci-ms2-deployment-2.png "Click on Branch")
-4. Optionally, use the drop-down menu to select a folder for your publishing source
+4. Optionally, use the drop-down menu to select a folder for your publishing source<br>
 ![Settings/GitHub Pages/Source](./assets/doc/ci-ms2-deployment-3.png "Click on Root")
-5. Click Save
+5. Click Save<br>
 ![Settings/GitHub Pages/Save](./assets/doc/ci-ms2-deployment-4.png "Click on Save")
-6. After a while you are presented whith this status message at the same place
+6. After a while you are presented whith this status message at the same place<br>
 ![Settings/GitHub Pages](./assets/doc/ci-ms2-deployment-5.png "Your site is published")
 
 ### Deployment to a different hosting solution
