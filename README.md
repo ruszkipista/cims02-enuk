@@ -379,7 +379,7 @@ First step in testing was the validation of HTML, CSS and JS code with [Markup V
 The whole testing was conducted manually on Windows 10 desktop device running Chrome browser on a 1920x1080 resolution screen and on an Android tablet.
 
 See the whole 
-<a href="./assets/doc/ci-ms2-test-log.html" target="_blank">test log</a>
+<a href="https://ruszkipista.github.io/cims02-enuk/assets/doc/ci-ms2-test-log.html" target="_blank">test log</a>
 
 Conclusion: The website performs on desktop as intended.
 
@@ -387,7 +387,7 @@ No additional bugs were discovered during the final testing.
 
 ## 7. Deployment
 ### Deployment to GitHub Pages
-The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims01-lkc/](https://ruszkipista.github.io/cims01-lkc/).
+The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims01-lkc/](https://ruszkipista.github.io/cims02-enuk/).
 I followed [this](https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) tutorial to deploy the project on GitHub Pages, these were the steps:
 1. On GitHub navigate to the repository's main page
 2. Under your repository name, click Settings
