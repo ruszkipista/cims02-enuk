@@ -414,7 +414,7 @@ See my [study notes/development journal](./assets/doc/ci-ms2-study-notes-journal
 
 First step in testing was the validation of HTML, CSS and JS code with [Markup Validation Service](https://validator.w3.org/), [CSS Validation Service](https://jigsaw.w3.org/css-validator/), [JS Hint](https://jshint.com/) respectively. I performed the validations a couple of times during development and once at the end. Now the `index.html` page validates to "Document checking completed. No errors or warnings to show.". The `style.css` file validates to "Congratulations! No Error Found." All 3 `*.js` file validates to one type of warning that variables are unknown or unused. They are due to the split of JavaScript code into three separate files.
 
-The whole testing was conducted manually on Windows 10 desktop device running Chrome browser on a 1920x1080 resolution screen and on an Android tablet.
+The whole testing was conducted manually on Windows 10 desktop device running Chrome browser on a 1920x1080 resolution screen and on an Android tablet. Not tested on mobile phone, because the limited sceen estate does not allow game play in a way as intended.
 
 See the whole <a href="https://ruszkipista.github.io/cims02-enuk/assets/doc/ci-ms2-test-log.html" target="_blank">test log</a> in a webpage or [here](./assets/doc/ci-ms2-test-log.pdf) as a pdf.
 
@@ -424,7 +424,7 @@ Conclusion: The website performs on desktop and tablet as intended.
 
 ## 7. Deployment
 ### Deployment to GitHub Pages
-The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims01-lkc/](https://ruszkipista.github.io/cims02-enuk/).
+The website is deployed to GitHub Pages automatically by GitHub. The assigned web address is [ruszkipista.github.io/cims02-enuk/](https://ruszkipista.github.io/cims02-enuk/).
 I followed [this](https://docs.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) tutorial to deploy the project on GitHub Pages, these were the steps:
 1. On GitHub navigate to the repository's main page
 2. Under your repository name, click Settings<br>
@@ -444,12 +444,12 @@ After you have your local copies of these files, you copy them into the home fol
 Just because this is a static website, you can even start up the Home page by double clicking on the `index.html` file in your local file system - effectively launching you default browser with the starting page.
 
 ## 8. Credits
-### Boardgame Designers
+### Original Boardgame Designers
 * [Stefan Dorra](https://boardgamegeek.com/boardgamedesigner/13/stefan-dorra)
 * [Manfred Reindl](https://boardgamegeek.com/boardgamedesigner/10614/manfred-reindl)
-### Boardgame Artist
+### Original Boardgame Artist
 * [Alexander Jung](https://boardgamegeek.com/boardgameartist/12123/alexander-jung)
-### Boardgame Publishers
+### Original Boardgame Publishers
 * [Queen Games](https://boardgamegeek.com/boardgamepublisher/47/queen-games)
 * [Piatnik](https://boardgamegeek.com/boardgamepublisher/22/piatnik)
 
