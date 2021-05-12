@@ -399,7 +399,7 @@ OR flag `RequestToCollect`<br>
 - Stored the code and project deliverables cloud service [Github](https://github.com/) repository with versions.
 - Deployed the website on [GitHub Pages](https://pages.github.com/)
 - The development machine run [Windows 10](https://www.microsoft.com/en-us/software-download/windows10) operating system.
-- The website was tested on desktop on [Chrome](https://www.google.com/intl/en_ie/chrome/) and [Firefox](https://www.mozilla.org/en-US/firefox/) web browsers, also on a [OnePlus2](https://www.oneplus.com/ie/support/spec/oneplus-2) mobile phone running [Android OS](https://www.android.com/) and mobile [Chrome](https://play.google.com/store/apps/details?id=com.android.chrome&hl=en) browser.
+- The website was tested on desktop on [Chrome](https://www.google.com/intl/en_ie/chrome/) and [Firefox](https://www.mozilla.org/en-US/firefox/) web browsers, also on a [Asus Google Nexus 7 (2013)](https://www.gsmarena.com/asus_google_nexus_7_(2013)-5600.php) tablet running [Android OS](https://www.android.com/) and mobile [Chrome](https://play.google.com/store/apps/details?id=com.android.chrome&hl=en) browser.
 - Generated favicon with [Favicon & App Icon Generator](https://www.favicon-generator.org/)
 - Generated one image (on top of this Readme) of how the website looks on different size devices with [Am I Responsive](http://ami.responsivedesign.is/)
 - Chose font using [Google Fonts](https://fonts.google.com/)
